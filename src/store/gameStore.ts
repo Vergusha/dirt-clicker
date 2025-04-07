@@ -120,6 +120,7 @@ export const useGameStore = create<GameState>()(
         }
       },
       
+      // Округляем значения до 2 знаков после запятой для всех чисел с плавающей точкой
       purchaseMultiClick: (quantity) => {
         const state = get();
         const baseCost = 50; // Снижена начальная стоимость
@@ -137,12 +138,13 @@ export const useGameStore = create<GameState>()(
         if (state.canAfford(totalCost)) {
           set({
             dirtCount: state.dirtCount - totalCost,
-            multiClickPower: state.multiClickPower + (quantity * 0.1), // Each level adds +0.1 to multiplier
+            multiClickPower: parseFloat((state.multiClickPower + (quantity * 0.1)).toFixed(2)), // Округляем до 2 знаков
             multiClickCost: Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel + quantity))
           });
         }
       },
       
+      // Округляем значения до 2 знаков после запятой для всех чисел с плавающей точкой
       purchaseMultiAutoClick: (quantity) => {
         const state = get();
         const baseCost = 100; // Снижена начальная стоимость
@@ -160,7 +162,7 @@ export const useGameStore = create<GameState>()(
         if (state.canAfford(totalCost)) {
           set({
             dirtCount: state.dirtCount - totalCost,
-            multiAutoClickPower: state.multiAutoClickPower + (quantity * 0.1), // Each level adds +0.1 to multiplier
+            multiAutoClickPower: parseFloat((state.multiAutoClickPower + (quantity * 0.1)).toFixed(2)), // Округляем до 2 знаков
             multiAutoClickCost: Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel + quantity))
           });
         }
