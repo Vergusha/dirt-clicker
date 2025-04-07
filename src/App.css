@@ -683,3 +683,178 @@ button {
   overflow: visible; /* Убедитесь, что лопаты не обрезаются */
   pointer-events: none;
 }
+
+/* Стили для контейнеров улучшений */
+.upgrade-container {
+  display: flex;
+  align-items: stretch;
+  gap: 5px;
+  margin-bottom: 1rem;
+}
+
+.upgrade-container .upgrade-btn {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Стили для информационной кнопки */
+.info-btn {
+  width: 35px;
+  min-width: 35px;
+  height: auto;
+  border-radius: 0px;
+  background-color: #3d2b1f;
+  border: 3px solid #2a1a10;
+  color: #e2c08d;
+  font-family: 'Press Start 2P', 'VT323', monospace;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-btn:hover {
+  background-color: #6b4731;
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+}
+
+.info-btn:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* Стили для оверлея информационной панели */
+.info-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  cursor: pointer;
+}
+
+/* Стили для информационной панели */
+.info-panel {
+  background-color: #2a1a10;
+  border: 4px solid #3d2b1f;
+  border-radius: 0px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  width: 300px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  color: #e2c08d;
+  cursor: default;
+  image-rendering: pixelated;
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
+}
+
+/* Заголовок информационной панели */
+.info-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #3d2b1f;
+  border-bottom: 3px solid #2a1a10;
+}
+
+.info-panel-header h3 {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #f8c471;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
+  letter-spacing: 1px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #f8c471;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2a1a10;
+  border: 2px solid #3d2b1f;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background-color: #6b4731;
+  color: #fff;
+}
+
+/* Контент информационной панели */
+.info-panel-content {
+  padding: 15px;
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.info-row {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #3d2b1f;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.info-label {
+  font-size: 0.7rem;
+  color: #f8c471;
+  margin-bottom: 5px;
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+}
+
+.info-value {
+  font-size: 0.9rem;
+  color: #fff;
+  line-height: 1.2;
+  padding-left: 10px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+  .info-panel {
+    width: 90%;
+    font-size: 0.8rem;
+  }
+  
+  .info-panel-header h3 {
+    font-size: 0.7rem;
+  }
+  
+  .info-label {
+    font-size: 0.6rem;
+  }
+  
+  .info-value {
+    font-size: 0.8rem;
+  }
+}

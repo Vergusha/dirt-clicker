@@ -19,6 +19,98 @@ type TabType = 'game' | 'upgrades';
 // Define available purchase quantities
 type PurchaseQuantity = 1 | 10 | 50 | 100;
 
+// Типы улучшений для информационных панелей
+type UpgradeType = 'clickPower' | 'autoClicker' | 'multiClick' | 'multiAutoClick';
+
+// Компонент InfoPanel отображает детальную информацию об улучшении
+function InfoPanel({ 
+  type, 
+  onClose
+}: { 
+  type: UpgradeType; 
+  onClose: () => void 
+}) {
+  const { 
+    clickPower, 
+    autoClickerCount,
+    multiClickPower,
+    multiAutoClickPower 
+  } = useGameStore();
+  
+  // Определяем информацию в зависимости от типа улучшения
+  const getUpgradeInfo = () => {
+    switch(type) {
+      case 'clickPower':
+        return {
+          title: "Click Power",
+          description: "Increases base click power by +1",
+          count: `Current level: ${clickPower}`,
+          baseProduction: "Produces +1 per click",
+          totalProduction: `Total click power: ${clickPower} (without multiplier)`
+        };
+      case 'autoClicker':
+        return {
+          title: "Auto Clicker",
+          description: "Automatically mines dirt every second",
+          count: `Purchased: ${autoClickerCount}`,
+          baseProduction: "Produces +1 dirt per second",
+          totalProduction: `Total production: ${autoClickerCount} dirt per second (without multiplier)`
+        };
+      case 'multiClick':
+        return {
+          title: "Multi-Click",
+          description: "Multiplies the power of each click",
+          count: `Current multiplier: x${multiClickPower}`,
+          baseProduction: "Increases click multiplier by +0.1",
+          totalProduction: `Total effect: multiplies base click power by x${multiClickPower}`
+        };
+      case 'multiAutoClick':
+        return {
+          title: "Multi-AutoClick",
+          description: "Multiplies the efficiency of all auto clickers",
+          count: `Current multiplier: x${multiAutoClickPower}`,
+          baseProduction: "Increases auto-click multiplier by +0.1",
+          totalProduction: `Total effect: multiplies auto-clicker production by x${multiAutoClickPower}`
+        };
+    }
+  };
+  
+  const info = getUpgradeInfo();
+  
+  return (
+    <motion.div
+      className="info-panel"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="info-panel-header">
+        <h3>{info.title}</h3>
+        <button className="close-button" onClick={onClose}>×</button>
+      </div>
+      <div className="info-panel-content">
+        <div className="info-row">
+          <span className="info-label">Description:</span> 
+          <span className="info-value">{info.description}</span>
+        </div>
+        <div className="info-row">
+          <span className="info-label">Progress:</span> 
+          <span className="info-value">{info.count}</span>
+        </div>
+        <div className="info-row">
+          <span className="info-label">Effect:</span> 
+          <span className="info-value">{info.baseProduction}</span>
+        </div>
+        <div className="info-row">
+          <span className="info-label">Total:</span> 
+          <span className="info-value">{info.totalProduction}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // Компонент AutoDigger для анимации автокликера
 function AutoDigger({ centerPosition }: { centerPosition: { x: number, y: number } }) {
   const { autoClickerCount } = useGameStore();
@@ -129,6 +221,9 @@ function App() {
   
   // State for purchase quantity
   const [purchaseQuantity, setPurchaseQuantity] = useState<PurchaseQuantity>(1)
+  
+  // State for active info panel
+  const [activeInfoPanel, setActiveInfoPanel] = useState<UpgradeType | null>(null);
   
   // Ref for tracking dirt block position
   const dirtBlockRef = useRef<HTMLDivElement>(null);
@@ -306,6 +401,20 @@ function App() {
         </div>
       )}
 
+      {/* Информационная панель с деталями улучшения */}
+      <AnimatePresence>
+        {activeInfoPanel && (
+          <div className="info-overlay" onClick={() => setActiveInfoPanel(null)}>
+            <div onClick={(e) => e.stopPropagation()}>
+              <InfoPanel 
+                type={activeInfoPanel} 
+                onClose={() => setActiveInfoPanel(null)} 
+              />
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <main className="game-main">
         {/* Game Tab Content */}
         {activeTab === 'game' && (
@@ -367,49 +476,81 @@ function App() {
             </div>
             
             <div className="upgrade-buttons">
-              <button 
-                className="upgrade-btn"
-                onClick={() => buyClickPower(purchaseQuantity)} 
-                disabled={dirtCount < totalClickPowerPrice}
-              >
-                Increase Click Power (Current: {clickPower})
-                <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                <span className="price">Cost: {totalClickPowerPrice} dirt</span>
-              </button>
+              <div className="upgrade-container">
+                <button 
+                  className="upgrade-btn"
+                  onClick={() => buyClickPower(purchaseQuantity)} 
+                  disabled={dirtCount < totalClickPowerPrice}
+                >
+                  Increase Click Power (Current: {clickPower})
+                  <span className="quantity-tag">+{purchaseQuantity} levels</span>
+                  <span className="price">Cost: {totalClickPowerPrice} dirt</span>
+                </button>
+                <button 
+                  className="info-btn"
+                  onClick={() => setActiveInfoPanel('clickPower')}
+                >
+                  i
+                </button>
+              </div>
               
-              <button 
-                className="upgrade-btn"
-                onClick={() => buyMultiClick(purchaseQuantity)} 
-                disabled={dirtCount < totalMultiClickPrice}
-              >
-                Multi-Click (Current: x{multiClickPower})
-                <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                <span className="price">Cost: {totalMultiClickPrice} dirt</span>
-              </button>
+              <div className="upgrade-container">
+                <button 
+                  className="upgrade-btn"
+                  onClick={() => buyMultiClick(purchaseQuantity)} 
+                  disabled={dirtCount < totalMultiClickPrice}
+                >
+                  Multi-Click (Current: x{multiClickPower})
+                  <span className="quantity-tag">+{purchaseQuantity} levels</span>
+                  <span className="price">Cost: {totalMultiClickPrice} dirt</span>
+                </button>
+                <button 
+                  className="info-btn"
+                  onClick={() => setActiveInfoPanel('multiClick')}
+                >
+                  i
+                </button>
+              </div>
               
-              <button 
-                className="upgrade-btn"
-                onClick={() => buyAutoClicker(purchaseQuantity)} 
-                disabled={dirtCount < totalAutoClickerPrice}
-              >
-                Auto Clicker (Current: {autoClickerCount})
-                <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                <span className="price">Cost: {totalAutoClickerPrice} dirt</span>
-                <span className="description">Generates {totalAutoClickPower} dirt per second</span>
-              </button>
+              <div className="upgrade-container">
+                <button 
+                  className="upgrade-btn"
+                  onClick={() => buyAutoClicker(purchaseQuantity)} 
+                  disabled={dirtCount < totalAutoClickerPrice}
+                >
+                  Auto Clicker (Current: {autoClickerCount})
+                  <span className="quantity-tag">+{purchaseQuantity} levels</span>
+                  <span className="price">Cost: {totalAutoClickerPrice} dirt</span>
+                  <span className="description">Generates {totalAutoClickPower} dirt per second</span>
+                </button>
+                <button 
+                  className="info-btn"
+                  onClick={() => setActiveInfoPanel('autoClicker')}
+                >
+                  i
+                </button>
+              </div>
 
               {/* Добавляем новую кнопку для улучшения мульти-автоклика */}
               {autoClickerCount > 0 && (
-                <button 
-                  className="upgrade-btn"
-                  onClick={() => buyMultiAutoClick(purchaseQuantity)} 
-                  disabled={dirtCount < totalMultiAutoClickPrice}
-                >
-                  Multi-AutoClick (Current: x{multiAutoClickPower})
-                  <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                  <span className="price">Cost: {totalMultiAutoClickPrice} dirt</span>
-                  <span className="description">Multiplies auto clicker efficiency</span>
-                </button>
+                <div className="upgrade-container">
+                  <button 
+                    className="upgrade-btn"
+                    onClick={() => buyMultiAutoClick(purchaseQuantity)} 
+                    disabled={dirtCount < totalMultiAutoClickPrice}
+                  >
+                    Multi-AutoClick (Current: x{multiAutoClickPower})
+                    <span className="quantity-tag">+{purchaseQuantity} levels</span>
+                    <span className="price">Cost: {totalMultiAutoClickPrice} dirt</span>
+                    <span className="description">Multiplies auto clicker efficiency</span>
+                  </button>
+                  <button 
+                    className="info-btn"
+                    onClick={() => setActiveInfoPanel('multiAutoClick')}
+                  >
+                    i
+                  </button>
+                </div>
               )}
             </div>
           </div>
