@@ -81,8 +81,14 @@ function App() {
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
             onClick={handleClick}
             style={{ position: 'relative', overflow: 'visible' }}
+            onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на контейнере
           >
-            <img src={dirtImage} alt="Dirt Block" />
+            <img 
+              src={dirtImage} 
+              alt="Dirt Block" 
+              draggable="false" 
+              onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на изображении
+            />
             
             {/* Click animations */}
             <AnimatePresence>

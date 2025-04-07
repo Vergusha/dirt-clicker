@@ -96,6 +96,7 @@
   -webkit-user-select: none;
   position: relative;
   image-rendering: pixelated;
+  -webkit-touch-callout: none; /* Предотвращает выделение на iOS */
 }
 
 .dirt-block img {
@@ -106,6 +107,13 @@
   user-select: none;
   -webkit-user-select: none;
   image-rendering: pixelated;
+  pointer-events: none; /* Отключает события мыши для изображения */
+  -webkit-touch-callout: none; /* Предотвращает выделение на iOS */
+  -webkit-user-drag: none; /* Отключает перетаскивание на iOS */
+  -khtml-user-drag: none; /* Для старых версий Konqueror */
+  -moz-user-drag: none; /* Для Firefox */
+  -o-user-drag: none; /* Для Opera */
+  user-drag: none; /* Стандартное свойство */
 }
 
 /* Click animations */
