@@ -17,14 +17,14 @@ export default defineConfig({
         background_color: '#242424',
         icons: [
           {
-            src: 'vite.svg',
+            src: 'src/assets/dirt.webp',
             sizes: '192x192',
-            type: 'image/svg+xml'
+            type: 'image/webp'
           },
           {
-            src: 'vite.svg',
+            src: 'src/assets/dirt.webp',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/webp',
             purpose: 'any maskable'
           }
         ]

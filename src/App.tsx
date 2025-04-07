@@ -51,8 +51,16 @@ function App() {
           >
             <img src={dirtImage} alt="Dirt Block" />
           </motion.div>
-          <div className="click-info">
-            <p>Click Power: {clickPower} x {multiClickPower} = {clickPower * multiClickPower} per click</p>
+          <div className="click-power-display">
+            <div className="click-power-title">Click Power</div>
+            <div className="click-power-formula">
+              <span className="power-value">{clickPower}</span>
+              <span className="power-operator">×</span>
+              <span className="power-value">{multiClickPower}</span>
+              <span className="power-operator">=</span>
+              <span className="power-result">{clickPower * multiClickPower}</span>
+            </div>
+            <div className="click-power-label">per click</div>
           </div>
         </div>
 
