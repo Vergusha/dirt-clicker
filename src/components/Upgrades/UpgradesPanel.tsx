@@ -70,14 +70,16 @@ export const UpgradesPanel: React.FC = () => {
         />
       </div>
       
-      <AnimatePresence>
-        {showInfoPanel && (
-          <InfoPanel 
-            type={infoType} 
-            onClose={handleCloseInfoPanel} 
-          />
-        )}
-      </AnimatePresence>
+      {showInfoPanel && (
+        <div className="info-overlay" onClick={handleCloseInfoPanel}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <InfoPanel 
+              type={infoType} 
+              onClose={handleCloseInfoPanel} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

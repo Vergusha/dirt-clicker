@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import { UpgradeType } from '../../types';
 import { formatNumber } from '../../utils/formatNumber';
+import buttonImage from '../../assets/button.png';
 
 interface InfoPanelProps {
   type: UpgradeType;
@@ -109,12 +110,23 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         exit={{ scale: 0.8, opacity: 0 }}
         onClick={e => e.stopPropagation()}
       >
+        <div className="info-panel-header">
+          <h3>{type === 'clickPower' ? 'Click Power' : 
+               type === 'autoClicker' ? 'Auto Clicker' : 
+               type === 'multiClick' ? 'Multi-Click' : 'Multi-AutoClick'}</h3>
+          <button className="close-button" onClick={onClose}>
+            ✕
+          </button>
+        </div>
         <div className="info-content">
           {renderContent()}
         </div>
-        <button className="close-button" onClick={onClose}>
-          Close
-        </button>
+        <div className="info-panel-footer">
+          <button className="close-button-large" onClick={onClose}>
+            <img src={buttonImage} alt="Button" className="button-image" />
+            <span className="button-text">Close</span>
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );

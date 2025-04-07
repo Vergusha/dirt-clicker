@@ -1024,3 +1024,128 @@ button {
   cursor: not-allowed;
   background-color: #555;
 }
+
+.info-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.info-panel {
+  background-color: #2a1a10;
+  border: 4px solid #3d2b1f;
+  border-radius: 0;
+  width: 300px;
+  max-width: 90%;
+  color: #e2c08d;
+  image-rendering: pixelated;
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.info-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #3d2b1f;
+  padding: 10px 15px;
+  border-bottom: 3px solid #2a1a10;
+}
+
+.info-panel-header h3 {
+  margin: 0;
+  color: #f8c471;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
+  font-size: 0.9rem;
+}
+
+.close-button {
+  width: 25px;
+  height: 25px;
+  background-color: #2a1a10;
+  border: 2px solid #3d2b1f;
+  color: #e2c08d;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background-color: #6b4731;
+  transform: translateY(-1px);
+}
+
+.info-content {
+  padding: 15px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.info-content h3 {
+  display: none; /* Скрываем заголовок из контента, т.к. он уже есть в шапке */
+}
+
+.info-content p {
+  margin: 8px 0;
+}
+
+.info-panel-footer {
+  padding: 10px 15px;
+  display: flex;
+  justify-content: center;
+  border-top: 3px solid #2a1a10;
+  background-color: #3d2b1f;
+}
+
+.close-button-large {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, filter 0.1s;
+}
+
+.close-button-large .button-image {
+  width: 100px; /* Ширина кнопки */
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.close-button-large .button-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.close-button-large:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.close-button-large:active {
+  transform: translateY(1px);
+}
