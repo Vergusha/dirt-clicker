@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import { UpgradeType } from '../../types';
@@ -22,6 +22,25 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     multiClickCost,
     multiAutoClickCost
   } = useGameStore();
+  
+  // Блокировка прокрутки страницы при открытии инфопанели
+  useEffect(() => {
+    // Сохраняем текущую позицию прокрутки
+    const scrollY = window.scrollY;
+    
+    // Блокируем прокрутку и устанавливаем стили для body
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    
+    // При закрытии панели возвращаем прокрутку в исходное состояние
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
   
   // Контент в зависимости от типа улучшения
   const renderContent = () => {

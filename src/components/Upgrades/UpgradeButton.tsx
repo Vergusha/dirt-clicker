@@ -29,20 +29,21 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     clickPowerCost,
     autoClickerCost,
     multiClickCost,
-    multiAutoClickCost
+    multiAutoClickCost,
+    calculateTotalPrice
   } = useGameStore();
   
   // Определяем стоимость улучшения в зависимости от типа
   const getCost = () => {
     switch (type) {
       case 'clickPower': 
-        return clickPowerCost * purchaseQuantity;
+        return calculateTotalPrice(5, purchaseQuantity, 0.08);
       case 'autoClicker':
-        return autoClickerCost * purchaseQuantity;
+        return calculateTotalPrice(15, purchaseQuantity, 0.10);
       case 'multiClick':
-        return multiClickCost * purchaseQuantity;
+        return calculateTotalPrice(50, purchaseQuantity, 0.15);
       case 'multiAutoClick':
-        return multiAutoClickCost * purchaseQuantity;
+        return calculateTotalPrice(100, purchaseQuantity, 0.15);
     }
   };
   

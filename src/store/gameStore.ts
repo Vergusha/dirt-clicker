@@ -58,11 +58,11 @@ export const useGameStore = create<GameState>()(
       multiClickPower: 1.0,
       multiAutoClickPower: 1.0,
       
-      // Base costs
-      clickPowerCost: 10,
-      autoClickerCost: 25,
-      multiClickCost: 100,
-      multiAutoClickCost: 200,
+      // Base costs - более низкие начальные цены
+      clickPowerCost: 5,
+      autoClickerCost: 15, 
+      multiClickCost: 50,
+      multiAutoClickCost: 100,
       
       // Actions
       increaseDirtCount: (amount) => {
@@ -78,8 +78,8 @@ export const useGameStore = create<GameState>()(
       
       purchaseClickPower: (quantity) => {
         const state = get();
-        const baseCost = 10; // Starting cost
-        const growthRate = 0.15; // 15% increase per level
+        const baseCost = 5; // Снижена начальная стоимость
+        const growthRate = 0.08; // Снижен рост с 15% до 8% за уровень
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -100,8 +100,8 @@ export const useGameStore = create<GameState>()(
       
       purchaseAutoClicker: (quantity) => {
         const state = get();
-        const baseCost = 25; // Starting cost
-        const growthRate = 0.15; // 15% increase per auto-clicker
+        const baseCost = 15; // Снижена начальная стоимость
+        const growthRate = 0.10; // Снижен рост с 15% до 10% за автокликер
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -122,8 +122,8 @@ export const useGameStore = create<GameState>()(
       
       purchaseMultiClick: (quantity) => {
         const state = get();
-        const baseCost = 100; // Starting cost
-        const growthRate = 0.3; // 30% increase per level
+        const baseCost = 50; // Снижена начальная стоимость
+        const growthRate = 0.15; // Снижен рост с 30% до 15% за уровень
         
         // Calculate cost for quantity upgrades from current level
         const currentLevel = Math.round((state.multiClickPower - 1) * 10); // Convert to level (1.0 = 0, 1.1 = 1, etc)
@@ -145,8 +145,8 @@ export const useGameStore = create<GameState>()(
       
       purchaseMultiAutoClick: (quantity) => {
         const state = get();
-        const baseCost = 200; // Starting cost
-        const growthRate = 0.3; // 30% increase per level
+        const baseCost = 100; // Снижена начальная стоимость
+        const growthRate = 0.15; // Снижен рост с 30% до 15% за уровень
         
         // Calculate cost for quantity upgrades from current level
         const currentLevel = Math.round((state.multiAutoClickPower - 1) * 10); // Convert to level (1.0 = 0, 1.1 = 1, etc)
@@ -168,11 +168,33 @@ export const useGameStore = create<GameState>()(
       
       // Helper to calculate total price for multiple purchases
       calculateTotalPrice: (baseCost, quantity, growthRate) => {
-        let total = 0;
-        for (let i = 0; i < quantity; i++) {
-          total += Math.floor(baseCost * Math.pow(1 + growthRate, i));
+        const state = get();
+        let level = 0;
+        
+        // Определяем текущий уровень улучшения на основе базовой стоимости
+        if (baseCost === 5) { // Click Power - обновлено значение
+          level = state.clickPower - 1;
+          growthRate = 0.08; // Используем новый коэффициент роста
+        } else if (baseCost === 15) { // Auto Clicker - обновлено значение
+          level = state.autoClickerCount;
+          growthRate = 0.10; // Используем новый коэффициент роста
+        } else if (baseCost === 50) { // Multi Click - обновлено значение
+          level = Math.round((state.multiClickPower - 1) * 10);
+          growthRate = 0.15; // Используем новый коэффициент роста
+        } else if (baseCost === 100) { // Multi AutoClick - обновлено значение
+          level = Math.round((state.multiAutoClickPower - 1) * 10);
+          growthRate = 0.15; // Используем новый коэффициент роста
         }
-        return total;
+        
+        // Рассчитываем общую стоимость с учетом текущего уровня
+        let totalCost = 0;
+        const actualBaseCost = baseCost * Math.pow(1 + growthRate, level);
+        
+        for (let i = 0; i < quantity; i++) {
+          totalCost += Math.floor(actualBaseCost * Math.pow(1 + growthRate, i));
+        }
+        
+        return totalCost;
       },
       
       // Reset game (for testing)
@@ -184,10 +206,10 @@ export const useGameStore = create<GameState>()(
           autoClickerCount: 0,
           multiClickPower: 1.0,
           multiAutoClickPower: 1.0,
-          clickPowerCost: 10,
-          autoClickerCost: 25,
-          multiClickCost: 100,
-          multiAutoClickCost: 200,
+          clickPowerCost: 5, // Обновлено значение
+          autoClickerCost: 15, // Обновлено значение
+          multiClickCost: 50, // Обновлено значение
+          multiAutoClickCost: 100, // Обновлено значение
         });
       },
     }),
