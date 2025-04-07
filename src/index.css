@@ -1,5 +1,5 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Press Start 2P', 'VT323', monospace;
   line-height: 1.5;
   font-weight: 400;
 
@@ -9,8 +9,9 @@
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: grayscale;
+  image-rendering: pixelated;
 }
 
 a {
@@ -31,8 +32,9 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 2.2em;
   line-height: 1.1;
+  letter-spacing: 1px;
 }
 
 button {
@@ -41,7 +43,7 @@ button {
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
+  font-family: 'Press Start 2P', 'VT323', monospace;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
