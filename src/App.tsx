@@ -203,7 +203,8 @@ function App() {
 
   return (
     <div className="game-container">
-      <header className="game-header">
+      {/* Fixed header with game title and dirt counter */}
+      <header className="game-header fixed-header">
         <h1>Dirt Clicker</h1>
         <div className="dirt-counter">
           <div className="dirt-count">Dirt: {dirtCount.toFixed(0)}</div>
@@ -215,16 +216,18 @@ function App() {
         </div>
       </header>
 
+      {/* Add spacing div to prevent content from going under the fixed header */}
+      <div className="header-spacer"></div>
+
       <main className="game-main">
         {/* Game Tab Content */}
         {activeTab === 'game' && (
           <div className="clicker-area">
             <motion.div 
-              className="dirt-block"
+              className="dirt-block-container"
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               onClick={handleClick}
-              className="dirt-block-container"
               onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на контейнере
             >
               <img 

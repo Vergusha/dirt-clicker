@@ -51,6 +51,8 @@
   padding-bottom: 70px;
   max-width: 100%;
   overflow-x: hidden;
+  padding-top: 0;
+  margin-top: 0;
 }
 
 .game-header {
@@ -115,6 +117,8 @@
   align-items: center;
   width: 100%;
   padding: 0;
+  padding-top: 20px;
+  position: relative;
 }
 
 .dirt-block {
@@ -569,6 +573,14 @@ button {
   .game-main {
     padding: 0;
   }
+
+  .header-spacer {
+    height: 110px; /* Smaller spacer for mobile */
+  }
+  
+  .fixed-header {
+    padding-top: 5px;
+  }
 }
 
 /* Adjust for small height screens */
@@ -584,4 +596,21 @@ button {
   .dirt-counter {
     margin: 0.2rem 0 0.5rem;
   }
+}
+
+/* Fixed header styles */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200; /* Higher z-index to ensure it stays above everything */
+  background-color: #1a1a1a; /* Match the background color */
+  padding-top: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* Header spacer to prevent content from going under fixed header */
+.header-spacer {
+  height: 130px; /* Adjust this value based on the actual header height */
 }
