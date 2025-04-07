@@ -44,6 +44,49 @@ const calculateCost = (baseCost: number, growthRate: number, quantity: number): 
   return totalCost;
 };
 
+// Функция для исправления чисел с плавающей запятой и обработки изменений базовых стоимостей
+const fixFloatingPointNumbers = (state: any) => {
+  const newState = { ...state };
+  
+  // Исправляем multiClickPower и multiAutoClickPower округляя до 2 знаков
+  if (newState.multiClickPower) {
+    newState.multiClickPower = parseFloat(newState.multiClickPower.toFixed(2));
+  }
+  
+  if (newState.multiAutoClickPower) {
+    newState.multiAutoClickPower = parseFloat(newState.multiAutoClickPower.toFixed(2));
+    
+    // Обновляем стоимость multiAutoClickCost при изменении базовой цены с 200 на 100
+    const currentLevel = Math.round((newState.multiAutoClickPower - 1) * 10);
+    const newBaseCost = 100; // Новая базовая стоимость
+    const growthRate = 0.15; // Новый коэффициент роста
+    
+    // Пересчитываем стоимость следующего уровня с новыми параметрами
+    newState.multiAutoClickCost = Math.floor(newBaseCost * Math.pow(1 + growthRate, currentLevel));
+  }
+  
+  // Исправляем multiClickCost при изменении базовой цены со 100 на 50
+  if (newState.multiClickCost && newState.multiClickPower) {
+    const currentLevel = Math.round((newState.multiClickPower - 1) * 10);
+    const newBaseCost = 50; // Новая базовая стоимость
+    const growthRate = 0.15; // Новый коэффициент роста
+    
+    // Пересчитываем стоимость следующего уровня с новыми параметрами
+    newState.multiClickCost = Math.floor(newBaseCost * Math.pow(1 + growthRate, currentLevel));
+  }
+  
+  // Исправляем dirtCount и totalDirtCollected округляя до целых чисел
+  if (newState.dirtCount) {
+    newState.dirtCount = Math.floor(newState.dirtCount);
+  }
+  
+  if (newState.totalDirtCollected) {
+    newState.totalDirtCollected = Math.floor(newState.totalDirtCollected);
+  }
+  
+  return newState;
+};
+
 // Create the store with persistence
 export const useGameStore = create<GameState>()(
   persist(
@@ -67,8 +110,8 @@ export const useGameStore = create<GameState>()(
       // Actions
       increaseDirtCount: (amount) => {
         set((state) => ({ 
-          dirtCount: state.dirtCount + amount,
-          totalDirtCollected: state.totalDirtCollected + amount
+          dirtCount: Math.floor(state.dirtCount + amount),
+          totalDirtCollected: Math.floor(state.totalDirtCollected + amount)
         }));
       },
       
@@ -91,7 +134,7 @@ export const useGameStore = create<GameState>()(
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
-            dirtCount: state.dirtCount - totalCost,
+            dirtCount: Math.floor(state.dirtCount - totalCost),
             clickPower: state.clickPower + quantity,
             clickPowerCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.clickPower + quantity - 1))
           });
@@ -113,7 +156,7 @@ export const useGameStore = create<GameState>()(
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
-            dirtCount: state.dirtCount - totalCost,
+            dirtCount: Math.floor(state.dirtCount - totalCost),
             autoClickerCount: state.autoClickerCount + quantity,
             autoClickerCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.autoClickerCount + quantity))
           });
@@ -137,7 +180,7 @@ export const useGameStore = create<GameState>()(
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
-            dirtCount: state.dirtCount - totalCost,
+            dirtCount: Math.floor(state.dirtCount - totalCost),
             multiClickPower: parseFloat((state.multiClickPower + (quantity * 0.1)).toFixed(2)), // Округляем до 2 знаков
             multiClickCost: Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel + quantity))
           });
@@ -161,7 +204,7 @@ export const useGameStore = create<GameState>()(
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
-            dirtCount: state.dirtCount - totalCost,
+            dirtCount: Math.floor(state.dirtCount - totalCost),
             multiAutoClickPower: parseFloat((state.multiAutoClickPower + (quantity * 0.1)).toFixed(2)), // Округляем до 2 знаков
             multiAutoClickCost: Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel + quantity))
           });
@@ -196,7 +239,7 @@ export const useGameStore = create<GameState>()(
           totalCost += Math.floor(actualBaseCost * Math.pow(1 + growthRate, i));
         }
         
-        return totalCost;
+        return Math.floor(totalCost);
       },
       
       // Reset game (for testing)
@@ -217,6 +260,17 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: 'dirt-clicker-storage', // Name for localStorage
+      onRehydrateStorage: () => (state) => {
+        // Исправляем числа с плавающей запятой при загрузке сохраненных данных
+        if (state) {
+          const fixedState = fixFloatingPointNumbers(state);
+          Object.keys(fixedState).forEach(key => {
+            if (state[key] !== fixedState[key]) {
+              state[key] = fixedState[key];
+            }
+          });
+        }
+      }
     }
   )
 );

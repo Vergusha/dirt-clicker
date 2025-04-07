@@ -26,24 +26,42 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     purchaseAutoClicker,
     purchaseMultiClick,
     purchaseMultiAutoClick,
+    clickPower,
+    autoClickerCount,
+    multiClickPower,
+    multiAutoClickPower,
     clickPowerCost,
     autoClickerCost,
     multiClickCost,
-    multiAutoClickCost,
-    calculateTotalPrice
+    multiAutoClickCost
   } = useGameStore();
   
-  // Определяем стоимость улучшения в зависимости от типа
+  // Получаем актуальную стоимость для отображения с учетом текущего прогресса
   const getCost = () => {
     switch (type) {
-      case 'clickPower': 
-        return calculateTotalPrice(5, purchaseQuantity, 0.08);
+      case 'clickPower':
+        const clickLevel = clickPower - 1;
+        const clickBaseCost = 5;
+        const clickGrowthRate = 0.08;
+        return Math.floor(clickBaseCost * Math.pow(1 + clickGrowthRate, clickLevel) * purchaseQuantity);
+        
       case 'autoClicker':
-        return calculateTotalPrice(15, purchaseQuantity, 0.10);
+        const autoLevel = autoClickerCount;
+        const autoBaseCost = 15;
+        const autoGrowthRate = 0.10;
+        return Math.floor(autoBaseCost * Math.pow(1 + autoGrowthRate, autoLevel) * purchaseQuantity);
+        
       case 'multiClick':
-        return calculateTotalPrice(50, purchaseQuantity, 0.15);
+        const multiClickLevel = Math.round((multiClickPower - 1) * 10);
+        const multiClickBaseCost = 50;
+        const multiClickGrowthRate = 0.15;
+        return Math.floor(multiClickCost * purchaseQuantity);
+        
       case 'multiAutoClick':
-        return calculateTotalPrice(100, purchaseQuantity, 0.15);
+        const multiAutoLevel = Math.round((multiAutoClickPower - 1) * 10);
+        const multiAutoBaseCost = 100;
+        const multiAutoGrowthRate = 0.15;
+        return Math.floor(multiAutoClickCost * purchaseQuantity);
     }
   };
   
