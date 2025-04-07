@@ -19,7 +19,7 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
   // Вертикальное смещение для визуального баланса
   const [yOffset, setYOffset] = useState(0);
   // Длительность анимации копания
-  const [animationDuration, setAnimationDuration] = useState(1);
+  const [animationDuration, setAnimationDuration] = useState(0.8); // Уменьшили с 1 до 0.8 для более легкой анимации
   // Базовый поворот изображения лопаты (в градусах)
   const baseImageRotation = 50; // Добавляем 15 градусов к повороту самого изображения
 
@@ -30,17 +30,17 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
       // Мобильные устройства
       setRadius(80);
       setYOffset(0);
-      setAnimationDuration(1.2);
+      setAnimationDuration(1.0);
     } else if (window.innerWidth <= 768) {
       // Планшеты
       setRadius(120);
       setYOffset(0);
-      setAnimationDuration(1.1);
+      setAnimationDuration(0.9);
     } else {
       // Десктопы
       setRadius(150);
       setYOffset(0);
-      setAnimationDuration(1);
+      setAnimationDuration(0.8);
     }
   }, []);
 
@@ -94,8 +94,9 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
     <div className="shovels-container">
       {shovels.map(shovel => {
         // Вычисляем направление движения к центру блока для анимации "копания"
-        const moveX = Math.cos(shovel.angle) * -35; // Более выраженное движение
-        const moveY = Math.sin(shovel.angle) * -35;
+        // Уменьшаем глубину движения с -35 до -20 для более легкой анимации
+        const moveX = Math.cos(shovel.angle) * -20; 
+        const moveY = Math.sin(shovel.angle) * -20;
         
         // Итоговый поворот = базовая ориентация + базовый поворот изображения + индивидуальная вариация
         const finalRotation = shovel.rotation + baseImageRotation + shovel.individualRotation;
@@ -123,18 +124,18 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
                 transform: `rotate(${finalRotation}deg)` // Поворачиваем лопату с учетом всех углов
               }}
               animate={{
-                // Анимация "копания" - движение к центру и обратно
+                // Анимация "копания" - движение к центру и обратно с меньшей глубиной
                 x: [0, moveX, 0],
                 y: [0, moveY, 0],
-                // Добавляем небольшое вращение для реалистичности
-                rotate: [finalRotation, finalRotation - 20, finalRotation]
+                // Уменьшаем амплитуду поворота с 20 до 12 градусов
+                rotate: [finalRotation, finalRotation - 12, finalRotation]
               }}
               transition={{
                 duration: animationDuration,
                 repeat: Infinity,
-                repeatDelay: 0.8, // Пауза между копаниями
+                repeatDelay: 0.6, // Уменьшили с 0.8 до 0.6 для более частого копания
                 delay: shovel.delay, // Индивидуальная задержка для каждой лопаты
-                ease: "easeInOut" // Более плавная анимация
+                ease: "easeInOut", // Более плавная анимация
               }}
             />
           </motion.div>
