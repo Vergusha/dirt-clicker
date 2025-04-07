@@ -1,5 +1,6 @@
 import React from 'react';
 import { PurchaseQuantity } from '../../types';
+import buttonImage from '../../assets/button.png';
 
 interface PurchaseQuantitySelectorProps {
   purchaseQuantity: PurchaseQuantity;
@@ -17,16 +18,17 @@ export const PurchaseQuantitySelector: React.FC<PurchaseQuantitySelectorProps> =
   const quantities: PurchaseQuantity[] = [1, 10, 50, 100];
   
   return (
-    <div className="purchase-quantity-selector">
-      <span className="purchase-quantity-label">Purchase quantity:</span>
+    <div className="quantity-selector">
+      <div className="quantity-label">Purchase Quantity:</div>
       <div className="quantity-buttons">
         {quantities.map(quantity => (
           <button
             key={quantity}
-            className={`quantity-button ${purchaseQuantity === quantity ? 'active' : ''}`}
+            className={`quantity-btn ${purchaseQuantity === quantity ? 'active' : ''}`}
             onClick={() => setPurchaseQuantity(quantity)}
           >
-            x{quantity}
+            <img src={buttonImage} alt="Button" className="button-image" />
+            <span className="quantity-btn-text">x{quantity}</span>
           </button>
         ))}
       </div>

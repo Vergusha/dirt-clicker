@@ -512,37 +512,55 @@ button {
 
 .quantity-buttons {
   display: flex;
-  justify-content: space-between;
-  gap: 0.2rem; /* Reduced gap between buttons */
+  justify-content: center;
+  gap: 0.2rem; /* Маленький отступ между кнопками */
 }
 
 .quantity-btn {
-  flex: 1;
-  padding: 0.5rem 0;
-  background-color: #2a1a10;
-  border: 2px solid #1a0e08;
-  color: #ccc;
-  font-size: 0.7rem;
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
-  transition: all 0.1s;
+  position: relative;
+  padding: 0;
+  border: none;
+  background: transparent;
   cursor: pointer;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, filter 0.1s;
+  flex: 1;
+}
+
+.button-image {
+  width: 100%;
+  height: auto;
   image-rendering: pixelated;
+  display: block;
+}
+
+.quantity-btn-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.7rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  z-index: 1;
+}
+
+.quantity-btn:hover {
+  filter: brightness(1.1);
 }
 
 .quantity-btn.active {
-  background-color: #6b4731;
-  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.4);
-}
-
-.quantity-btn:hover:not(.active) {
-  background-color: #3d2b1f;
+  filter: brightness(1.2);
 }
 
 .quantity-btn:active {
   transform: translateY(1px);
-  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.4);
 }
 
 /* Quantity tag inside upgrade buttons */
@@ -716,7 +734,7 @@ button {
   height: auto;
   border-radius: 0px;
   background-color: #3d2b1f;
-  border: 3px solid #2a1a10;
+  border: 3px солидный #2a1a10;
   color: #e2c08d;
   font-family: 'Press Start 2P', 'VT323', monospace;
   font-size: 0.9rem;
