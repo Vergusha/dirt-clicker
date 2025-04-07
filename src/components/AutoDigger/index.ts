@@ -1,0 +1,1 @@
+export { AutoDigger } from './AutoDigger';

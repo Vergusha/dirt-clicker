@@ -112,7 +112,7 @@ function InfoPanel({
 }
 
 // Компонент AutoDigger для анимации автокликера
-function AutoDigger({ centerPosition }: { centerPosition: { x: number, y: number } }) {
+function AutoDigger() {
   const { autoClickerCount } = useGameStore();
 
   if (autoClickerCount <= 0) return null;
@@ -201,14 +201,14 @@ function App() {
     multiClickPower,
     multiAutoClickPower,
     increaseDirtCount, 
-    buyClickPower, 
-    buyAutoClicker,
-    buyMultiClick,
-    buyMultiAutoClick,
-    clickPowerPrice,
-    autoClickerPrice,
-    multiClickPrice,
-    multiAutoClickPrice,
+    purchaseClickPower, 
+    purchaseAutoClicker,
+    purchaseMultiClick,
+    purchaseMultiAutoClick,
+    clickPowerCost,
+    autoClickerCost,
+    multiClickCost,
+    multiAutoClickCost,
     calculateTotalPrice
   } = useGameStore()
   
@@ -329,10 +329,10 @@ function App() {
   }
 
   // Calculate total prices based on current purchase quantity
-  const totalClickPowerPrice = calculateTotalPrice(clickPowerPrice, purchaseQuantity, 1.15);
-  const totalAutoClickerPrice = calculateTotalPrice(autoClickerPrice, purchaseQuantity, 1.15);
-  const totalMultiClickPrice = calculateTotalPrice(multiClickPrice, purchaseQuantity, 1.25);
-  const totalMultiAutoClickPrice = calculateTotalPrice(multiAutoClickPrice, purchaseQuantity, 1.25);
+  const totalClickPowerPrice = calculateTotalPrice(clickPowerCost, purchaseQuantity, 1.15);
+  const totalAutoClickerPrice = calculateTotalPrice(autoClickerCost, purchaseQuantity, 1.15);
+  const totalMultiClickPrice = calculateTotalPrice(multiClickCost, purchaseQuantity, 1.25);
+  const totalMultiAutoClickPrice = calculateTotalPrice(multiAutoClickCost, purchaseQuantity, 1.25);
 
   // Общая мощность автокликеров с учетом множителя
   const totalAutoClickPower = autoClickerCount * multiAutoClickPower;
@@ -397,7 +397,7 @@ function App() {
       {/* Отдельный контейнер для лопат на уровне страницы */}
       {activeTab === 'game' && autoClickerCount > 0 && (
         <div className="global-shovels-container">
-          <AutoDigger centerPosition={blockCenter} />
+          <AutoDigger />
         </div>
       )}
 
@@ -479,7 +479,7 @@ function App() {
               <div className="upgrade-container">
                 <button 
                   className="upgrade-btn"
-                  onClick={() => buyClickPower(purchaseQuantity)} 
+                  onClick={() => purchaseClickPower(purchaseQuantity)} 
                   disabled={dirtCount < totalClickPowerPrice}
                 >
                   Increase Click Power (Current: {clickPower})
@@ -497,7 +497,7 @@ function App() {
               <div className="upgrade-container">
                 <button 
                   className="upgrade-btn"
-                  onClick={() => buyMultiClick(purchaseQuantity)} 
+                  onClick={() => purchaseMultiClick(purchaseQuantity)} 
                   disabled={dirtCount < totalMultiClickPrice}
                 >
                   Multi-Click (Current: x{multiClickPower})
@@ -515,7 +515,7 @@ function App() {
               <div className="upgrade-container">
                 <button 
                   className="upgrade-btn"
-                  onClick={() => buyAutoClicker(purchaseQuantity)} 
+                  onClick={() => purchaseAutoClicker(purchaseQuantity)} 
                   disabled={dirtCount < totalAutoClickerPrice}
                 >
                   Auto Clicker (Current: {autoClickerCount})
@@ -536,7 +536,7 @@ function App() {
                 <div className="upgrade-container">
                   <button 
                     className="upgrade-btn"
-                    onClick={() => buyMultiAutoClick(purchaseQuantity)} 
+                    onClick={() => purchaseMultiAutoClick(purchaseQuantity)} 
                     disabled={dirtCount < totalMultiAutoClickPrice}
                   >
                     Multi-AutoClick (Current: x{multiAutoClickPower})

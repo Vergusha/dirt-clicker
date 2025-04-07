@@ -17,12 +17,12 @@ export default defineConfig({
         background_color: '#242424',
         icons: [
           {
-            src: 'src/assets/dirt.webp',
+            src: '/dirt.webp',
             sizes: '192x192',
             type: 'image/webp'
           },
           {
-            src: 'src/assets/dirt.webp',
+            src: '/dirt.webp',
             sizes: '512x512',
             type: 'image/webp',
             purpose: 'any maskable'
