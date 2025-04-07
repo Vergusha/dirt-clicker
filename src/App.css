@@ -116,13 +116,16 @@
   display: flex;
   align-items: center;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+  text-align: center;
+  white-space: nowrap;
 }
 
 .mini-dirt {
-  width: 7px;
-  height: 7px;
-  margin-right: 1px;
+  width: 24px;
+  height: 24px;
+  margin-right: 3px;
   image-rendering: pixelated;
+  display: inline-block;
 }
 
 .click-power-text {

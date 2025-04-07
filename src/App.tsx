@@ -92,23 +92,29 @@ function App() {
                   className="click-animation"
                   style={{
                     position: 'absolute',
-                    left: `${anim.x - 5}px`,  // Center the animation (half of dirt width)
-                    top: `${anim.y - 5}px`,   // Center the animation (half of dirt height)
-                    pointerEvents: 'none'
+                    left: `${anim.x}px`,
+                    top: `${anim.y}px`,
+                    pointerEvents: 'none',
+                    transform: 'translate(-50%, -50%)' // Центрирование анимации относительно точки клика
                   }}
                   initial={{ 
                     opacity: 1,
-                    scale: 0.5
+                    scale: 1 // Фиксированный начальный размер
                   }}
                   animate={{ 
                     top: `${anim.y - 40}px`,  // Move upward from click point
                     opacity: 0,
-                    scale: 0.8
+                    scale: 1.2 // Фиксированный конечный размер
                   }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.8 }}
                 >
-                  <img src={dirtImage} alt="" className="mini-dirt" />
+                  <img 
+                    src={dirtImage} 
+                    alt="" 
+                    className="mini-dirt"
+                    style={{ width: '24px', height: '24px' }} // Увеличиваю размер миниатюры в два раза
+                  />
                   <span className="click-power-text">+{anim.value}</span>
                 </motion.div>
               ))}
