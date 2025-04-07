@@ -53,6 +53,9 @@ function App() {
   
   // Handle auto clickers
   useEffect(() => {
+    // Если не на вкладке Game, прерываем выполнение эффекта
+    if (activeTab !== 'game') return;
+    
     const interval = setInterval(() => {
       if (autoClickerCount > 0) {
         // Общее количество земли от автокликеров с учетом множителя
@@ -88,7 +91,16 @@ function App() {
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [autoClickerCount, multiAutoClickPower, increaseDirtCount, blockPosition]);
+  }, [autoClickerCount, multiAutoClickPower, increaseDirtCount, blockPosition, activeTab]);
+
+  // Очистка анимаций при смене вкладки
+  useEffect(() => {
+    // Если пользователь перешёл на вкладку отличную от Game - очищаем все анимации
+    if (activeTab !== 'game') {
+      setClickAnimations([]);
+      setAutoClickAnimations([]);
+    }
+  }, [activeTab]);
 
   // Обработчик клика по блоку земли
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
