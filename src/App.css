@@ -112,16 +112,17 @@
   padding: 0 10px;
 }
 
+/* Стили для области кликов и блока земли */
 .clicker-area {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Горизонтальное центрирование блока */
+  justify-content: center; /* Вертикальное центрирование блока */
   width: 100%;
-  padding: 0;
-  padding-top:px; /* Увеличьте отступ сверху */
+  height: 50vh; /* Высота 50% от высоты окна */
+  min-height: 300px; /* Минимальная высота */
   position: relative;
-  overflow: hidden; /* Prevent any animations from causing scroll */
-  min-height: 300px; /* Минимальная высота для корректного отображения лопат */
+  overflow: visible; /* Позволяем элементам выходить за границы (для лопат) */
 }
 
 .dirt-block {
@@ -185,21 +186,19 @@
 /* Styles for dirt block container */
 .dirt-block-container {
   position: relative;
-  overflow: visible;
-  width: 150px;
+  width: 150px; /* Фиксированный размер независимо от размера экрана */
   height: 150px;
-  margin: 0 auto;
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
   outline: none;
-  contain: layout paint; /* Optimize rendering */
+  z-index: 10; /* Блок должен быть поверх большинства элементов, кроме анимаций и лопат */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10; /* Убедимся, что блок всегда под лопатами */
+  will-change: transform; /* Оптимизация производительности */
 }
 
 .dirt-block-container img {
@@ -572,9 +571,8 @@ button {
   }
 
   .dirt-block-container {
-    width: 110px; /* Уменьшаем размер для маленьких экранов */
-    height: 110px;
-    margin-top: 20px; /* Добавляем отступ сверху */
+    width: 120px; /* Немного меньше на мобильных устройствах */
+    height: 120px;
   }
 
   .tab-button {
@@ -608,12 +606,11 @@ button {
   }
 
   .clicker-area {
-    min-height: 240px; /* Уменьшаем минимальную высоту для мобильных */
-    padding-top: 10px;
+    min-height: 250px; /* Меньше область на мобильных */
   }
 
   .shovel-image {
-    width: 34px; /* Уменьшаем размер лопат на мобильных */
+    width: 34px; /* Меньше лопаты на мобильных */
   }
 }
 

@@ -1,198 +1,13 @@
-import { useEffect, useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import dirtImage from './assets/dirt.webp'
-import shovelImage from './assets/wood_shovel.webp'
-import './App.css'
-import { useGameStore } from './store/gameStore'
-import { formatNumber } from './utils/formatNumber'
-
-// Define an interface for click animation
-interface ClickAnimation {
-  id: number;
-  x: number;
-  y: number;
-  value: number;
-}
-
-// Define tab types for navigation
-type TabType = 'game' | 'upgrades';
-
-// Define available purchase quantities
-type PurchaseQuantity = 1 | 10 | 50 | 100;
-
-// Типы улучшений для информационных панелей
-type UpgradeType = 'clickPower' | 'autoClicker' | 'multiClick' | 'multiAutoClick';
-
-// Компонент InfoPanel отображает детальную информацию об улучшении
-function InfoPanel({ 
-  type, 
-  onClose
-}: { 
-  type: UpgradeType; 
-  onClose: () => void 
-}) {
-  const { 
-    clickPower, 
-    autoClickerCount,
-    multiClickPower,
-    multiAutoClickPower 
-  } = useGameStore();
-  
-  // Определяем информацию в зависимости от типа улучшения
-  const getUpgradeInfo = () => {
-    switch(type) {
-      case 'clickPower':
-        return {
-          title: "Click Power",
-          description: "Increases base click power by +1",
-          count: `Current level: ${clickPower}`,
-          baseProduction: `Produces +${formatNumber(1)} per click`,
-          totalProduction: `Total click power: ${formatNumber(clickPower)} (without multiplier)`
-        };
-      case 'autoClicker':
-        return {
-          title: "Auto Clicker",
-          description: "Automatically mines dirt every second",
-          count: `Purchased: ${autoClickerCount}`,
-          baseProduction: `Produces +${formatNumber(1)} dirt per second`,
-          totalProduction: `Total production: ${formatNumber(autoClickerCount)} dirt per second (without multiplier)`
-        };
-      case 'multiClick':
-        return {
-          title: "Multi-Click",
-          description: "Multiplies the power of each click",
-          count: `Current multiplier: x${multiClickPower}`,
-          baseProduction: "Increases click multiplier by +0.1",
-          totalProduction: `Total effect: multiplies base click power by x${multiClickPower}`
-        };
-      case 'multiAutoClick':
-        return {
-          title: "Multi-AutoClick",
-          description: "Multiplies the efficiency of all auto clickers",
-          count: `Current multiplier: x${multiAutoClickPower}`,
-          baseProduction: "Increases auto-click multiplier by +0.1",
-          totalProduction: `Total effect: multiplies auto-clicker production by x${multiAutoClickPower}`
-        };
-    }
-  };
-  
-  const info = getUpgradeInfo();
-  
-  return (
-    <motion.div
-      className="info-panel"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div className="info-panel-header">
-        <h3>{info.title}</h3>
-        <button className="close-button" onClick={onClose}>×</button>
-      </div>
-      <div className="info-panel-content">
-        <div className="info-row">
-          <span className="info-label">Description:</span> 
-          <span className="info-value">{info.description}</span>
-        </div>
-        <div className="info-row">
-          <span className="info-label">Progress:</span> 
-          <span className="info-value">{info.count}</span>
-        </div>
-        <div className="info-row">
-          <span className="info-label">Effect:</span> 
-          <span className="info-value">{info.baseProduction}</span>
-        </div>
-        <div className="info-row">
-          <span className="info-label">Total:</span> 
-          <span className="info-value">{info.totalProduction}</span>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// Компонент AutoDigger для анимации автокликера
-function AutoDigger() {
-  const { autoClickerCount } = useGameStore();
-
-  if (autoClickerCount <= 0) return null;
-
-  // Создаем массив лопат в соответствии с количеством автокликеров
-  const shovels = Array.from({ length: autoClickerCount }, (_, index) => {
-    // Вычисляем позицию лопаты вокруг блока земли
-    // Угол в радианах, равномерно распределяем лопаты по кругу
-    const angle = (index / autoClickerCount) * Math.PI * 2;
-
-    // Радиус круга, по которому распределяем лопаты
-    // Фиксированный радиус для всех лопат, а не зависящий от размера блока
-    const radius = 100; 
-
-    // Вычисляем координаты на окружности
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
-
-    // Вычисляем угол поворота лопаты, чтобы она была направлена к блоку
-    const rotation = (angle * (180 / Math.PI)) + 230;
-
-    return {
-      id: index,
-      position: { x, y },
-      angle, 
-      rotation,
-      delay: index * 0.2 // Последовательная задержка для каждой лопаты
-    };
-  });
-
-  return (
-    <div className="shovels-container">
-      {shovels.map(shovel => {
-        // Вычисляем направление движения к центру блока
-        const moveX = Math.cos(shovel.angle) * -20; // Движение к центру по X
-        const moveY = Math.sin(shovel.angle) * -20; // Движение к центру по Y
-
-        return (
-          <motion.div
-            key={`digger-${shovel.id}`}
-            className="auto-digger"
-            style={{
-              position: 'absolute',
-              left: `50%`,
-              top: `50%`,
-              transform: `translate(calc(-50% + ${shovel.position.x + 0}px), calc(-50% + ${shovel.position.y - 75}px))`, // Сдвиг на 10px вправо и 20px вниз
-              pointerEvents: 'none',
-            }}
-          >
-            <motion.img
-              src={shovelImage}
-              alt="Wooden Shovel"
-              className="shovel-image"
-              style={{
-                width: '40px',
-                height: 'auto',
-                transformOrigin: '50% 75%', // Точка вращения ближе к нижней части лопаты
-                transform: `rotate(${shovel.rotation}deg)` // Поворачиваем лопату чтобы она смотрела на блок земли
-              }}
-              animate={{
-                // Анимация "копания" - движение к центру и обратно по вычисленному направлению
-                x: [0, moveX, 0],
-                y: [0, moveY, 0],
-                // Анимация небольшого поворота при копании
-                rotate: [shovel.rotation, shovel.rotation - 15, shovel.rotation]
-              }}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                repeatDelay: 1.5, // Пауза между копаниями
-                delay: shovel.delay // Индивидуальная задержка для каждой лопаты
-              }}
-            />
-          </motion.div>
-        );
-      })}
-    </div>
-  );
-}
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import dirtImage from './assets/dirt.webp';
+import './App.css';
+import { useGameStore } from './store/gameStore';
+import { formatNumber } from './utils/formatNumber';
+import { DirtBlock } from './components/DirtBlock';
+import { AutoDigger } from './components/AutoDigger';
+import { TabType, ClickAnimation, UpgradeType } from './types';
+import { InfoPanel } from './components/InfoPanel';
 
 function App() {
   const { 
@@ -211,61 +26,29 @@ function App() {
     multiClickCost,
     multiAutoClickCost,
     calculateTotalPrice
-  } = useGameStore()
+  } = useGameStore();
   
   // State for click animations
-  const [clickAnimations, setClickAnimations] = useState<ClickAnimation[]>([])
-  const [autoClickAnimations, setAutoClickAnimations] = useState<ClickAnimation[]>([])
+  const [clickAnimations, setClickAnimations] = useState<ClickAnimation[]>([]);
+  const [autoClickAnimations, setAutoClickAnimations] = useState<ClickAnimation[]>([]);
   
   // State for active tab
-  const [activeTab, setActiveTab] = useState<TabType>('game')
+  const [activeTab, setActiveTab] = useState<TabType>('game');
   
   // State for purchase quantity
-  const [purchaseQuantity, setPurchaseQuantity] = useState<PurchaseQuantity>(1)
+  const [purchaseQuantity, setPurchaseQuantity] = useState<1 | 10 | 50 | 100>(1);
   
   // State for active info panel
   const [activeInfoPanel, setActiveInfoPanel] = useState<UpgradeType | null>(null);
   
   // Ref for tracking dirt block position
   const dirtBlockRef = useRef<HTMLDivElement>(null);
-  const [blockCenter, setBlockCenter] = useState({ x: 0, y: 0 });
-  const [blockRect, setBlockRect] = useState({ left: 0, top: 0, width: 0, height: 0 });
+  const [blockPosition, setBlockPosition] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
   
-  // Update block center position when component mounts or window resizes
-  useEffect(() => {
-    const updateBlockPosition = () => {
-      if (dirtBlockRef.current) {
-        const rect = dirtBlockRef.current.getBoundingClientRect();
-        const scrollX = window.scrollX || document.documentElement.scrollLeft;
-        const scrollY = window.scrollY || document.documentElement.scrollTop;
-
-        setBlockCenter({
-          x: rect.left + rect.width / 2 + scrollX,
-          y: rect.top + rect.height / 2 + scrollY
-        });
-
-        setBlockRect({
-          left: rect.left + scrollX,
-          top: rect.top + scrollY,
-          width: rect.width,
-          height: rect.height
-        });
-      }
-    };
-    
-    // Initial position
-    updateBlockPosition();
-    
-    // Update on resize
-    window.addEventListener('resize', updateBlockPosition);
-    window.addEventListener('scroll', updateBlockPosition);
-    
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', updateBlockPosition);
-      window.removeEventListener('scroll', updateBlockPosition);
-    };
-  }, [activeTab]); // Re-calculate when tab changes
+  // Use useCallback to prevent the function from being recreated on every render
+  const handleBlockPositionUpdate = useCallback((position: { x: number, y: number, width: number, height: number }) => {
+    setBlockPosition(position);
+  }, []); // Empty dependency array ensures the function is created only once
   
   // Handle auto clickers
   useEffect(() => {
@@ -276,14 +59,15 @@ function App() {
         increaseDirtCount(autoClickPower);
         
         // Создаем анимацию для автоклика с фиксированным размером
-        if (autoClickerCount > 0 && dirtBlockRef.current) {
-          // Случайная позиция для анимации в пределах блока
-          const blockWidth = blockRect.width;
-          const blockHeight = blockRect.height;
+        if (blockPosition) {
+          // Случайный угол для позиционирования анимации вокруг блока
+          const randomAngle = Math.random() * Math.PI * 2;
+          // Случайное расстояние от центра блока
+          const randomDistance = Math.random() * (blockPosition.width / 2 - 10);
           
-          // Генерируем позицию внутри блока
-          const randomX = blockRect.left + Math.random() * blockWidth;
-          const randomY = blockRect.top + Math.random() * blockHeight;
+          // Вычисляем позицию на основе случайного угла и расстояния
+          const randomX = blockPosition.x + Math.cos(randomAngle) * randomDistance;
+          const randomY = blockPosition.y + Math.sin(randomAngle) * randomDistance;
           
           const newAnimation = {
             id: Date.now(),
@@ -297,23 +81,24 @@ function App() {
           // Удаляем анимацию через некоторое время
           setTimeout(() => {
             setAutoClickAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
-          }, 800); // Уменьшаем время анимации
+          }, 800);
         }
       }
-    }, 1000)
+    }, 1000);
     
-    return () => clearInterval(interval)
-  }, [autoClickerCount, multiAutoClickPower, increaseDirtCount, blockRect])
+    return () => clearInterval(interval);
+  }, [autoClickerCount, multiAutoClickPower, increaseDirtCount, blockPosition]);
 
+  // Обработчик клика по блоку земли
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const power = clickPower * multiClickPower;
-    increaseDirtCount(power)
+    increaseDirtCount(power);
     
-    // Get click position relative to the document
+    // Получаем позицию клика относительно документа
     const clickX = event.clientX;
     const clickY = event.clientY;
     
-    // Add a new animation at the click position
+    // Создаем новую анимацию в позиции клика
     const newAnimation = {
       id: Date.now(),
       x: clickX,
@@ -323,11 +108,11 @@ function App() {
     
     setClickAnimations(prev => [...prev, newAnimation]);
     
-    // Remove the animation after it completes
+    // Удаляем анимацию после ее завершения
     setTimeout(() => {
       setClickAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
-    }, 800); // Время анимации
-  }
+    }, 800);
+  };
 
   // Calculate total prices based on current purchase quantity
   const totalClickPowerPrice = calculateTotalPrice(clickPowerCost, purchaseQuantity, 1.15);
@@ -356,7 +141,7 @@ function App() {
       {/* Add spacing div to prevent content from going under the fixed header */}
       <div className="header-spacer"></div>
 
-      {/* Отдельный контейнер для всех анимаций, вынесенный на уровень страницы */}
+      {/* Контейнер для всех анимаций (клики и автоклики) */}
       <div className="animations-container">
         <AnimatePresence>
           {[...clickAnimations, ...autoClickAnimations].map(anim => (
@@ -394,13 +179,6 @@ function App() {
           ))}
         </AnimatePresence>
       </div>
-      
-      {/* Отдельный контейнер для лопат на уровне страницы */}
-      {activeTab === 'game' && autoClickerCount > 0 && (
-        <div className="global-shovels-container">
-          <AutoDigger />
-        </div>
-      )}
 
       {/* Информационная панель с деталями улучшения */}
       <AnimatePresence>
@@ -417,26 +195,20 @@ function App() {
       </AnimatePresence>
 
       <main className="game-main">
-        {/* Game Tab Content */}
+        {/* Game Tab Content - Блок земли в центре */}
         {activeTab === 'game' && (
           <div className="clicker-area">
-            {/* Убрали AutoDigger отсюда */}
+            {/* DirtBlock всегда в центре */}
+            <DirtBlock 
+              blockRef={dirtBlockRef} 
+              onBlockClick={handleClick}
+              onPositionUpdate={handleBlockPositionUpdate}
+            />
             
-            <motion.div 
-              ref={dirtBlockRef}
-              className="dirt-block-container"
-              whileTap={{ scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              onClick={handleClick}
-              onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на контейнере
-            >
-              <img 
-                src={dirtImage} 
-                alt="Dirt Block" 
-                draggable="false" 
-                onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на изображении
-              />
-            </motion.div>
+            {/* Лопаты вокруг блока земли */}
+            {autoClickerCount > 0 && (
+              <AutoDigger blockPosition={blockPosition} />
+            )}
           </div>
         )}
 
@@ -532,7 +304,6 @@ function App() {
                 </button>
               </div>
 
-              {/* Добавляем новую кнопку для улучшения мульти-автоклика */}
               {autoClickerCount > 0 && (
                 <div className="upgrade-container">
                   <button 
@@ -574,7 +345,7 @@ function App() {
         </button>
       </nav>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
