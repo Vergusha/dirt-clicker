@@ -97,6 +97,11 @@
   position: relative;
   image-rendering: pixelated;
   -webkit-touch-callout: none; /* Предотвращает выделение на iOS */
+  outline: none; /* Убирает синий контур */
+}
+
+.dirt-block:focus {
+  outline: none; /* Убирает синий контур при фокусировке */
 }
 
 .dirt-block img {
