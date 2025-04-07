@@ -48,6 +48,7 @@
   gap: 2rem;
   width: 100%;
   image-rendering: pixelated;
+  padding-bottom: 70px;
 }
 
 .game-header {
@@ -79,6 +80,7 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  padding: 0 10px;
 }
 
 .clicker-area {
@@ -86,14 +88,16 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  width: 100%;
+  padding: 0 10px;
 }
 
 .dirt-block {
   cursor: pointer;
   width: 150px;
   height: 150px;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   position: relative;
   image-rendering: pixelated;
   -webkit-touch-callout: none; /* Предотвращает выделение на iOS */
@@ -111,8 +115,8 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   image-rendering: pixelated;
   pointer-events: none; /* Отключает события мыши для изображения */
   -webkit-touch-callout: none; /* Предотвращает выделение на iOS */
@@ -120,7 +124,6 @@
   -khtml-user-drag: none; /* Для старых версий Konqueror */
   -moz-user-drag: none; /* Для Firefox */
   -o-user-drag: none; /* Для Opera */
-  user-drag: none; /* Стандартное свойство */
 }
 
 /* Click animations */
@@ -133,6 +136,7 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
   text-align: center;
   white-space: nowrap;
+  transform: translate(-50%, -50%); /* Центрирование анимации */
 }
 
 .mini-dirt {
@@ -141,6 +145,12 @@
   margin-right: 3px;
   image-rendering: pixelated;
   display: inline-block;
+}
+
+/* Styles for dirt block container */
+.dirt-block-container {
+  position: relative;
+  overflow: visible;
 }
 
 .click-power-text {
@@ -233,6 +243,7 @@
   padding: 1.5rem;
   box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
   image-rendering: pixelated;
+  width: 100%;
 }
 
 .upgrades-area h2 {
@@ -355,4 +366,111 @@ button {
   filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.5));
   image-rendering: pixelated;
   transform-origin: 50% 75%; /* Точка вращения внизу лопаты */
+}
+
+/* Tab Navigation Styles */
+.tab-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  background-color: #2a1a10;
+  padding: 10px 5px;
+  border-top: 3px solid #3d2b1f;
+  box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.tab-button {
+  width: 45%;
+  padding: 10px 0;
+  background-color: #3d2b1f;
+  border: 3px solid #2a1a10;
+  color: #ccc;
+  font-family: 'Press Start 2P', 'VT323', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+  transition: all 0.1s;
+  image-rendering: pixelated;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background-color: #6b4731;
+  color: #ffffff;
+  border-color: #3d2b1f;
+  transform: translateY(-3px);
+  box-shadow: 0px 5px 0px rgba(0, 0, 0, 0.4);
+}
+
+.tab-button:active {
+  transform: translateY(2px);
+  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.4);
+}
+
+/* Quantity Selector Styles */
+.quantity-selector {
+  margin-bottom: 1.5rem;
+  padding: 0.8rem;
+  background-color: #3d2b1f;
+  border: 3px solid #2a1a10;
+  border-radius: 0px;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+}
+
+.quantity-label {
+  font-size: 0.7rem;
+  color: #e2c08d;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.6);
+}
+
+.quantity-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.quantity-btn {
+  flex: 1;
+  padding: 0.5rem 0;
+  background-color: #2a1a10;
+  border: 2px solid #1a0e08;
+  color: #ccc;
+  font-size: 0.7rem;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+  transition: all 0.1s;
+  cursor: pointer;
+  image-rendering: pixelated;
+}
+
+.quantity-btn.active {
+  background-color: #6b4731;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.4);
+}
+
+.quantity-btn:hover:not(.active) {
+  background-color: #3d2b1f;
+}
+
+.quantity-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.4);
+}
+
+/* Quantity tag inside upgrade buttons */
+.quantity-tag {
+  font-size: 0.65rem;
+  color: #8aff8a;
+  margin-top: 0.3rem;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+  font-weight: bold;
 }

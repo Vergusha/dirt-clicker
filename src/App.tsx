@@ -13,6 +13,12 @@ interface ClickAnimation {
   value: number;
 }
 
+// Define tab types for navigation
+type TabType = 'game' | 'upgrades';
+
+// Define available purchase quantities
+type PurchaseQuantity = 1 | 10 | 50 | 100;
+
 // Компонент AutoDigger для анимации автокликера
 function AutoDigger() {
   const { autoClickerCount } = useGameStore();
@@ -113,12 +119,19 @@ function App() {
     clickPowerPrice,
     autoClickerPrice,
     multiClickPrice,
-    multiAutoClickPrice
+    multiAutoClickPrice,
+    calculateTotalPrice
   } = useGameStore()
   
   // State for click animations
   const [clickAnimations, setClickAnimations] = useState<ClickAnimation[]>([])
   const [autoClickAnimations, setAutoClickAnimations] = useState<ClickAnimation[]>([])
+  
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<TabType>('game')
+  
+  // State for purchase quantity
+  const [purchaseQuantity, setPurchaseQuantity] = useState<PurchaseQuantity>(1)
   
   // Handle auto clickers
   useEffect(() => {
@@ -179,6 +192,12 @@ function App() {
     }, 1000);
   }
 
+  // Calculate total prices based on current purchase quantity
+  const totalClickPowerPrice = calculateTotalPrice(clickPowerPrice, purchaseQuantity, 1.15);
+  const totalAutoClickerPrice = calculateTotalPrice(autoClickerPrice, purchaseQuantity, 1.15);
+  const totalMultiClickPrice = calculateTotalPrice(multiClickPrice, purchaseQuantity, 1.25);
+  const totalMultiAutoClickPrice = calculateTotalPrice(multiAutoClickPrice, purchaseQuantity, 1.25);
+
   // Общая мощность автокликеров с учетом множителя
   const totalAutoClickPower = autoClickerCount * multiAutoClickPower;
 
@@ -190,134 +209,188 @@ function App() {
       </header>
 
       <main className="game-main">
-        <div className="clicker-area">
-          <motion.div 
-            className="dirt-block"
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            onClick={handleClick}
-            style={{ position: 'relative', overflow: 'visible' }}
-            onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на контейнере
-          >
-            <img 
-              src={dirtImage} 
-              alt="Dirt Block" 
-              draggable="false" 
-              onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на изображении
-            />
+        {/* Game Tab Content */}
+        {activeTab === 'game' && (
+          <div className="clicker-area">
+            <motion.div 
+              className="dirt-block"
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              onClick={handleClick}
+              className="dirt-block-container"
+              onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на контейнере
+            >
+              <img 
+                src={dirtImage} 
+                alt="Dirt Block" 
+                draggable="false" 
+                onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на изображении
+              />
+              
+              {/* Click animations */}
+              <AnimatePresence>
+                {[...clickAnimations, ...autoClickAnimations].map(anim => (
+                  <motion.div
+                    key={anim.id}
+                    className="click-animation"
+                    style={{
+                      left: `${anim.x}px`,
+                      top: `${anim.y}px`,
+                    }}
+                    initial={{ 
+                      opacity: 1,
+                      scale: 1
+                    }}
+                    animate={{ 
+                      top: `${anim.y - 40}px`,
+                      opacity: 0,
+                      scale: 1.2
+                    }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                  >
+                    <img 
+                      src={dirtImage} 
+                      alt="" 
+                      className="mini-dirt"
+                    />
+                    <span className="click-power-text">+{anim.value}</span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              <AutoDigger />
+            </motion.div>
             
-            {/* Click animations */}
-            <AnimatePresence>
-              {[...clickAnimations, ...autoClickAnimations].map(anim => (
-                <motion.div
-                  key={anim.id}
-                  className="click-animation"
-                  style={{
-                    position: 'absolute',
-                    left: `${anim.x}px`,
-                    top: `${anim.y}px`,
-                    pointerEvents: 'none',
-                    transform: 'translate(-50%, -50%)' // Центрирование анимации относительно точки клика
-                  }}
-                  initial={{ 
-                    opacity: 1,
-                    scale: 1 // Фиксированный начальный размер
-                  }}
-                  animate={{ 
-                    top: `${anim.y - 40}px`,  // Move upward from click point
-                    opacity: 0,
-                    scale: 1.2 // Фиксированный конечный размер
-                  }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8 }}
-                >
-                  <img 
-                    src={dirtImage} 
-                    alt="" 
-                    className="mini-dirt"
-                    style={{ width: '24px', height: '24px' }} // Увеличиваю размер миниатюры в два раза
-                  />
-                  <span className="click-power-text">+{anim.value}</span>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            <AutoDigger />
-          </motion.div>
-          
-          <div className="click-power-display">
-            <div className="click-power-title">Click Power</div>
-            <div className="click-power-formula">
-              <span className="power-value">{clickPower}</span>
-              <span className="power-operator">×</span>
-              <span className="power-value">{multiClickPower}</span>
-              <span className="power-operator">=</span>
-              <span className="power-result">{clickPower * multiClickPower}</span>
-            </div>
-            <div className="click-power-label">per click</div>
-          </div>
-          
-          {/* Добавляем отображение информации о мощности автокликеров */}
-          {autoClickerCount > 0 && (
             <div className="click-power-display">
-              <div className="click-power-title">Auto Clicker Power</div>
+              <div className="click-power-title">Click Power</div>
               <div className="click-power-formula">
-                <span className="power-value">{autoClickerCount}</span>
+                <span className="power-value">{clickPower}</span>
                 <span className="power-operator">×</span>
-                <span className="power-value">{multiAutoClickPower}</span>
+                <span className="power-value">{multiClickPower}</span>
                 <span className="power-operator">=</span>
-                <span className="power-result">{totalAutoClickPower}</span>
+                <span className="power-result">{clickPower * multiClickPower}</span>
               </div>
-              <div className="click-power-label">per second</div>
+              <div className="click-power-label">per click</div>
             </div>
-          )}
-        </div>
-
-        <div className="upgrades-area">
-          <h2>Upgrades</h2>
-          <div className="upgrade-buttons">
-            <button 
-              className="upgrade-btn"
-              onClick={buyClickPower} 
-              disabled={dirtCount < clickPowerPrice}
-            >
-              Increase Click Power (Current: {clickPower})
-              <span className="price">Cost: {clickPowerPrice} dirt</span>
-            </button>
             
-            <button 
-              className="upgrade-btn"
-              onClick={buyMultiClick} 
-              disabled={dirtCount < multiClickPrice}
-            >
-              Multi-Click (Current: x{multiClickPower})
-              <span className="price">Cost: {multiClickPrice} dirt</span>
-            </button>
-            
-            <button 
-              className="upgrade-btn"
-              onClick={buyAutoClicker} 
-              disabled={dirtCount < autoClickerPrice}
-            >
-              Auto Clicker (Current: {autoClickerCount})
-              <span className="price">Cost: {autoClickerPrice} dirt</span>
-              <span className="description">Generates {totalAutoClickPower} dirt per second</span>
-            </button>
-
-            {/* Добавляем новую кнопку для улучшения мульти-автоклика */}
+            {/* Добавляем отображение информации о мощности автокликеров */}
             {autoClickerCount > 0 && (
-              <button 
-                className="upgrade-btn"
-                onClick={buyMultiAutoClick} 
-                disabled={dirtCount < multiAutoClickPrice}
-              >
-                Multi-AutoClick (Current: x{multiAutoClickPower})
-                <span className="price">Cost: {multiAutoClickPrice} dirt</span>
-                <span className="description">Multiplies auto clicker efficiency</span>
-              </button>
+              <div className="click-power-display">
+                <div className="click-power-title">Auto Clicker Power</div>
+                <div className="click-power-formula">
+                  <span className="power-value">{autoClickerCount}</span>
+                  <span className="power-operator">×</span>
+                  <span className="power-value">{multiAutoClickPower}</span>
+                  <span className="power-operator">=</span>
+                  <span className="power-result">{totalAutoClickPower}</span>
+                </div>
+                <div className="click-power-label">per second</div>
+              </div>
             )}
           </div>
-        </div>
+        )}
+
+        {/* Upgrades Tab Content */}
+        {activeTab === 'upgrades' && (
+          <div className="upgrades-area">
+            <h2>Upgrades</h2>
+            
+            {/* Purchase Quantity Selector */}
+            <div className="quantity-selector">
+              <div className="quantity-label">Purchase Quantity:</div>
+              <div className="quantity-buttons">
+                <button 
+                  className={`quantity-btn ${purchaseQuantity === 1 ? 'active' : ''}`}
+                  onClick={() => setPurchaseQuantity(1)}
+                >
+                  x1
+                </button>
+                <button 
+                  className={`quantity-btn ${purchaseQuantity === 10 ? 'active' : ''}`}
+                  onClick={() => setPurchaseQuantity(10)}
+                >
+                  x10
+                </button>
+                <button 
+                  className={`quantity-btn ${purchaseQuantity === 50 ? 'active' : ''}`}
+                  onClick={() => setPurchaseQuantity(50)}
+                >
+                  x50
+                </button>
+                <button 
+                  className={`quantity-btn ${purchaseQuantity === 100 ? 'active' : ''}`}
+                  onClick={() => setPurchaseQuantity(100)}
+                >
+                  x100
+                </button>
+              </div>
+            </div>
+            
+            <div className="upgrade-buttons">
+              <button 
+                className="upgrade-btn"
+                onClick={() => buyClickPower(purchaseQuantity)} 
+                disabled={dirtCount < totalClickPowerPrice}
+              >
+                Increase Click Power (Current: {clickPower})
+                <span className="quantity-tag">+{purchaseQuantity} levels</span>
+                <span className="price">Cost: {totalClickPowerPrice} dirt</span>
+              </button>
+              
+              <button 
+                className="upgrade-btn"
+                onClick={() => buyMultiClick(purchaseQuantity)} 
+                disabled={dirtCount < totalMultiClickPrice}
+              >
+                Multi-Click (Current: x{multiClickPower})
+                <span className="quantity-tag">+{purchaseQuantity} levels</span>
+                <span className="price">Cost: {totalMultiClickPrice} dirt</span>
+              </button>
+              
+              <button 
+                className="upgrade-btn"
+                onClick={() => buyAutoClicker(purchaseQuantity)} 
+                disabled={dirtCount < totalAutoClickerPrice}
+              >
+                Auto Clicker (Current: {autoClickerCount})
+                <span className="quantity-tag">+{purchaseQuantity} levels</span>
+                <span className="price">Cost: {totalAutoClickerPrice} dirt</span>
+                <span className="description">Generates {totalAutoClickPower} dirt per second</span>
+              </button>
+
+              {/* Добавляем новую кнопку для улучшения мульти-автоклика */}
+              {autoClickerCount > 0 && (
+                <button 
+                  className="upgrade-btn"
+                  onClick={() => buyMultiAutoClick(purchaseQuantity)} 
+                  disabled={dirtCount < totalMultiAutoClickPrice}
+                >
+                  Multi-AutoClick (Current: x{multiAutoClickPower})
+                  <span className="quantity-tag">+{purchaseQuantity} levels</span>
+                  <span className="price">Cost: {totalMultiAutoClickPrice} dirt</span>
+                  <span className="description">Multiplies auto clicker efficiency</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </main>
+      
+      {/* Tab Navigation */}
+      <nav className="tab-navigation">
+        <button 
+          className={`tab-button ${activeTab === 'game' ? 'active' : ''}`} 
+          onClick={() => setActiveTab('game')}
+        >
+          Game
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'upgrades' ? 'active' : ''}`} 
+          onClick={() => setActiveTab('upgrades')}
+        >
+          Upgrades
+        </button>
+      </nav>
     </div>
   )
 }

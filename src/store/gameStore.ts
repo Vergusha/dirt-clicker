@@ -1,92 +1,150 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+// Define types for our store
 interface GameState {
   dirtCount: number
   clickPower: number
   autoClickerCount: number
   multiClickPower: number
-  multiAutoClickPower: number // Новое свойство для мульти-автоклика
+  multiAutoClickPower: number
   clickPowerPrice: number
   autoClickerPrice: number
   multiClickPrice: number
-  multiAutoClickPrice: number // Цена улучшения мульти-автоклика
+  multiAutoClickPrice: number
   
   // Actions
   increaseDirtCount: (amount: number) => void
-  buyClickPower: () => void
-  buyAutoClicker: () => void
-  buyMultiClick: () => void
-  buyMultiAutoClick: () => void // Новая функция для покупки мульти-автоклика
-  resetGame: () => void
+  buyClickPower: (quantity: number) => void
+  buyAutoClicker: (quantity: number) => void
+  buyMultiClick: (quantity: number) => void
+  buyMultiAutoClick: (quantity: number) => void
+  
+  // Calculate total price for multiple upgrades
+  calculateTotalPrice: (basePrice: number, quantity: number, growth: number) => number
 }
 
-// Initial state values
-const initialState = {
-  dirtCount: 0,
-  clickPower: 1,
-  autoClickerCount: 0,
-  multiClickPower: 1,
-  multiAutoClickPower: 1, // Начальное значение мульти-автоклика
-  clickPowerPrice: 10,
-  autoClickerPrice: 50,
-  multiClickPrice: 100,
-  multiAutoClickPrice: 200, // Начальная цена мульти-автоклика
-}
+// Helper function to calculate price for multiple upgrades
+const calculatePrice = (basePrice: number, quantity: number, growth: number = 1.15): number => {
+  if (quantity === 1) return basePrice;
+  
+  // For multiple upgrades, use the sum of geometric series formula
+  // total = basePrice * (1 - growth^quantity) / (1 - growth)
+  return Math.floor(basePrice * (1 - Math.pow(growth, quantity)) / (1 - growth));
+};
 
+// Create the store with persistence
 export const useGameStore = create<GameState>()(
   persist(
     (set) => ({
-      ...initialState,
+      dirtCount: 0,
+      clickPower: 1,
+      autoClickerCount: 0,
+      multiClickPower: 1,
+      multiAutoClickPower: 1,
+      clickPowerPrice: 10,
+      autoClickerPrice: 50,
+      multiClickPrice: 100,
+      multiAutoClickPrice: 200,
       
-      increaseDirtCount: (amount) => set((state) => ({ 
-        dirtCount: state.dirtCount + amount 
-      })),
+      // Calculate total price for multiple upgrades
+      calculateTotalPrice: (basePrice: number, quantity: number, growth: number = 1.15) => {
+        return calculatePrice(basePrice, quantity, growth);
+      },
       
-      buyClickPower: () => set((state) => {
-        if (state.dirtCount < state.clickPowerPrice) return state
+      // Add dirt to the counter
+      increaseDirtCount: (amount) => set((state) => ({ dirtCount: state.dirtCount + amount })),
+      
+      // Buy click power upgrades
+      buyClickPower: (quantity) => set((state) => {
+        // Calculate the total price for quantity upgrades
+        let totalPrice = 0;
+        let nextPrice = state.clickPowerPrice;
         
-        return {
-          dirtCount: state.dirtCount - state.clickPowerPrice,
-          clickPower: state.clickPower + 1,
-          clickPowerPrice: Math.floor(state.clickPowerPrice * 1.5)
+        for (let i = 0; i < quantity; i++) {
+          totalPrice += nextPrice;
+          nextPrice = Math.floor(nextPrice * 1.15); // 15% increase per level
         }
+        
+        // Check if player can afford it
+        if (state.dirtCount < totalPrice) return state;
+        
+        // Apply the purchase
+        return {
+          dirtCount: state.dirtCount - totalPrice,
+          clickPower: state.clickPower + quantity,
+          clickPowerPrice: nextPrice
+        };
       }),
       
-      buyAutoClicker: () => set((state) => {
-        if (state.dirtCount < state.autoClickerPrice) return state
+      // Buy auto clicker upgrades
+      buyAutoClicker: (quantity) => set((state) => {
+        // Calculate the total price for quantity upgrades
+        let totalPrice = 0;
+        let nextPrice = state.autoClickerPrice;
         
-        return {
-          dirtCount: state.dirtCount - state.autoClickerPrice,
-          autoClickerCount: state.autoClickerCount + 1,
-          autoClickerPrice: Math.floor(state.autoClickerPrice * 1.8)
+        for (let i = 0; i < quantity; i++) {
+          totalPrice += nextPrice;
+          nextPrice = Math.floor(nextPrice * 1.15); // 15% increase per level
         }
+        
+        // Check if player can afford it
+        if (state.dirtCount < totalPrice) return state;
+        
+        // Apply the purchase
+        return {
+          dirtCount: state.dirtCount - totalPrice,
+          autoClickerCount: state.autoClickerCount + quantity,
+          autoClickerPrice: nextPrice
+        };
       }),
       
-      buyMultiClick: () => set((state) => {
-        if (state.dirtCount < state.multiClickPrice) return state
+      // Buy multi-click upgrades
+      buyMultiClick: (quantity) => set((state) => {
+        // Calculate the total price for quantity upgrades
+        let totalPrice = 0;
+        let nextPrice = state.multiClickPrice;
         
-        return {
-          dirtCount: state.dirtCount - state.multiClickPrice,
-          multiClickPower: state.multiClickPower + 1,
-          multiClickPrice: Math.floor(state.multiClickPrice * 2.2)
+        for (let i = 0; i < quantity; i++) {
+          totalPrice += nextPrice;
+          nextPrice = Math.floor(nextPrice * 1.25); // 25% increase per level
         }
+        
+        // Check if player can afford it
+        if (state.dirtCount < totalPrice) return state;
+        
+        // Apply the purchase
+        return {
+          dirtCount: state.dirtCount - totalPrice,
+          multiClickPower: state.multiClickPower + quantity,
+          multiClickPrice: nextPrice
+        };
       }),
       
-      buyMultiAutoClick: () => set((state) => {
-        if (state.dirtCount < state.multiAutoClickPrice) return state
+      // Buy multi-autoclick upgrades
+      buyMultiAutoClick: (quantity) => set((state) => {
+        // Calculate the total price for quantity upgrades
+        let totalPrice = 0;
+        let nextPrice = state.multiAutoClickPrice;
         
-        return {
-          dirtCount: state.dirtCount - state.multiAutoClickPrice,
-          multiAutoClickPower: state.multiAutoClickPower + 1,
-          multiAutoClickPrice: Math.floor(state.multiAutoClickPrice * 2.5)
+        for (let i = 0; i < quantity; i++) {
+          totalPrice += nextPrice;
+          nextPrice = Math.floor(nextPrice * 1.25); // 25% increase per level
         }
-      }),
-      
-      resetGame: () => set(initialState)
+        
+        // Check if player can afford it
+        if (state.dirtCount < totalPrice) return state;
+        
+        // Apply the purchase
+        return {
+          dirtCount: state.dirtCount - totalPrice,
+          multiAutoClickPower: state.multiAutoClickPower + quantity,
+          multiAutoClickPrice: nextPrice
+        };
+      })
     }),
     {
-      name: 'dirt-clicker-storage',
+      name: 'dirt-clicker-storage'
     }
   )
 )
