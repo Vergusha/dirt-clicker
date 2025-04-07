@@ -84,6 +84,8 @@
   width: 150px;
   height: 150px;
   user-select: none;
+  -webkit-user-select: none;
+  position: relative;
 }
 
 .dirt-block img {
@@ -92,6 +94,31 @@
   object-fit: contain;
   display: block;
   user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Click animations */
+.click-animation {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.mini-dirt {
+  width: 7px;
+  height: 7px;
+  margin-right: 1px;
+  image-rendering: pixelated;
+}
+
+.click-power-text {
+  color: #ffeb3b;
+  font-weight: bold;
+  font-size: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .click-info {

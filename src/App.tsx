@@ -1,8 +1,16 @@
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import dirtImage from './assets/dirt.webp'
 import './App.css'
 import { useGameStore } from './store/gameStore'
+
+// Define an interface for click animation
+interface ClickAnimation {
+  id: number;
+  x: number;
+  y: number;
+  value: number;
+}
 
 function App() {
   const { 
@@ -18,7 +26,10 @@ function App() {
     autoClickerPrice,
     multiClickPrice
   } = useGameStore()
-
+  
+  // State for click animations
+  const [clickAnimations, setClickAnimations] = useState<ClickAnimation[]>([])
+  
   // Handle auto clickers
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,8 +41,29 @@ function App() {
     return () => clearInterval(interval)
   }, [autoClickerCount, increaseDirtCount])
 
-  const handleClick = () => {
-    increaseDirtCount(clickPower * multiClickPower)
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const power = clickPower * multiClickPower;
+    increaseDirtCount(power)
+    
+    // Get click position relative to the clicked element
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    // Add a new animation at the click position
+    const newAnimation = {
+      id: Date.now(),
+      x,
+      y,
+      value: power
+    };
+    
+    setClickAnimations(prev => [...prev, newAnimation]);
+    
+    // Remove the animation after it completes
+    setTimeout(() => {
+      setClickAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
+    }, 1000);
   }
 
   return (
@@ -48,9 +80,41 @@ function App() {
             whileTap={{ scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
             onClick={handleClick}
+            style={{ position: 'relative', overflow: 'visible' }}
           >
             <img src={dirtImage} alt="Dirt Block" />
+            
+            {/* Click animations */}
+            <AnimatePresence>
+              {clickAnimations.map(anim => (
+                <motion.div
+                  key={anim.id}
+                  className="click-animation"
+                  style={{
+                    position: 'absolute',
+                    left: `${anim.x - 5}px`,  // Center the animation (half of dirt width)
+                    top: `${anim.y - 5}px`,   // Center the animation (half of dirt height)
+                    pointerEvents: 'none'
+                  }}
+                  initial={{ 
+                    opacity: 1,
+                    scale: 0.5
+                  }}
+                  animate={{ 
+                    top: `${anim.y - 40}px`,  // Move upward from click point
+                    opacity: 0,
+                    scale: 0.8
+                  }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <img src={dirtImage} alt="" className="mini-dirt" />
+                  <span className="click-power-text">+{anim.value}</span>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </motion.div>
+          
           <div className="click-power-display">
             <div className="click-power-title">Click Power</div>
             <div className="click-power-formula">
