@@ -4,6 +4,7 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .logo {
@@ -50,7 +51,7 @@
   image-rendering: pixelated;
   padding-bottom: 70px;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: hidden; /* Prevent horizontal scroll */
   padding-top: 0;
   margin-top: 0;
 }
@@ -117,8 +118,10 @@
   align-items: center;
   width: 100%;
   padding: 0;
-  padding-top: 20px;
+  padding-top:px; /* Увеличьте отступ сверху */
   position: relative;
+  overflow: hidden; /* Prevent any animations from causing scroll */
+  min-height: 300px; /* Минимальная высота для корректного отображения лопат */
 }
 
 .dirt-block {
@@ -157,23 +160,26 @@
 
 /* Click animations */
 .click-animation {
-  position: absolute;
+  position: fixed;
   pointer-events: none;
-  z-index: 10;
+  z-index: 150;
   display: flex;
   align-items: center;
+  justify-content: center;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
   text-align: center;
   white-space: nowrap;
-  transform: translate(-50%, -50%); /* Центрирование анимации */
+  width: 50px; /* Фиксированная ширина */
+  height: 30px; /* Фиксированная высота */
 }
 
 .mini-dirt {
-  width: 24px;
-  height: 24px;
+  width: 20px; /* Fixed width */
+  height: 20px; /* Fixed height */
   margin-right: 3px;
   image-rendering: pixelated;
   display: inline-block;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 /* Styles for dirt block container */
@@ -189,6 +195,10 @@
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
   outline: none;
+  contain: layout paint; /* Optimize rendering */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dirt-block-container img {
@@ -213,6 +223,8 @@
   font-size: 0.8rem;
   text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
   image-rendering: pixelated;
+  white-space: nowrap;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .click-info {
@@ -398,29 +410,36 @@ button {
   line-height: 1.2;
 }
 
-/* Стили для контейнера лопат */
+/* Стили для контейнера лопат - обновленная версия */
 .shovels-container {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: absolute; /* Меняем с fixed на absolute */
+  pointer-events: none; /* Игнорирует все события мыши */
+  z-index: 50; /* Достаточно высокий z-index, чтобы быть поверх блока земли */
   width: 100%;
   height: 100%;
-  pointer-events: none;
-  z-index: 4;
+  top: 0;
+  left: 0;
+  overflow: visible; /* Чтобы лопаты не обрезались */
+  /* Центрирование контейнера */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Стили для автокликера (лопаты) */
+/* Стили для автокликера (лопаты) - обновленные */
 .auto-digger {
-  width: 0; /* Устанавливаем нулевую ширину для точного позиционирования */
-  height: 0; /* Устанавливаем нулевую высоту для точного позиционирования */
+  position: absolute;
   pointer-events: none;
-  z-index: 5;
+  z-index: 50;
+  /* Убираем width и height, чтобы не ограничивать размер */
 }
 
 .shovel-image {
   filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.5));
   image-rendering: pixelated;
   transform-origin: 50% 75%; /* Точка вращения внизу лопаты */
+  width: 40px; /* Фиксируем ширину лопаты */
+  height: auto; /* Высота автоматически адаптируется */
 }
 
 /* Tab Navigation Styles */
@@ -613,4 +632,54 @@ button {
 /* Header spacer to prevent content from going under fixed header */
 .header-spacer {
   height: 130px; /* Adjust this value based on the actual header height */
+}
+
+/* Контейнер для анимаций - новые стили */
+.animations-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Чтобы можно было кликать сквозь него */
+  z-index: 150; /* Выше всего, кроме шапки */
+  overflow: visible;
+}
+
+/* Глобальный контейнер для лопат */
+.global-shovels-container {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 60px; /* Отступ сверху для перемещения контейнера ниже */
+}
+
+/* Убираем зависимость лопат от клик-области */
+.shovels-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  z-index: 100;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shovels-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible; /* Убедитесь, что лопаты не обрезаются */
+  pointer-events: none;
 }

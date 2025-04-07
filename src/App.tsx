@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import dirtImage from './assets/dirt.webp'
 import shovelImage from './assets/wood_shovel.webp'
@@ -20,7 +20,7 @@ type TabType = 'game' | 'upgrades';
 type PurchaseQuantity = 1 | 10 | 50 | 100;
 
 // Компонент AutoDigger для анимации автокликера
-function AutoDigger() {
+function AutoDigger({ centerPosition }: { centerPosition: { x: number, y: number } }) {
   const { autoClickerCount } = useGameStore();
 
   if (autoClickerCount <= 0) return null;
@@ -31,24 +31,21 @@ function AutoDigger() {
     // Угол в радианах, равномерно распределяем лопаты по кругу
     const angle = (index / autoClickerCount) * Math.PI * 2;
 
-    // Радиус круга, по которому распределяем лопаты (немного больше блока земли)
-    const radius = 120; // Уменьшаю радиус для более точного расположения вокруг блока земли
-
-    const offsetX = -20; // Сдвиг вправо
-    const offsetY = -25; // Сдвиг вверх
+    // Радиус круга, по которому распределяем лопаты
+    // Фиксированный радиус для всех лопат, а не зависящий от размера блока
+    const radius = 100; 
 
     // Вычисляем координаты на окружности
-    const x = Math.cos(angle) * radius + offsetX;
-    const y = Math.sin(angle) * radius + offsetY;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
 
     // Вычисляем угол поворота лопаты, чтобы она была направлена к блоку
-    // Учитываем, что изображение уже повернуто на 45 градусов
-    const rotation = (angle * (180 / Math.PI)) + 230; // +270 для направления к центру (180 градусов переворот)
+    const rotation = (angle * (180 / Math.PI)) + 230;
 
     return {
       id: index,
       position: { x, y },
-      angle, // Сохраняем угол для вычисления направления движения
+      angle, 
       rotation,
       delay: index * 0.2 // Последовательная задержка для каждой лопаты
     };
@@ -67,9 +64,9 @@ function AutoDigger() {
             className="auto-digger"
             style={{
               position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: `translate(calc(${shovel.position.x}px - 50%), calc(${shovel.position.y}px - 50%))`, // Центрирование относительно блока земли
+              left: `50%`,
+              top: `50%`,
+              transform: `translate(calc(-50% + ${shovel.position.x + 0}px), calc(-50% + ${shovel.position.y - 75}px))`, // Сдвиг на 10px вправо и 20px вниз
               pointerEvents: 'none',
             }}
           >
@@ -133,6 +130,47 @@ function App() {
   // State for purchase quantity
   const [purchaseQuantity, setPurchaseQuantity] = useState<PurchaseQuantity>(1)
   
+  // Ref for tracking dirt block position
+  const dirtBlockRef = useRef<HTMLDivElement>(null);
+  const [blockCenter, setBlockCenter] = useState({ x: 0, y: 0 });
+  const [blockRect, setBlockRect] = useState({ left: 0, top: 0, width: 0, height: 0 });
+  
+  // Update block center position when component mounts or window resizes
+  useEffect(() => {
+    const updateBlockPosition = () => {
+      if (dirtBlockRef.current) {
+        const rect = dirtBlockRef.current.getBoundingClientRect();
+        const scrollX = window.scrollX || document.documentElement.scrollLeft;
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+        setBlockCenter({
+          x: rect.left + rect.width / 2 + scrollX,
+          y: rect.top + rect.height / 2 + scrollY
+        });
+
+        setBlockRect({
+          left: rect.left + scrollX,
+          top: rect.top + scrollY,
+          width: rect.width,
+          height: rect.height
+        });
+      }
+    };
+    
+    // Initial position
+    updateBlockPosition();
+    
+    // Update on resize
+    window.addEventListener('resize', updateBlockPosition);
+    window.addEventListener('scroll', updateBlockPosition);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', updateBlockPosition);
+      window.removeEventListener('scroll', updateBlockPosition);
+    };
+  }, [activeTab]); // Re-calculate when tab changes
+  
   // Handle auto clickers
   useEffect(() => {
     const interval = setInterval(() => {
@@ -141,16 +179,20 @@ function App() {
         const autoClickPower = autoClickerCount * multiAutoClickPower;
         increaseDirtCount(autoClickPower);
         
-        // Создаем анимацию для автоклика
-        if (autoClickerCount > 0) {
-          // Случайная позиция для анимации
-          const x = Math.random() * 120 - 60;
-          const y = Math.random() * 120 - 60;
+        // Создаем анимацию для автоклика с фиксированным размером
+        if (autoClickerCount > 0 && dirtBlockRef.current) {
+          // Случайная позиция для анимации в пределах блока
+          const blockWidth = blockRect.width;
+          const blockHeight = blockRect.height;
+          
+          // Генерируем позицию внутри блока
+          const randomX = blockRect.left + Math.random() * blockWidth;
+          const randomY = blockRect.top + Math.random() * blockHeight;
           
           const newAnimation = {
             id: Date.now(),
-            x: 75 + x,
-            y: 75 + y,
+            x: randomX,
+            y: randomY,
             value: autoClickPower
           };
           
@@ -159,28 +201,27 @@ function App() {
           // Удаляем анимацию через некоторое время
           setTimeout(() => {
             setAutoClickAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
-          }, 1000);
+          }, 800); // Уменьшаем время анимации
         }
       }
     }, 1000)
     
     return () => clearInterval(interval)
-  }, [autoClickerCount, multiAutoClickPower, increaseDirtCount])
+  }, [autoClickerCount, multiAutoClickPower, increaseDirtCount, blockRect])
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const power = clickPower * multiClickPower;
     increaseDirtCount(power)
     
-    // Get click position relative to the clicked element
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    // Get click position relative to the document
+    const clickX = event.clientX;
+    const clickY = event.clientY;
     
     // Add a new animation at the click position
     const newAnimation = {
       id: Date.now(),
-      x,
-      y,
+      x: clickX,
+      y: clickY,
       value: power
     };
     
@@ -189,7 +230,7 @@ function App() {
     // Remove the animation after it completes
     setTimeout(() => {
       setClickAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
-    }, 1000);
+    }, 800); // Время анимации
   }
 
   // Calculate total prices based on current purchase quantity
@@ -219,11 +260,60 @@ function App() {
       {/* Add spacing div to prevent content from going under the fixed header */}
       <div className="header-spacer"></div>
 
+      {/* Отдельный контейнер для всех анимаций, вынесенный на уровень страницы */}
+      <div className="animations-container">
+        <AnimatePresence>
+          {[...clickAnimations, ...autoClickAnimations].map(anim => (
+            <motion.div
+              key={anim.id}
+              className="click-animation"
+              style={{
+                position: 'fixed',
+                left: `${anim.x}px`,
+                top: `${anim.y}px`,
+                pointerEvents: 'none',
+                zIndex: 60,
+              }}
+              initial={{ 
+                opacity: 1,
+                scale: 1,
+                translateX: '-50%',
+                translateY: '-50%'
+              }}
+              animate={{ 
+                top: `${anim.y - 40}px`,
+                opacity: 0,
+                scale: 1.2
+              }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <img 
+                src={dirtImage} 
+                alt="" 
+                className="mini-dirt"
+              />
+              <span className="click-power-text">+{anim.value}</span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+      
+      {/* Отдельный контейнер для лопат на уровне страницы */}
+      {activeTab === 'game' && autoClickerCount > 0 && (
+        <div className="global-shovels-container">
+          <AutoDigger centerPosition={blockCenter} />
+        </div>
+      )}
+
       <main className="game-main">
         {/* Game Tab Content */}
         {activeTab === 'game' && (
           <div className="clicker-area">
+            {/* Убрали AutoDigger отсюда */}
+            
             <motion.div 
+              ref={dirtBlockRef}
               className="dirt-block-container"
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -236,42 +326,7 @@ function App() {
                 draggable="false" 
                 onContextMenu={(e) => e.preventDefault()} // Отключаем контекстное меню на изображении
               />
-              
-              {/* Click animations */}
-              <AnimatePresence>
-                {[...clickAnimations, ...autoClickAnimations].map(anim => (
-                  <motion.div
-                    key={anim.id}
-                    className="click-animation"
-                    style={{
-                      left: `${anim.x}px`,
-                      top: `${anim.y}px`,
-                    }}
-                    initial={{ 
-                      opacity: 1,
-                      scale: 1
-                    }}
-                    animate={{ 
-                      top: `${anim.y - 40}px`,
-                      opacity: 0,
-                      scale: 1.2
-                    }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8 }}
-                  >
-                    <img 
-                      src={dirtImage} 
-                      alt="" 
-                      className="mini-dirt"
-                    />
-                    <span className="click-power-text">+{anim.value}</span>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              <AutoDigger />
             </motion.div>
-            
-            {/* Click Power display table removed */}
           </div>
         )}
 
