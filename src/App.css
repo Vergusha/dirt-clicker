@@ -529,7 +529,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.1s, filter 0.1s;
+  transition: transform 0.1s, filter 0.1s, opacity 0.1s;
   flex: 1;
 }
 
@@ -538,6 +538,11 @@ button {
   height: auto;
   image-rendering: pixelated;
   display: block;
+}
+
+.quantity-btn:not(.active) {
+  opacity: 0.6;
+  filter: brightness(0.7) grayscale(0.3);
 }
 
 .quantity-btn-text {
@@ -559,6 +564,7 @@ button {
 .quantity-btn.active {
   transform: translateY(-2px);
   filter: brightness(1.2);
+  opacity: 1;
 }
 
 .quantity-btn:active {
@@ -901,7 +907,7 @@ button {
   color: white;
   border-radius: 0px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s, opacity 0.2s, filter 0.2s;
   box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
   font-size: 0.7rem;
   line-height: 1.2;
@@ -1027,6 +1033,7 @@ button {
   opacity: 0.6;
   cursor: not-allowed;
   background-color: #555;
+  filter: brightness(0.8) grayscale(0.3);
 }
 
 .info-panel-overlay {
