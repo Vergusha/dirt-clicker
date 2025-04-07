@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import shovelImage from '../../assets/wood_shovel.webp';
 import { BlockPosition } from '../../types';
+import { useEffect, useState } from 'react';
 
 interface AutoDiggerProps {
   centerPosition: BlockPosition;
@@ -12,6 +13,28 @@ interface AutoDiggerProps {
  */
 export const AutoDigger: React.FC<AutoDiggerProps> = ({ centerPosition }) => {
   const { autoClickerCount } = useGameStore();
+  const [radius, setRadius] = useState(100); // Дефолтное значение радиуса
+
+  // Адаптивный радиус в зависимости от размера экрана
+  useEffect(() => {
+    const updateRadius = () => {
+      // Для мобильных устройств используем меньший радиус
+      if (window.innerWidth <= 480) {
+        setRadius(70);
+      } else if (window.innerWidth <= 768) {
+        setRadius(85);
+      } else {
+        setRadius(100);
+      }
+    };
+    
+    updateRadius();
+    window.addEventListener('resize', updateRadius);
+    
+    return () => {
+      window.removeEventListener('resize', updateRadius);
+    };
+  }, []);
 
   // Если нет автокликеров, не рендерим ничего
   if (autoClickerCount <= 0) return null;
@@ -21,9 +44,6 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ centerPosition }) => {
     // Вычисляем позицию лопаты вокруг блока земли
     // Угол в радианах, равномерно распределяем лопаты по кругу
     const angle = (index / autoClickerCount) * Math.PI * 2;
-
-    // Радиус круга, по которому распределяем лопаты
-    const radius = 100; 
 
     // Вычисляем координаты на окружности
     const x = Math.cos(angle) * radius;
@@ -41,6 +61,16 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ centerPosition }) => {
     };
   });
 
+  // Вычисляем вертикальное смещение основываясь на размере экрана
+  const getYOffset = () => {
+    if (window.innerWidth <= 480) {
+      return -50; // Меньшее смещение для мобильных устройств
+    } else if (window.innerWidth <= 768) {
+      return -60; // Среднее смещение для планшетов
+    }
+    return -75; // Оригинальное смещение для больших экранов
+  };
+
   return (
     <div className="shovels-container">
       {shovels.map(shovel => {
@@ -56,7 +86,7 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ centerPosition }) => {
               position: 'absolute',
               left: `50%`,
               top: `50%`,
-              transform: `translate(calc(-50% + ${shovel.position.x + 0}px), calc(-50% + ${shovel.position.y - 75}px))`, // Сдвиг на 10px вправо и 20px вниз
+              transform: `translate(calc(-50% + ${shovel.position.x}px), calc(-50% + ${shovel.position.y + getYOffset()}px))`,
               pointerEvents: 'none',
             }}
           >

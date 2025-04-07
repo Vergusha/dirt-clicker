@@ -199,6 +199,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10; /* Убедимся, что блок всегда под лопатами */
 }
 
 .dirt-block-container img {
@@ -424,6 +425,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  transform-origin: center center;
 }
 
 /* Стили для автокликера (лопаты) - обновленные */
@@ -432,6 +434,7 @@ button {
   pointer-events: none;
   z-index: 50;
   /* Убираем width и height, чтобы не ограничивать размер */
+  will-change: transform; /* Оптимизация производительности */
 }
 
 .shovel-image {
@@ -440,6 +443,8 @@ button {
   transform-origin: 50% 75%; /* Точка вращения внизу лопаты */
   width: 40px; /* Фиксируем ширину лопаты */
   height: auto; /* Высота автоматически адаптируется */
+  -webkit-backface-visibility: hidden; /* Предотвращает мерцание на iOS */
+  backface-visibility: hidden;
 }
 
 /* Tab Navigation Styles */
@@ -567,8 +572,9 @@ button {
   }
 
   .dirt-block-container {
-    width: 120px;
-    height: 120px;
+    width: 110px; /* Уменьшаем размер для маленьких экранов */
+    height: 110px;
+    margin-top: 20px; /* Добавляем отступ сверху */
   }
 
   .tab-button {
@@ -599,6 +605,15 @@ button {
   
   .fixed-header {
     padding-top: 5px;
+  }
+
+  .clicker-area {
+    min-height: 240px; /* Уменьшаем минимальную высоту для мобильных */
+    padding-top: 10px;
+  }
+
+  .shovel-image {
+    width: 34px; /* Уменьшаем размер лопат на мобильных */
   }
 }
 
