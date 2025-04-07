@@ -98,10 +98,12 @@
   image-rendering: pixelated;
   -webkit-touch-callout: none; /* Предотвращает выделение на iOS */
   outline: none; /* Убирает синий контур */
+  -webkit-tap-highlight-color: transparent; /* Убирает подсветку при нажатии на мобильных устройствах */
 }
 
 .dirt-block:focus {
   outline: none; /* Убирает синий контур при фокусировке */
+  -webkit-tap-highlight-color: transparent; /* Убирает подсветку при фокусировке на мобильных устройствах */
 }
 
 .dirt-block img {
