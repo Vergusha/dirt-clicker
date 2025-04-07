@@ -16,61 +16,82 @@ interface ClickAnimation {
 // Компонент AutoDigger для анимации автокликера
 function AutoDigger() {
   const { autoClickerCount } = useGameStore();
-  
+
   if (autoClickerCount <= 0) return null;
-  
+
   // Создаем массив лопат в соответствии с количеством автокликеров
-  const shovels = Array.from({ length: autoClickerCount }, (_, index) => ({
-    id: index,
-    // Для каждой лопаты генерируем случайные начальные позиции
-    position: {
-      x: Math.random() * 100 - 50, // от -50 до 50
-      y: Math.random() * 100 - 50  // от -50 до 50
-    },
-    // Индивидуальные задержки для каждой лопаты чтобы они не двигались синхронно
-    delay: Math.random() * 0.5
-  }));
-  
+  const shovels = Array.from({ length: autoClickerCount }, (_, index) => {
+    // Вычисляем позицию лопаты вокруг блока земли
+    // Угол в радианах, равномерно распределяем лопаты по кругу
+    const angle = (index / autoClickerCount) * Math.PI * 2;
+
+    // Радиус круга, по которому распределяем лопаты (немного больше блока земли)
+    const radius = 120;
+
+    // Вычисляем координаты на окружности
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+
+    // Вычисляем угол поворота лопаты, чтобы она была направлена к блоку
+    // Учитываем, что изображение уже повернуто на 45 градусов
+    const rotation = (angle * (180 / Math.PI)) + 270; // +270 для направления к центру (180 градусов переворот)
+
+    return {
+      id: index,
+      position: { x, y },
+      angle, // Сохраняем угол для вычисления направления движения
+      rotation,
+      delay: index * 0.2 // Последовательная задержка для каждой лопаты
+    };
+  });
+
   return (
-    <>
-      {shovels.map(shovel => (
-        <motion.div
-          key={`digger-${shovel.id}`}
-          className="auto-digger"
-          style={{ 
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            pointerEvents: 'none',
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
-          <motion.img
-            src={shovelImage}
-            alt="Wooden Shovel"
-            className="shovel-image"
-            style={{ 
-              transformOrigin: 'bottom center',
+    <div className="shovels-container">
+      {shovels.map(shovel => {
+        // Вычисляем направление движения к центру блока
+        const moveX = Math.cos(shovel.angle) * -20; // Движение к центру по X
+        const moveY = Math.sin(shovel.angle) * -20; // Движение к центру по Y
+
+        return (
+          <motion.div
+            key={`digger-${shovel.id}`}
+            className="auto-digger"
+            style={{
               position: 'absolute',
-              bottom: '0px',
-              left: `${shovel.position.x}px`,
-              width: '40px',
-              height: 'auto'
+              top: '50%',
+              left: '50%',
+              transform: `translate(${shovel.position.x}px, ${shovel.position.y}px)`,
+              pointerEvents: 'none',
             }}
-            animate={{
-              rotate: [0, -25, 0], // Анимация копания
-              y: [0, -8, 0]
-            }}
-            transition={{
-              duration: 0.5,
-              repeat: Infinity,
-              repeatDelay: 0.5,
-              delay: shovel.delay // Индивидуальная задержка для каждой лопаты
-            }}
-          />
-        </motion.div>
-      ))}
-    </>
+          >
+            <motion.img
+              src={shovelImage}
+              alt="Wooden Shovel"
+              className="shovel-image"
+              style={{
+                width: '40px',
+                height: 'auto',
+                transformOrigin: '50% 75%', // Точка вращения ближе к нижней части лопаты
+                transform: `rotate(${shovel.rotation}deg)` // Поворачиваем лопату чтобы она смотрела на блок земли
+              }}
+              animate={{
+                // Анимация "копания" - движение к центру и обратно по вычисленному направлению
+                x: [0, moveX, 0],
+                y: [0, moveY, 0],
+                // Анимация небольшого поворота при копании
+                rotate: [shovel.rotation, shovel.rotation - 15, shovel.rotation]
+              }}
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                repeatDelay: 1.5, // Пауза между копаниями
+                delay: shovel.delay // Индивидуальная задержка для каждой лопаты
+              }}
+            />
+          </motion.div>
+        );
+      })}
+    </div>
   );
 }
 
