@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import dirtImage from './assets/dirt.webp'
+import shovelImage from './assets/wood_shovel.webp'
 import './App.css'
 import { useGameStore } from './store/gameStore'
 
@@ -12,34 +13,122 @@ interface ClickAnimation {
   value: number;
 }
 
+// Компонент AutoDigger для анимации автокликера
+function AutoDigger() {
+  const { autoClickerCount } = useGameStore();
+  
+  if (autoClickerCount <= 0) return null;
+  
+  // Создаем массив лопат в соответствии с количеством автокликеров
+  const shovels = Array.from({ length: autoClickerCount }, (_, index) => ({
+    id: index,
+    // Для каждой лопаты генерируем случайные начальные позиции
+    position: {
+      x: Math.random() * 100 - 50, // от -50 до 50
+      y: Math.random() * 100 - 50  // от -50 до 50
+    },
+    // Индивидуальные задержки для каждой лопаты чтобы они не двигались синхронно
+    delay: Math.random() * 0.5
+  }));
+  
+  return (
+    <>
+      {shovels.map(shovel => (
+        <motion.div
+          key={`digger-${shovel.id}`}
+          className="auto-digger"
+          style={{ 
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            pointerEvents: 'none',
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <motion.img
+            src={shovelImage}
+            alt="Wooden Shovel"
+            className="shovel-image"
+            style={{ 
+              transformOrigin: 'bottom center',
+              position: 'absolute',
+              bottom: '0px',
+              left: `${shovel.position.x}px`,
+              width: '40px',
+              height: 'auto'
+            }}
+            animate={{
+              rotate: [0, -25, 0], // Анимация копания
+              y: [0, -8, 0]
+            }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+              repeatDelay: 0.5,
+              delay: shovel.delay // Индивидуальная задержка для каждой лопаты
+            }}
+          />
+        </motion.div>
+      ))}
+    </>
+  );
+}
+
 function App() {
   const { 
     dirtCount, 
     clickPower, 
     autoClickerCount, 
     multiClickPower,
+    multiAutoClickPower,
     increaseDirtCount, 
     buyClickPower, 
     buyAutoClicker,
     buyMultiClick,
+    buyMultiAutoClick,
     clickPowerPrice,
     autoClickerPrice,
-    multiClickPrice
+    multiClickPrice,
+    multiAutoClickPrice
   } = useGameStore()
   
   // State for click animations
   const [clickAnimations, setClickAnimations] = useState<ClickAnimation[]>([])
+  const [autoClickAnimations, setAutoClickAnimations] = useState<ClickAnimation[]>([])
   
   // Handle auto clickers
   useEffect(() => {
     const interval = setInterval(() => {
       if (autoClickerCount > 0) {
-        increaseDirtCount(autoClickerCount)
+        // Общее количество земли от автокликеров с учетом множителя
+        const autoClickPower = autoClickerCount * multiAutoClickPower;
+        increaseDirtCount(autoClickPower);
+        
+        // Создаем анимацию для автоклика
+        if (autoClickerCount > 0) {
+          // Случайная позиция для анимации
+          const x = Math.random() * 120 - 60;
+          const y = Math.random() * 120 - 60;
+          
+          const newAnimation = {
+            id: Date.now(),
+            x: 75 + x,
+            y: 75 + y,
+            value: autoClickPower
+          };
+          
+          setAutoClickAnimations(prev => [...prev, newAnimation]);
+          
+          // Удаляем анимацию через некоторое время
+          setTimeout(() => {
+            setAutoClickAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
+          }, 1000);
+        }
       }
     }, 1000)
     
     return () => clearInterval(interval)
-  }, [autoClickerCount, increaseDirtCount])
+  }, [autoClickerCount, multiAutoClickPower, increaseDirtCount])
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const power = clickPower * multiClickPower;
@@ -65,6 +154,9 @@ function App() {
       setClickAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
     }, 1000);
   }
+
+  // Общая мощность автокликеров с учетом множителя
+  const totalAutoClickPower = autoClickerCount * multiAutoClickPower;
 
   return (
     <div className="game-container">
@@ -92,7 +184,7 @@ function App() {
             
             {/* Click animations */}
             <AnimatePresence>
-              {clickAnimations.map(anim => (
+              {[...clickAnimations, ...autoClickAnimations].map(anim => (
                 <motion.div
                   key={anim.id}
                   className="click-animation"
@@ -125,6 +217,7 @@ function App() {
                 </motion.div>
               ))}
             </AnimatePresence>
+            <AutoDigger />
           </motion.div>
           
           <div className="click-power-display">
@@ -138,6 +231,21 @@ function App() {
             </div>
             <div className="click-power-label">per click</div>
           </div>
+          
+          {/* Добавляем отображение информации о мощности автокликеров */}
+          {autoClickerCount > 0 && (
+            <div className="click-power-display">
+              <div className="click-power-title">Auto Clicker Power</div>
+              <div className="click-power-formula">
+                <span className="power-value">{autoClickerCount}</span>
+                <span className="power-operator">×</span>
+                <span className="power-value">{multiAutoClickPower}</span>
+                <span className="power-operator">=</span>
+                <span className="power-result">{totalAutoClickPower}</span>
+              </div>
+              <div className="click-power-label">per second</div>
+            </div>
+          )}
         </div>
 
         <div className="upgrades-area">
@@ -168,8 +276,21 @@ function App() {
             >
               Auto Clicker (Current: {autoClickerCount})
               <span className="price">Cost: {autoClickerPrice} dirt</span>
-              <span className="description">Generates {autoClickerCount} dirt per second</span>
+              <span className="description">Generates {totalAutoClickPower} dirt per second</span>
             </button>
+
+            {/* Добавляем новую кнопку для улучшения мульти-автоклика */}
+            {autoClickerCount > 0 && (
+              <button 
+                className="upgrade-btn"
+                onClick={buyMultiAutoClick} 
+                disabled={dirtCount < multiAutoClickPrice}
+              >
+                Multi-AutoClick (Current: x{multiAutoClickPower})
+                <span className="price">Cost: {multiAutoClickPrice} dirt</span>
+                <span className="description">Multiplies auto clicker efficiency</span>
+              </button>
+            )}
           </div>
         </div>
       </main>

@@ -6,15 +6,18 @@ interface GameState {
   clickPower: number
   autoClickerCount: number
   multiClickPower: number
+  multiAutoClickPower: number // Новое свойство для мульти-автоклика
   clickPowerPrice: number
   autoClickerPrice: number
   multiClickPrice: number
+  multiAutoClickPrice: number // Цена улучшения мульти-автоклика
   
   // Actions
   increaseDirtCount: (amount: number) => void
   buyClickPower: () => void
   buyAutoClicker: () => void
   buyMultiClick: () => void
+  buyMultiAutoClick: () => void // Новая функция для покупки мульти-автоклика
   resetGame: () => void
 }
 
@@ -24,9 +27,11 @@ const initialState = {
   clickPower: 1,
   autoClickerCount: 0,
   multiClickPower: 1,
+  multiAutoClickPower: 1, // Начальное значение мульти-автоклика
   clickPowerPrice: 10,
   autoClickerPrice: 50,
   multiClickPrice: 100,
+  multiAutoClickPrice: 200, // Начальная цена мульти-автоклика
 }
 
 export const useGameStore = create<GameState>()(
@@ -65,6 +70,16 @@ export const useGameStore = create<GameState>()(
           dirtCount: state.dirtCount - state.multiClickPrice,
           multiClickPower: state.multiClickPower + 1,
           multiClickPrice: Math.floor(state.multiClickPrice * 2.2)
+        }
+      }),
+      
+      buyMultiAutoClick: () => set((state) => {
+        if (state.dirtCount < state.multiAutoClickPrice) return state
+        
+        return {
+          dirtCount: state.dirtCount - state.multiAutoClickPrice,
+          multiAutoClickPower: state.multiAutoClickPower + 1,
+          multiAutoClickPrice: Math.floor(state.multiAutoClickPrice * 2.5)
         }
       }),
       

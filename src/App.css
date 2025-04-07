@@ -331,3 +331,20 @@ button {
   font-size: 0.7rem;
   line-height: 1.2;
 }
+
+/* Стили для автокликера (лопаты) */
+.auto-digger {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.shovel-image {
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.5));
+  image-rendering: pixelated;
+  z-index: 5;
+}
