@@ -45,27 +45,33 @@
 .game-container {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   width: 100%;
   image-rendering: pixelated;
   padding-bottom: 70px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .game-header {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 10px;
+  width: 100%;
 }
 
 .game-header h1 {
   text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
   letter-spacing: 2px;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
 }
 
 .dirt-counter {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
-  margin: 1rem 0;
+  margin: 0.5rem 0 1rem;
   padding: 0.7rem 1rem;
   background-color: #3d2b1f;
   border: 3px solid #2a1a10;
@@ -74,6 +80,26 @@
   box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
   image-rendering: pixelated;
   text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 85%;
+  max-width: 300px;
+}
+
+.dirt-count {
+  margin-bottom: 0.2rem;
+}
+
+.dirt-per-second {
+  font-size: 0.8rem;
+  color: #8aff8a;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+}
+
+.dirt-per-second span {
+  position: relative;
+  padding-right: 0.5rem;
 }
 
 .game-main {
@@ -87,9 +113,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
   width: 100%;
-  padding: 0 10px;
+  padding: 0;
 }
 
 .dirt-block {
@@ -151,6 +176,31 @@
 .dirt-block-container {
   position: relative;
   overflow: visible;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.dirt-block-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  -webkit-user-select: none;
+  user-select: none;
+  image-rendering: pixelated;
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
 }
 
 .click-power-text {
@@ -240,10 +290,11 @@
   background-color: #2a2a2a;
   border: 3px solid #181818;
   border-radius: 0px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
   image-rendering: pixelated;
-  width: 100%;
+  width: 95%;
+  margin: 0 auto;
 }
 
 .upgrades-area h2 {
@@ -377,7 +428,7 @@ button {
   display: flex;
   justify-content: space-around;
   background-color: #2a1a10;
-  padding: 10px 5px;
+  padding: 8px 5px;
   border-top: 3px solid #3d2b1f;
   box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.3);
   z-index: 100;
@@ -397,6 +448,7 @@ button {
   transition: all 0.1s;
   image-rendering: pixelated;
   cursor: pointer;
+  border-radius: 0;
 }
 
 .tab-button.active {
@@ -473,4 +525,63 @@ button {
   margin-top: 0.3rem;
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
   font-weight: bold;
+}
+
+/* Mobile optimization */
+@media (max-width: 480px) {
+  #root {
+    padding: 0.5rem 0;
+  }
+
+  .game-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .dirt-counter {
+    width: 85%;
+    padding: 0.6rem;
+    margin: 0.5rem 0;
+  }
+
+  .dirt-block-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .tab-button {
+    padding: 8px 0;
+    font-size: 0.6rem;
+  }
+
+  .quantity-buttons {
+    flex-wrap: wrap;
+  }
+  
+  .quantity-btn {
+    padding: 0.4rem 0;
+    font-size: 0.6rem;
+  }
+
+  .tab-navigation {
+    padding: 5px;
+  }
+
+  .game-main {
+    padding: 0;
+  }
+}
+
+/* Adjust for small height screens */
+@media (max-height: 700px) {
+  .game-container {
+    gap: 0.5rem;
+  }
+
+  .game-header h1 {
+    margin: 0.2rem 0;
+  }
+
+  .dirt-counter {
+    margin: 0.2rem 0 0.5rem;
+  }
 }

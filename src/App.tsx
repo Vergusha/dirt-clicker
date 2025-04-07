@@ -205,7 +205,14 @@ function App() {
     <div className="game-container">
       <header className="game-header">
         <h1>Dirt Clicker</h1>
-        <div className="dirt-counter">Dirt: {dirtCount.toFixed(0)}</div>
+        <div className="dirt-counter">
+          <div className="dirt-count">Dirt: {dirtCount.toFixed(0)}</div>
+          {autoClickerCount > 0 && (
+            <div className="dirt-per-second">
+              <span>{totalAutoClickPower}/s</span>
+            </div>
+          )}
+        </div>
       </header>
 
       <main className="game-main">
@@ -261,32 +268,7 @@ function App() {
               <AutoDigger />
             </motion.div>
             
-            <div className="click-power-display">
-              <div className="click-power-title">Click Power</div>
-              <div className="click-power-formula">
-                <span className="power-value">{clickPower}</span>
-                <span className="power-operator">×</span>
-                <span className="power-value">{multiClickPower}</span>
-                <span className="power-operator">=</span>
-                <span className="power-result">{clickPower * multiClickPower}</span>
-              </div>
-              <div className="click-power-label">per click</div>
-            </div>
-            
-            {/* Добавляем отображение информации о мощности автокликеров */}
-            {autoClickerCount > 0 && (
-              <div className="click-power-display">
-                <div className="click-power-title">Auto Clicker Power</div>
-                <div className="click-power-formula">
-                  <span className="power-value">{autoClickerCount}</span>
-                  <span className="power-operator">×</span>
-                  <span className="power-value">{multiAutoClickPower}</span>
-                  <span className="power-operator">=</span>
-                  <span className="power-result">{totalAutoClickPower}</span>
-                </div>
-                <div className="click-power-label">per second</div>
-              </div>
-            )}
+            {/* Click Power display table removed */}
           </div>
         )}
 
