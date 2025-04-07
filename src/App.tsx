@@ -26,15 +26,18 @@ function AutoDigger() {
     const angle = (index / autoClickerCount) * Math.PI * 2;
 
     // Радиус круга, по которому распределяем лопаты (немного больше блока земли)
-    const radius = 120;
+    const radius = 120; // Уменьшаю радиус для более точного расположения вокруг блока земли
+
+    const offsetX = -20; // Сдвиг вправо
+    const offsetY = -25; // Сдвиг вверх
 
     // Вычисляем координаты на окружности
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
+    const x = Math.cos(angle) * radius + offsetX;
+    const y = Math.sin(angle) * radius + offsetY;
 
     // Вычисляем угол поворота лопаты, чтобы она была направлена к блоку
     // Учитываем, что изображение уже повернуто на 45 градусов
-    const rotation = (angle * (180 / Math.PI)) + 270; // +270 для направления к центру (180 градусов переворот)
+    const rotation = (angle * (180 / Math.PI)) + 230; // +270 для направления к центру (180 градусов переворот)
 
     return {
       id: index,
@@ -60,7 +63,7 @@ function AutoDigger() {
               position: 'absolute',
               top: '50%',
               left: '50%',
-              transform: `translate(${shovel.position.x}px, ${shovel.position.y}px)`,
+              transform: `translate(calc(${shovel.position.x}px - 50%), calc(${shovel.position.y}px - 50%))`, // Центрирование относительно блока земли
               pointerEvents: 'none',
             }}
           >
