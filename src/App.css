@@ -1232,3 +1232,35 @@ button {
     width: 100%;
   }
 }
+
+/* Отключение стандартной подсветки фокуса для всех кнопок и интерактивных элементов */
+button:focus,
+button:focus-visible,
+.quantity-btn:focus,
+.upgrade-button:focus,
+.info-button:focus,
+.buy-button:focus,
+.close-button:focus,
+.close-button-large:focus {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Добавляем специфичный стиль для предотвращения синей подсветки на мобильных устройствах */
+.quantity-btn,
+.upgrade-button,
+.info-button,
+.buy-button,
+.close-button,
+.close-button-large {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Убираем и синюю обводку */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
