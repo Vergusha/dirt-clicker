@@ -2,6 +2,7 @@ import React from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { UpgradeType, PurchaseQuantity } from '../../types';
 import { formatNumber } from '../../utils/formatNumber';
+import slotImage from '../../assets/slot.webp';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -21,7 +22,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   purchaseQuantity,
   onInfoClick
 }) => {
-  const { 
+  const {
     dirtCount,
     purchaseClickPower,
     purchaseAutoClicker,
@@ -36,8 +37,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     multiClickCost,
     multiAutoClickCost
   } = useGameStore();
-  
-  // Получаем актуальную стоимость для отображения с учетом текущего прогресса
+
+  // Get the cost of the upgrade based on its type
   const getCost = () => {
     switch (type) {
       case 'clickPower':
@@ -45,19 +46,19 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         const clickBaseCost = 5;
         const clickGrowthRate = 0.08;
         return Math.floor(clickBaseCost * Math.pow(1 + clickGrowthRate, clickLevel) * purchaseQuantity);
-        
+
       case 'autoClicker':
         const autoLevel = autoClickerCount;
         const autoBaseCost = 15;
         const autoGrowthRate = 0.10;
         return Math.floor(autoBaseCost * Math.pow(1 + autoGrowthRate, autoLevel) * purchaseQuantity);
-        
+
       case 'multiClick':
         const multiClickLevel = Math.round((multiClickPower - 1) * 10);
         const multiClickBaseCost = 50;
         const multiClickGrowthRate = 0.15;
         return Math.floor(multiClickCost * purchaseQuantity);
-        
+
       case 'multiAutoClick':
         const multiAutoLevel = Math.round((multiAutoClickPower - 1) * 10);
         const multiAutoBaseCost = 100;
@@ -65,8 +66,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return Math.floor(multiAutoClickCost * purchaseQuantity);
     }
   };
-  
-  // Получаем функцию для покупки улучшения в зависимости от типа
+
+  // Handle purchasing the upgrade
   const buyUpgrade = () => {
     switch (type) {
       case 'clickPower':
@@ -83,34 +84,41 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         break;
     }
   };
-  
+
   const cost = getCost();
   const formattedCost = formatNumber(cost);
   const canAfford = dirtCount >= cost;
-  
+
   return (
     <div className={`upgrade-button ${!canAfford ? 'disabled' : ''}`}>
-      <div className="upgrade-header">
-        <h3>{title}</h3>
-        <button 
-          className="info-button"
-          onClick={() => onInfoClick(type)}
-        >
-          ?
-        </button>
-      </div>
-      <p className="upgrade-description">{description}</p>
-      <div className="upgrade-footer">
-        <span className="cost">
-          Cost: {formattedCost}
-        </span>
-        <button 
-          onClick={buyUpgrade}
-          disabled={!canAfford}
-          className={`buy-button ${!canAfford ? 'disabled' : ''}`}
-        >
-          Buy{purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}
-        </button>
+      <div className="upgrade-content-wrapper">
+        <div className="upgrade-slot">
+          <img src={slotImage} alt="slot" className="slot-image" />
+        </div>
+        <div className="upgrade-info">
+          <div className="upgrade-header">
+            <h3>{title}</h3>
+            <button 
+              className="info-button"
+              onClick={() => onInfoClick(type)}
+            >
+              i
+            </button>
+          </div>
+          <p className="upgrade-description">{description}</p>
+          <div className="upgrade-footer">
+            <span className="cost">
+              Cost: {formattedCost}
+            </span>
+            <button 
+              onClick={buyUpgrade}
+              disabled={!canAfford}
+              className={`buy-button ${!canAfford ? 'disabled' : ''}`}
+            >
+              Buy{purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

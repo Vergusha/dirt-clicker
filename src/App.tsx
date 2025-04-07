@@ -8,6 +8,7 @@ import { DirtBlock } from './components/DirtBlock';
 import { AutoDigger } from './components/AutoDigger';
 import { TabType, ClickAnimation, UpgradeType } from './types';
 import { InfoPanel } from './components/InfoPanel';
+import { UpgradesPanel } from './components/Upgrades/UpgradesPanel';
 
 function App() {
   const { 
@@ -215,116 +216,7 @@ function App() {
         {/* Upgrades Tab Content */}
         {activeTab === 'upgrades' && (
           <div className="upgrades-area">
-            <h2>Upgrades</h2>
-            
-            {/* Purchase Quantity Selector */}
-            <div className="quantity-selector">
-              <div className="quantity-label">Purchase Quantity:</div>
-              <div className="quantity-buttons">
-                <button 
-                  className={`quantity-btn ${purchaseQuantity === 1 ? 'active' : ''}`}
-                  onClick={() => setPurchaseQuantity(1)}
-                >
-                  x1
-                </button>
-                <button 
-                  className={`quantity-btn ${purchaseQuantity === 10 ? 'active' : ''}`}
-                  onClick={() => setPurchaseQuantity(10)}
-                >
-                  x10
-                </button>
-                <button 
-                  className={`quantity-btn ${purchaseQuantity === 50 ? 'active' : ''}`}
-                  onClick={() => setPurchaseQuantity(50)}
-                >
-                  x50
-                </button>
-                <button 
-                  className={`quantity-btn ${purchaseQuantity === 100 ? 'active' : ''}`}
-                  onClick={() => setPurchaseQuantity(100)}
-                >
-                  x100
-                </button>
-              </div>
-            </div>
-            
-            <div className="upgrade-buttons">
-              <div className="upgrade-container">
-                <button 
-                  className="upgrade-btn"
-                  onClick={() => purchaseClickPower(purchaseQuantity)} 
-                  disabled={dirtCount < totalClickPowerPrice}
-                >
-                  Increase Click Power (Current: {formatNumber(clickPower)})
-                  <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                  <span className="price">Cost: {formatNumber(totalClickPowerPrice)} dirt</span>
-                </button>
-                <button 
-                  className="info-btn"
-                  onClick={() => setActiveInfoPanel('clickPower')}
-                >
-                  i
-                </button>
-              </div>
-              
-              <div className="upgrade-container">
-                <button 
-                  className="upgrade-btn"
-                  onClick={() => purchaseMultiClick(purchaseQuantity)} 
-                  disabled={dirtCount < totalMultiClickPrice}
-                >
-                  Multi-Click (Current: x{multiClickPower.toFixed(1)})
-                  <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                  <span className="price">Cost: {formatNumber(totalMultiClickPrice)} dirt</span>
-                </button>
-                <button 
-                  className="info-btn"
-                  onClick={() => setActiveInfoPanel('multiClick')}
-                >
-                  i
-                </button>
-              </div>
-              
-              <div className="upgrade-container">
-                <button 
-                  className="upgrade-btn"
-                  onClick={() => purchaseAutoClicker(purchaseQuantity)} 
-                  disabled={dirtCount < totalAutoClickerPrice}
-                >
-                  Auto Clicker (Current: {formatNumber(autoClickerCount)})
-                  <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                  <span className="price">Cost: {formatNumber(totalAutoClickerPrice)} dirt</span>
-                  <span className="description">Generates {formatNumber(totalAutoClickPower)} dirt per second</span>
-                </button>
-                <button 
-                  className="info-btn"
-                  onClick={() => setActiveInfoPanel('autoClicker')}
-                >
-                  i
-                </button>
-              </div>
-
-              {autoClickerCount > 0 && (
-                <div className="upgrade-container">
-                  <button 
-                    className="upgrade-btn"
-                    onClick={() => purchaseMultiAutoClick(purchaseQuantity)} 
-                    disabled={dirtCount < totalMultiAutoClickPrice}
-                  >
-                    Multi-AutoClick (Current: x{multiAutoClickPower.toFixed(1)})
-                    <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                    <span className="price">Cost: {formatNumber(totalMultiAutoClickPrice)} dirt</span>
-                    <span className="description">Multiplies auto clicker efficiency</span>
-                  </button>
-                  <button 
-                    className="info-btn"
-                    onClick={() => setActiveInfoPanel('multiAutoClick')}
-                  >
-                    i
-                  </button>
-                </div>
-              )}
-            </div>
+            <UpgradesPanel />
           </div>
         )}
       </main>

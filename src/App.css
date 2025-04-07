@@ -513,7 +513,7 @@ button {
 .quantity-buttons {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.2rem; /* Reduced gap between buttons */
 }
 
 .quantity-btn {
@@ -873,17 +873,53 @@ button {
 
 /* Стили для компонентов UpgradeButton */
 .upgrade-button {
-  background-color: #2a1a10;
-  border: 3px solid #3d2b1f;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 3px solid #181818;
+  background-color: #333;
+  color: white;
   border-radius: 0px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+  font-size: 0.7rem;
+  line-height: 1.2;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  text-align: left;
 }
 
-.upgrade-button.disabled {
-  opacity: 0.7;
+.upgrade-content-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.upgrade-slot {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1e1308;
+  border: 2px solid #3d2b1f;
+  padding: 3px;
+}
+
+.slot-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.upgrade-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .upgrade-header {
@@ -933,6 +969,7 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: auto;
 }
 
 .cost {
