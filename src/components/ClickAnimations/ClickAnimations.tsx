@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import dirtImage from '../../assets/dirt.webp';
 import { ClickAnimation } from '../../types';
+import { formatNumber } from '../../utils/formatNumber';
 
 interface ClickAnimationsProps {
   animations: ClickAnimation[];
@@ -43,7 +44,7 @@ export const ClickAnimations: React.FC<ClickAnimationsProps> = ({ animations }) 
               alt="" 
               className="mini-dirt"
             />
-            <span className="click-power-text">+{anim.value}</span>
+            <span className="click-power-text">+{formatNumber(anim.value)}</span>
           </motion.div>
         ))}
       </AnimatePresence>

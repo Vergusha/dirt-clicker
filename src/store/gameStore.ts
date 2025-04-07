@@ -48,40 +48,58 @@ const calculateCost = (baseCost: number, growthRate: number, quantity: number): 
 const fixFloatingPointNumbers = (state: any) => {
   const newState = { ...state };
   
-  // Исправляем multiClickPower и multiAutoClickPower округляя до 2 знаков
-  if (newState.multiClickPower) {
-    newState.multiClickPower = parseFloat(newState.multiClickPower.toFixed(2));
+  // Всегда округляем до целых чисел для основных значений
+  const integerFields = [
+    'dirtCount',
+    'totalDirtCollected',
+    'clickPower',
+    'autoClickerCount',
+    'clickPowerCost',
+    'autoClickerCost',
+    'multiClickCost',
+    'multiAutoClickCost'
+  ];
+  
+  integerFields.forEach(field => {
+    if (newState[field] !== undefined) {
+      newState[field] = Math.floor(Number(newState[field]));
+    }
+  });
+  
+  // Округляем множители до 2 знаков
+  if (newState.multiClickPower !== undefined) {
+    newState.multiClickPower = Number(Number(newState.multiClickPower).toFixed(2));
   }
   
-  if (newState.multiAutoClickPower) {
-    newState.multiAutoClickPower = parseFloat(newState.multiAutoClickPower.toFixed(2));
-    
-    // Обновляем стоимость multiAutoClickCost при изменении базовой цены с 200 на 100
-    const currentLevel = Math.round((newState.multiAutoClickPower - 1) * 10);
-    const newBaseCost = 100; // Новая базовая стоимость
-    const growthRate = 0.15; // Новый коэффициент роста
-    
-    // Пересчитываем стоимость следующего уровня с новыми параметрами
-    newState.multiAutoClickCost = Math.floor(newBaseCost * Math.pow(1 + growthRate, currentLevel));
+  if (newState.multiAutoClickPower !== undefined) {
+    newState.multiAutoClickPower = Number(Number(newState.multiAutoClickPower).toFixed(2));
   }
   
-  // Исправляем multiClickCost при изменении базовой цены со 100 на 50
-  if (newState.multiClickCost && newState.multiClickPower) {
+  // Пересчитываем стоимости, если они некорректные
+  if (newState.clickPower !== undefined && newState.clickPowerCost !== undefined) {
+    const baseCost = 5;
+    const growthRate = 0.08;
+    newState.clickPowerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.clickPower - 1));
+  }
+  
+  if (newState.autoClickerCount !== undefined && newState.autoClickerCost !== undefined) {
+    const baseCost = 15;
+    const growthRate = 0.10;
+    newState.autoClickerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.autoClickerCount));
+  }
+  
+  if (newState.multiClickPower !== undefined && newState.multiClickCost !== undefined) {
+    const baseCost = 50;
+    const growthRate = 0.15;
     const currentLevel = Math.round((newState.multiClickPower - 1) * 10);
-    const newBaseCost = 50; // Новая базовая стоимость
-    const growthRate = 0.15; // Новый коэффициент роста
-    
-    // Пересчитываем стоимость следующего уровня с новыми параметрами
-    newState.multiClickCost = Math.floor(newBaseCost * Math.pow(1 + growthRate, currentLevel));
+    newState.multiClickCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
   }
   
-  // Исправляем dirtCount и totalDirtCollected округляя до целых чисел
-  if (newState.dirtCount) {
-    newState.dirtCount = Math.floor(newState.dirtCount);
-  }
-  
-  if (newState.totalDirtCollected) {
-    newState.totalDirtCollected = Math.floor(newState.totalDirtCollected);
+  if (newState.multiAutoClickPower !== undefined && newState.multiAutoClickCost !== undefined) {
+    const baseCost = 100;
+    const growthRate = 0.15;
+    const currentLevel = Math.round((newState.multiAutoClickPower - 1) * 10);
+    newState.multiAutoClickCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
   }
   
   return newState;
@@ -109,10 +127,14 @@ export const useGameStore = create<GameState>()(
       
       // Actions
       increaseDirtCount: (amount) => {
-        set((state) => ({ 
-          dirtCount: Math.floor(state.dirtCount + amount),
-          totalDirtCollected: Math.floor(state.totalDirtCollected + amount)
-        }));
+        set((state) => {
+          const newDirtCount = Math.floor(state.dirtCount + amount);
+          const newTotalCollected = Math.floor(state.totalDirtCollected + amount);
+          return { 
+            dirtCount: newDirtCount,
+            totalDirtCollected: newTotalCollected
+          };
+        });
       },
       
       canAfford: (cost) => {

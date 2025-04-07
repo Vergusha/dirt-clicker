@@ -4,6 +4,7 @@ import dirtImage from './assets/dirt.webp'
 import shovelImage from './assets/wood_shovel.webp'
 import './App.css'
 import { useGameStore } from './store/gameStore'
+import { formatNumber } from './utils/formatNumber'
 
 // Define an interface for click animation
 interface ClickAnimation {
@@ -45,16 +46,16 @@ function InfoPanel({
           title: "Click Power",
           description: "Increases base click power by +1",
           count: `Current level: ${clickPower}`,
-          baseProduction: "Produces +1 per click",
-          totalProduction: `Total click power: ${clickPower} (without multiplier)`
+          baseProduction: `Produces +${formatNumber(1)} per click`,
+          totalProduction: `Total click power: ${formatNumber(clickPower)} (without multiplier)`
         };
       case 'autoClicker':
         return {
           title: "Auto Clicker",
           description: "Automatically mines dirt every second",
           count: `Purchased: ${autoClickerCount}`,
-          baseProduction: "Produces +1 dirt per second",
-          totalProduction: `Total production: ${autoClickerCount} dirt per second (without multiplier)`
+          baseProduction: `Produces +${formatNumber(1)} dirt per second`,
+          totalProduction: `Total production: ${formatNumber(autoClickerCount)} dirt per second (without multiplier)`
         };
       case 'multiClick':
         return {
@@ -343,10 +344,10 @@ function App() {
       <header className="game-header fixed-header">
         <h1>Dirt Clicker</h1>
         <div className="dirt-counter">
-          <div className="dirt-count">Dirt: {dirtCount.toFixed(0)}</div>
+          <div className="dirt-count">Dirt: {formatNumber(dirtCount)}</div>
           {autoClickerCount > 0 && (
             <div className="dirt-per-second">
-              <span>{totalAutoClickPower}/s</span>
+              <span>{formatNumber(totalAutoClickPower)}/s</span>
             </div>
           )}
         </div>
@@ -482,9 +483,9 @@ function App() {
                   onClick={() => purchaseClickPower(purchaseQuantity)} 
                   disabled={dirtCount < totalClickPowerPrice}
                 >
-                  Increase Click Power (Current: {clickPower})
+                  Increase Click Power (Current: {formatNumber(clickPower)})
                   <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                  <span className="price">Cost: {totalClickPowerPrice} dirt</span>
+                  <span className="price">Cost: {formatNumber(totalClickPowerPrice)} dirt</span>
                 </button>
                 <button 
                   className="info-btn"
@@ -500,9 +501,9 @@ function App() {
                   onClick={() => purchaseMultiClick(purchaseQuantity)} 
                   disabled={dirtCount < totalMultiClickPrice}
                 >
-                  Multi-Click (Current: x{multiClickPower})
+                  Multi-Click (Current: x{multiClickPower.toFixed(1)})
                   <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                  <span className="price">Cost: {totalMultiClickPrice} dirt</span>
+                  <span className="price">Cost: {formatNumber(totalMultiClickPrice)} dirt</span>
                 </button>
                 <button 
                   className="info-btn"
@@ -518,10 +519,10 @@ function App() {
                   onClick={() => purchaseAutoClicker(purchaseQuantity)} 
                   disabled={dirtCount < totalAutoClickerPrice}
                 >
-                  Auto Clicker (Current: {autoClickerCount})
+                  Auto Clicker (Current: {formatNumber(autoClickerCount)})
                   <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                  <span className="price">Cost: {totalAutoClickerPrice} dirt</span>
-                  <span className="description">Generates {totalAutoClickPower} dirt per second</span>
+                  <span className="price">Cost: {formatNumber(totalAutoClickerPrice)} dirt</span>
+                  <span className="description">Generates {formatNumber(totalAutoClickPower)} dirt per second</span>
                 </button>
                 <button 
                   className="info-btn"
@@ -539,9 +540,9 @@ function App() {
                     onClick={() => purchaseMultiAutoClick(purchaseQuantity)} 
                     disabled={dirtCount < totalMultiAutoClickPrice}
                   >
-                    Multi-AutoClick (Current: x{multiAutoClickPower})
+                    Multi-AutoClick (Current: x{multiAutoClickPower.toFixed(1)})
                     <span className="quantity-tag">+{purchaseQuantity} levels</span>
-                    <span className="price">Cost: {totalMultiAutoClickPrice} dirt</span>
+                    <span className="price">Cost: {formatNumber(totalMultiAutoClickPrice)} dirt</span>
                     <span className="description">Multiplies auto clicker efficiency</span>
                   </button>
                   <button 

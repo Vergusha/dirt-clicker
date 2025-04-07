@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { UpgradeType, PurchaseQuantity } from '../../types';
+import { formatNumber } from '../../utils/formatNumber';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -84,6 +85,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   };
   
   const cost = getCost();
+  const formattedCost = formatNumber(cost);
   const canAfford = dirtCount >= cost;
   
   return (
@@ -100,7 +102,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       <p className="upgrade-description">{description}</p>
       <div className="upgrade-footer">
         <span className="cost">
-          Cost: {cost.toLocaleString()}
+          Cost: {formattedCost}
         </span>
         <button 
           onClick={buyUpgrade}
