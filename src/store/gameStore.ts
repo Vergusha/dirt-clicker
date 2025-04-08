@@ -23,12 +23,14 @@ interface GameState {
   musicVolume: number;
   soundEffectsEnabled: boolean;
   shovelSoundsEnabled: boolean;
+  shovelSoundsVolume: number;
   
   // Audio controls
   setMusicEnabled: (enabled: boolean) => void;
   setMusicVolume: (volume: number) => void;
   setSoundEffectsEnabled: (enabled: boolean) => void;
   setShovelSoundsEnabled: (enabled: boolean) => void;
+  setShovelSoundsVolume: (volume: number) => void;
   
   // Promo codes
   usedPromoCodes: string[];
@@ -147,6 +149,7 @@ export const useGameStore = create<GameState>()(
       musicVolume: 0.5,
       soundEffectsEnabled: true,
       shovelSoundsEnabled: true,
+      shovelSoundsVolume: 0.5,
       
       // Promo codes initial values
       usedPromoCodes: [],
@@ -368,6 +371,10 @@ export const useGameStore = create<GameState>()(
 
       setShovelSoundsEnabled: (enabled) => {
         set({ shovelSoundsEnabled: enabled });
+      },
+
+      setShovelSoundsVolume: (volume) => {
+        set({ shovelSoundsVolume: volume });
       },
     }),
     {

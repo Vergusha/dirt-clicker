@@ -13,10 +13,12 @@ export const SettingsPanel: React.FC = () => {
     musicVolume,
     soundEffectsEnabled,
     shovelSoundsEnabled,
+    shovelSoundsVolume,
     setMusicEnabled,
     setMusicVolume,
     setSoundEffectsEnabled,
-    setShovelSoundsEnabled
+    setShovelSoundsEnabled,
+    setShovelSoundsVolume
   } = useGameStore();
   
   const [promoCode, setPromoCode] = useState('');
@@ -44,9 +46,15 @@ export const SettingsPanel: React.FC = () => {
   };
 
   // Обработчик изменения громкости музыки
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMusicVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setMusicVolume(newVolume);
+  };
+  
+  // Обработчик изменения громкости звуков лопаты
+  const handleShovelVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setShovelSoundsVolume(newVolume);
   };
   
   return (
@@ -63,6 +71,7 @@ export const SettingsPanel: React.FC = () => {
       
       <div className="settings-section">
         <h3>Sound Settings</h3>
+        
         <div className="setting-item">
           <span className="setting-label">Background Music:</span>
           <label className="toggle-switch">
@@ -84,7 +93,7 @@ export const SettingsPanel: React.FC = () => {
               max="1" 
               step="0.01" 
               value={musicVolume}
-              onChange={handleVolumeChange}
+              onChange={handleMusicVolumeChange}
               className="volume-slider"
               disabled={!musicEnabled}
             />
@@ -92,30 +101,48 @@ export const SettingsPanel: React.FC = () => {
           </div>
         </div>
         
+        <div className="setting-title">Sound Effects</div>
+        
         <div className="setting-item">
+          <span className="setting-label">Enabled:</span>
+          <label className="toggle-switch">
+            <input 
+              type="checkbox"
+              checked={soundEffectsEnabled}
+              onChange={(e) => setSoundEffectsEnabled(e.target.checked)}
+            />
+            <span className="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div className="setting-item sound-subitem">
           <span className="setting-label">Shovel Sounds:</span>
           <label className="toggle-switch">
             <input 
               type="checkbox"
               checked={shovelSoundsEnabled}
               onChange={(e) => setShovelSoundsEnabled(e.target.checked)}
+              disabled={!soundEffectsEnabled}
             />
             <span className="toggle-slider"></span>
           </label>
         </div>
         
-        <div className="setting-item">
-          <span className="setting-label">Sound Effects:</span>
-          <label className="toggle-switch">
+        <div className="setting-item sound-subitem">
+          <span className="setting-label">Shovel Volume:</span>
+          <div className="volume-slider-container">
             <input 
-              type="checkbox"
-              checked={soundEffectsEnabled}
-              onChange={(e) => setSoundEffectsEnabled(e.target.checked)}
-              disabled
+              type="range" 
+              min="0" 
+              max="1" 
+              step="0.01" 
+              value={shovelSoundsVolume}
+              onChange={handleShovelVolumeChange}
+              className="volume-slider"
+              disabled={!soundEffectsEnabled || !shovelSoundsEnabled}
             />
-            <span className="toggle-slider"></span>
-          </label>
-          <span className="coming-soon">Coming Soon</span>
+            <div className="volume-value">{Math.round(shovelSoundsVolume * 100)}%</div>
+          </div>
         </div>
       </div>
       

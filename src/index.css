@@ -409,7 +409,38 @@ input:disabled + .toggle-slider {
   font-weight: bold;
 }
 
-/* Мобильные адаптации */
+/* Стили для подпункта настроек звука */
+.sound-subitem {
+  margin-left: 20px;
+  border-left: 2px solid #3d2b1f;
+  padding-left: 10px;
+  margin-top: 5px;
+}
+
+.setting-title {
+  font-size: 0.9rem;
+  text-align: center;
+  border-bottom: 2px solid #2a1a10;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
+  color: #f8c471;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+}
+
+.setting-sublabel {
+  font-size: 0.85em;
+  color: #ccc;
+}
+
+/* Для мобильных устройств делаем отступ меньше */
+@media (max-width: 480px) {
+  .sound-subitem {
+    margin-left: 12px;
+    padding-left: 8px;
+    margin-top: 3px;
+  }
+}
+
 @media (max-width: 480px) {
   .settings-section {
     padding: 0.8rem;

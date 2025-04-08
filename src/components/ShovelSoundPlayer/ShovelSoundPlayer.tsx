@@ -11,18 +11,20 @@ import shovelSound4 from '../../audio/Shovel_flatten4.ogg';
  * Компонент для проигрывания звуков лопат при наличии автоматических копателей
  */
 export const ShovelSoundPlayer: React.FC = () => {
-  const { autoClickerCount, shovelSoundsEnabled } = useGameStore();
+  const { autoClickerCount, soundEffectsEnabled, shovelSoundsEnabled, shovelSoundsVolume } = useGameStore();
   const soundsArray = [shovelSound1, shovelSound2, shovelSound3, shovelSound4];
   const audioRefs = useRef<HTMLAudioElement[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef<number | null>(null);
+  
+  // Проверяем, можно ли воспроизводить звуки лопат
+  const shouldPlayShovelSounds = soundEffectsEnabled && shovelSoundsEnabled && autoClickerCount > 0;
   
   // Подготавливаем аудио элементы при монтировании
   useEffect(() => {
     // Создаем элементы Audio для каждого звука
     audioRefs.current = soundsArray.map(sound => {
       const audio = new Audio(sound);
-      audio.volume = 0.3; // Устанавливаем громкость звука (30%)
       return audio;
     });
     
@@ -38,9 +40,16 @@ export const ShovelSoundPlayer: React.FC = () => {
     };
   }, []);
   
+  // Обновляем громкость звуков при изменении настроек
+  useEffect(() => {
+    audioRefs.current.forEach(audio => {
+      audio.volume = shovelSoundsVolume;
+    });
+  }, [shovelSoundsVolume]);
+  
   // Функция воспроизведения случайного звука лопаты
   const playRandomShovelSound = () => {
-    if (!shovelSoundsEnabled || autoClickerCount <= 0) return;
+    if (!shouldPlayShovelSounds) return;
     
     // Выбираем случайный индекс для следующего звука, не повторяя предыдущий
     let nextIndex;
@@ -53,6 +62,7 @@ export const ShovelSoundPlayer: React.FC = () => {
     const audio = audioRefs.current[nextIndex];
     if (audio) {
       audio.currentTime = 0;
+      audio.volume = shovelSoundsVolume; // Устанавливаем текущую громкость
       audio.play().catch(error => {
         console.log('Error playing shovel sound:', error);
       });
@@ -62,7 +72,7 @@ export const ShovelSoundPlayer: React.FC = () => {
   // Запускаем и останавливаем воспроизведение звуков в зависимости от настроек и наличия лопат
   useEffect(() => {
     // Если звуки включены и есть лопаты - начинаем воспроизведение
-    if (shovelSoundsEnabled && autoClickerCount > 0) {
+    if (shouldPlayShovelSounds) {
       // Немедленное воспроизведение звука при активации
       playRandomShovelSound();
       
@@ -93,7 +103,7 @@ export const ShovelSoundPlayer: React.FC = () => {
         }
       });
     }
-  }, [shovelSoundsEnabled, autoClickerCount]);
+  }, [shouldPlayShovelSounds, shovelSoundsVolume]);
   
   // Компонент не отображает никаких элементов интерфейса
   return null;
