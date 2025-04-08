@@ -22,7 +22,9 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     clickPowerCost,
     autoClickerCost,
     multiClickCost,
-    multiAutoClickCost
+    multiAutoClickCost,
+    friendlyEndermanCount,
+    friendlyEndermanCost
   } = useGameStore();
   
   // Блокировка прокрутки страницы при открытии инфопанели
@@ -92,6 +94,20 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
             <p>Each level adds +0.1x to the multiplier and increases the base cost by 30%</p>
           </>
         );
+      case 'friendlyEnderman':
+        const endermanPower = friendlyEndermanCount * 5;
+        return (
+          <>
+            <h3>Friendly Enderman</h3>
+            <p>A rare friendly Enderman who teleports dirt from the End dimension.</p>
+            <p>Current count: {formatNumber(friendlyEndermanCount)}</p>
+            <p>Current effect: +{formatNumber(endermanPower)} dirt per second</p>
+            <p>Each Enderman generates 5 dirt per second</p>
+            <p>Cost: {formatNumber(friendlyEndermanCost)} dirt</p>
+            <p>Each Enderman increases the base cost by 15%</p>
+            <p>Requires at least one Wood Shovel and Enchanted Wood Shovel</p>
+          </>
+        );
     }
   };
   
@@ -113,7 +129,9 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         <div className="info-panel-header">
           <h3>{type === 'clickPower' ? 'Click Power' : 
                type === 'autoClicker' ? 'Wood Shovel' : 
-               type === 'multiClick' ? 'Multi-Click' : 'Enchanted Wood Shovel'}</h3>
+               type === 'multiClick' ? 'Multi-Click' : 
+               type === 'multiAutoClick' ? 'Enchanted Wood Shovel' : 
+               'Friendly Enderman'}</h3>
           <button className="close-button" onClick={onClose}>
             ✕
           </button>

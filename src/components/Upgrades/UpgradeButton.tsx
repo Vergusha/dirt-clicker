@@ -7,6 +7,7 @@ import woodenShovelNormalImage from '../../assets/wooden_shovel_normal.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 import cursorImage from '../../assets/cursor.webp';
 import enchantedCursorImage from '../../assets/enchanted_cursor.png';
+import enderPearlImage from '../../assets/Ender_Pearl.webp';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -32,10 +33,12 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     purchaseAutoClicker,
     purchaseMultiClick,
     purchaseMultiAutoClick,
+    purchaseFriendlyEnderman,
     clickPower,
     autoClickerCount,
     multiClickPower,
     multiAutoClickPower,
+    friendlyEndermanCount,
     calculateTotalPrice // Добавляем импорт функции calculateTotalPrice из gameStore
   } = useGameStore();
 
@@ -57,6 +60,10 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'multiAutoClick':
         // Расчет для Enchanted Wood Shovel с учетом прогрессии
         return calculateTotalPrice(100, purchaseQuantity, 0.15);
+        
+      case 'friendlyEnderman':
+        // Расчет для Friendly Enderman с учетом прогрессии
+        return calculateTotalPrice(500, purchaseQuantity, 0.15);
     }
   };
 
@@ -71,6 +78,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return Math.round((multiClickPower - 1) * 10); // Преобразуем множитель в уровни
       case 'multiAutoClick':
         return Math.round((multiAutoClickPower - 1) * 10); // Преобразуем множитель в уровни
+      case 'friendlyEnderman':
+        return friendlyEndermanCount;
       default:
         return 0;
     }
@@ -91,6 +100,9 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'multiAutoClick':
         purchaseMultiAutoClick(purchaseQuantity);
         break;
+      case 'friendlyEnderman':
+        purchaseFriendlyEnderman(purchaseQuantity);
+        break;
     }
   };
 
@@ -105,6 +117,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return enchantedCursorImage;
       case 'multiAutoClick':
         return enchantedWoodShovelImage;
+      case 'friendlyEnderman':
+        return enderPearlImage;
       default:
         return slotImage;
     }

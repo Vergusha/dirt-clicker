@@ -9,8 +9,8 @@ import { useGameStore } from '../../store/gameStore';
  * Component that combines all upgrade-related functionality
  */
 export const UpgradesPanel: React.FC = () => {
-  // Get autoClickerCount from game store to check if player has Wood Shovels
-  const { autoClickerCount } = useGameStore();
+  // Get counts from game store to check if player has Wood Shovels and Enchanted Wood Shovels
+  const { autoClickerCount, multiAutoClickPower } = useGameStore();
   
   // State for purchase quantity selector
   const [purchaseQuantity, setPurchaseQuantity] = useState<PurchaseQuantity>(1);
@@ -29,6 +29,10 @@ export const UpgradesPanel: React.FC = () => {
   const handleCloseInfoPanel = () => {
     setShowInfoPanel(false);
   };
+
+  // Check if player can see the Friendly Enderman upgrade
+  // Player needs both Wood Shovel and Enchanted Wood Shovel
+  const canSeeEndermanUpgrade = autoClickerCount > 0 && multiAutoClickPower > 1.0;
   
   return (
     <div className="upgrades-panel">
@@ -70,6 +74,17 @@ export const UpgradesPanel: React.FC = () => {
             type="multiAutoClick"
             title="Enchanted Wood Shovel"
             description="Multiplies auto-clicker efficiency (+0.1x)"
+            purchaseQuantity={purchaseQuantity}
+            onInfoClick={handleInfoClick}
+          />
+        )}
+
+        {/* Only show Friendly Enderman if player has both Wood Shovel and Enchanted Wood Shovel */}
+        {canSeeEndermanUpgrade && (
+          <UpgradeButton 
+            type="friendlyEnderman"
+            title="Friendly Enderman"
+            description="Teleports in dirt from the End dimension (5 dirt/s)"
             purchaseQuantity={purchaseQuantity}
             onInfoClick={handleInfoClick}
           />

@@ -11,12 +11,14 @@ interface GameState {
   autoClickerCount: number;
   multiClickPower: number;
   multiAutoClickPower: number;
+  friendlyEndermanCount: number;  // New Friendly Enderman count
   
   // Costs
   clickPowerCost: number;
   autoClickerCost: number;
   multiClickCost: number;
   multiAutoClickCost: number;
+  friendlyEndermanCost: number;   // New Friendly Enderman cost
   
   // Audio settings
   musicEnabled: boolean;
@@ -42,6 +44,7 @@ interface GameState {
   purchaseAutoClicker: (quantity: number) => void;
   purchaseMultiClick: (quantity: number) => void;
   purchaseMultiAutoClick: (quantity: number) => void;
+  purchaseFriendlyEnderman: (quantity: number) => void;  // New purchase function
   
   // Helper to check if player can afford an upgrade
   canAfford: (cost: number) => boolean;
@@ -76,7 +79,9 @@ const fixFloatingPointNumbers = (state: any) => {
     'clickPowerCost',
     'autoClickerCost',
     'multiClickCost',
-    'multiAutoClickCost'
+    'multiAutoClickCost',
+    'friendlyEndermanCount',
+    'friendlyEndermanCost'
   ];
   
   integerFields.forEach(field => {
@@ -121,6 +126,12 @@ const fixFloatingPointNumbers = (state: any) => {
     newState.multiAutoClickCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
   }
   
+  if (newState.friendlyEndermanCount !== undefined && newState.friendlyEndermanCost !== undefined) {
+    const baseCost = 500;
+    const growthRate = 0.15;
+    newState.friendlyEndermanCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.friendlyEndermanCount));
+  }
+  
   return newState;
 };
 
@@ -137,12 +148,14 @@ export const useGameStore = create<GameState>()(
       autoClickerCount: 0,
       multiClickPower: 1.0,
       multiAutoClickPower: 1.0,
+      friendlyEndermanCount: 0,
       
       // Base costs - более низкие начальные цены
       clickPowerCost: 5,
       autoClickerCost: 15, 
       multiClickCost: 50,
       multiAutoClickCost: 100,
+      friendlyEndermanCost: 500,
       
       // Audio settings initial values
       musicEnabled: true,
@@ -262,6 +275,29 @@ export const useGameStore = create<GameState>()(
         }
       },
       
+      // New purchase function for Friendly Enderman
+      purchaseFriendlyEnderman: (quantity) => {
+        const state = get();
+        const baseCost = 500;
+        const growthRate = 0.15;
+        
+        // Calculate cost for quantity upgrades from current level
+        const totalCost = calculateCost(
+          baseCost * Math.pow(1 + growthRate, state.friendlyEndermanCount), 
+          growthRate, 
+          quantity
+        );
+        
+        // Check if player can afford
+        if (state.canAfford(totalCost)) {
+          set({
+            dirtCount: Math.floor(state.dirtCount - totalCost),
+            friendlyEndermanCount: state.friendlyEndermanCount + quantity,
+            friendlyEndermanCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.friendlyEndermanCount + quantity))
+          });
+        }
+      },
+      
       // Helper to calculate total price for multiple purchases
       calculateTotalPrice: (baseCost, quantity, growthRate) => {
         const state = get();
@@ -280,6 +316,9 @@ export const useGameStore = create<GameState>()(
         } else if (baseCost === 100) { // Enchanted Wood Shovel - обновлено значение
           level = Math.round((state.multiAutoClickPower - 1) * 10);
           growthRate = 0.15; // Используем новый коэффициент роста
+        } else if (baseCost === 500) { // Friendly Enderman
+          level = state.friendlyEndermanCount;
+          growthRate = 0.15;
         }
         
         // Рассчитываем общую стоимость с учетом текущего уровня
@@ -302,10 +341,12 @@ export const useGameStore = create<GameState>()(
           autoClickerCount: 0,
           multiClickPower: 1.0,
           multiAutoClickPower: 1.0,
+          friendlyEndermanCount: 0,
           clickPowerCost: 5, // Обновлено значение
           autoClickerCost: 15, // Обновлено значение
           multiClickCost: 50, // Обновлено значение
           multiAutoClickCost: 100, // Обновлено значение
+          friendlyEndermanCost: 500,
           usedPromoCodes: [],
         });
       },
