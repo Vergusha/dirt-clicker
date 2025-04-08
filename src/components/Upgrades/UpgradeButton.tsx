@@ -3,6 +3,8 @@ import { useGameStore } from '../../store/gameStore';
 import { UpgradeType, PurchaseQuantity } from '../../types';
 import { formatNumber } from '../../utils/formatNumber';
 import slotImage from '../../assets/slot.webp';
+import woodShovelNormalImage from '../../assets/wooden_shovel_normal.webp';
+import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -85,15 +87,29 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     }
   };
 
+  // Get the appropriate slot image based on upgrade type
+  const getUpgradeImage = () => {
+    switch (type) {
+      case 'autoClicker':
+        return woodShovelNormalImage; // Используем wood_shovel_normal.webp
+      case 'multiAutoClick':
+        return enchantedWoodShovelImage;
+      default:
+        return slotImage;
+    }
+  };
+
   const cost = getCost();
   const formattedCost = formatNumber(cost);
   const canAfford = dirtCount >= cost;
+  const upgradeImage = getUpgradeImage();
 
   return (
     <div className={`upgrade-button ${!canAfford ? 'disabled' : ''}`}>
       <div className="upgrade-content-wrapper">
-        <div className="upgrade-slot">
+        <div className="upgrade-slot-wrapper">
           <img src={slotImage} alt="slot" className="slot-image" />
+          <img src={upgradeImage} alt="upgrade" className="upgrade-icon" />
         </div>
         <div className="upgrade-info">
           <div className="upgrade-header">

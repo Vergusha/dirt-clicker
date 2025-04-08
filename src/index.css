@@ -71,3 +71,28 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.upgrade-slot-wrapper {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slot-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+}
+
+.upgrade-icon {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  z-index: 2;
+}
