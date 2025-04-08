@@ -30,7 +30,7 @@ export const EndermanAnimation: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
   // Time for each state (in milliseconds)
-  const stateDuration = 10000; // 10 seconds
+  const stateDuration = 5000; // 5 seconds
 
   // Initialize audio
   useEffect(() => {

@@ -799,6 +799,11 @@ button {
   box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
 }
 
+/* Инвертирование изображения деревянной лопаты в информационной панели */
+.info-image-container img[src*="wood_shovel.webp"] {
+  transform: scaleY(-1);
+}
+
 /* Заголовок информационной панели */
 .info-panel-header {
   display: flex;

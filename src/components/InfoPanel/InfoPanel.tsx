@@ -8,6 +8,7 @@ import cursorImage from '../../assets/cursor.webp';
 import woodShovelImage from '../../assets/wood_shovel.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 import enderPearlImage from '../../assets/Ender_Pearl.webp';
+import endermanDefaultImage from '../../assets/enderman_default.webp';
 import allayImage from '../../assets/allay.webp';
 
 interface InfoPanelProps {
@@ -104,7 +105,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     case 'friendlyEnderman':
       title = 'Friendly Enderman';
       description = 'Friendly Endermen that teleport dirt to you from the End dimension. Each Enderman produces 5 dirt per second.';
-      image = enderPearlImage;
+      image = endermanDefaultImage;
       stats = [
         { label: 'Endermen', value: formatNumber(friendlyEndermanCount) },
         { label: 'Production per Enderman', value: '5 dirt/s' },

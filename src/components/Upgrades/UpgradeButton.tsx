@@ -6,8 +6,8 @@ import slotImage from '../../assets/slot.webp';
 import woodenShovelNormalImage from '../../assets/wooden_shovel_normal.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 import cursorImage from '../../assets/cursor.webp';
-import enderPearlImage from '../../assets/Ender_Pearl.webp';
-import allayImage from '../../assets/allay.webp';
+import enderPearlImage from '../../assets/invicon_enderman.webp';
+import allayImage from '../../assets/invicon_allay.webp';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
