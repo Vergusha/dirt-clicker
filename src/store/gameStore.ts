@@ -356,6 +356,9 @@ export const useGameStore = create<GameState>()(
         } else if (baseCost === 1000) { // Allay
           level = state.allayCount;
           growthRate = 0.20;
+        } else if (baseCost === 2000) { // Lucky Cat
+          level = state.luckyCatCount;
+          growthRate = 0.25;
         }
         
         // Рассчитываем общую стоимость с учетом текущего уровня

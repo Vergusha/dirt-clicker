@@ -84,11 +84,13 @@ export const SettingsPanel: React.FC = () => {
         
         <div className="setting-item">
           <span className="setting-label">Background Music:</span>
-          <label className="toggle-switch">
+          <label className="toggle-switch" htmlFor="background-music-toggle">
             <input 
+              id="background-music-toggle"
               type="checkbox" 
               checked={musicEnabled}
               onChange={(e) => setMusicEnabled(e.target.checked)}
+              title="Enable or disable background music"
             />
             <span className="toggle-slider"></span>
           </label>
@@ -98,6 +100,7 @@ export const SettingsPanel: React.FC = () => {
           <span className="setting-label">Music Volume:</span>
           <div className="volume-slider-container">
             <input 
+              id="music-volume"
               type="range" 
               min="0" 
               max="1" 
@@ -106,6 +109,8 @@ export const SettingsPanel: React.FC = () => {
               onChange={handleMusicVolumeChange}
               className="volume-slider"
               disabled={!musicEnabled}
+              aria-label="Music Volume"
+              title="Adjust background music volume"
             />
             <div className="volume-value">{Math.round(musicVolume * 100)}%</div>
           </div>
@@ -115,11 +120,13 @@ export const SettingsPanel: React.FC = () => {
         
         <div className="setting-item">
           <span className="setting-label">Enabled:</span>
-          <label className="toggle-switch">
+          <label className="toggle-switch" htmlFor="sound-effects-toggle">
             <input 
+              id="sound-effects-toggle"
               type="checkbox"
               checked={soundEffectsEnabled}
               onChange={(e) => setSoundEffectsEnabled(e.target.checked)}
+              title="Enable or disable all sound effects"
             />
             <span className="toggle-slider"></span>
           </label>
@@ -127,12 +134,14 @@ export const SettingsPanel: React.FC = () => {
         
         <div className="setting-item sound-subitem">
           <span className="setting-label">Shovel Sounds:</span>
-          <label className="toggle-switch">
+          <label className="toggle-switch" htmlFor="shovel-sounds-toggle">
             <input 
+              id="shovel-sounds-toggle"
               type="checkbox"
               checked={shovelSoundsEnabled}
               onChange={(e) => setShovelSoundsEnabled(e.target.checked)}
               disabled={!soundEffectsEnabled}
+              title="Enable or disable shovel sound effects"
             />
             <span className="toggle-slider"></span>
           </label>
@@ -142,6 +151,7 @@ export const SettingsPanel: React.FC = () => {
           <span className="setting-label">Shovel Volume:</span>
           <div className="volume-slider-container">
             <input 
+              id="shovel-volume"
               type="range" 
               min="0" 
               max="1" 
@@ -150,6 +160,8 @@ export const SettingsPanel: React.FC = () => {
               onChange={handleShovelVolumeChange}
               className="volume-slider"
               disabled={!soundEffectsEnabled || !shovelSoundsEnabled}
+              aria-label="Shovel Volume"
+              title="Adjust shovel sound effects volume"
             />
             <div className="volume-value">{Math.round(shovelSoundsVolume * 100)}%</div>
           </div>
@@ -158,12 +170,14 @@ export const SettingsPanel: React.FC = () => {
         {/* New Enderman sound settings */}
         <div className="setting-item sound-subitem">
           <span className="setting-label">Enderman Sounds:</span>
-          <label className="toggle-switch">
+          <label className="toggle-switch" htmlFor="enderman-sounds-toggle">
             <input 
+              id="enderman-sounds-toggle"
               type="checkbox"
               checked={endermanSoundsEnabled}
               onChange={(e) => setEndermanSoundsEnabled(e.target.checked)}
               disabled={!soundEffectsEnabled}
+              title="Enable or disable enderman sound effects"
             />
             <span className="toggle-slider"></span>
           </label>
@@ -173,6 +187,7 @@ export const SettingsPanel: React.FC = () => {
           <span className="setting-label">Enderman Volume:</span>
           <div className="volume-slider-container">
             <input 
+              id="enderman-volume"
               type="range" 
               min="0" 
               max="1" 
@@ -181,6 +196,8 @@ export const SettingsPanel: React.FC = () => {
               onChange={handleEndermanVolumeChange}
               className="volume-slider"
               disabled={!soundEffectsEnabled || !endermanSoundsEnabled}
+              aria-label="Enderman Volume"
+              title="Adjust enderman sound effects volume"
             />
             <div className="volume-value">{Math.round(endermanSoundsVolume * 100)}%</div>
           </div>
@@ -191,12 +208,15 @@ export const SettingsPanel: React.FC = () => {
         <h3>Promo Codes</h3>
         <div className="promo-code-container">
           <input 
+            id="promo-code-input"
             type="text" 
             className="promo-input"
             placeholder="Enter promo code"
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handlePromoCodeApply()}
+            aria-label="Promo code"
+            title="Enter promo code"
           />
           <button className="promo-button" onClick={handlePromoCodeApply}>Apply</button>
         </div>
