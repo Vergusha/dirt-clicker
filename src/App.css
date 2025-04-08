@@ -1380,8 +1380,8 @@ button:focus-visible,
 /* Styles for Pirate Parrot positioning */
 .pirate-parrot-container {
   position: fixed;
-  bottom: 160px; /* Position above LuckyCat */
-  right: 150px; /* Position to the left of other helpers */
+  bottom: 80px; /* Такая же высота, как у кота и эндермена */
+  right: 200px; /* Левее кота (у кота right: 120px) */
   z-index: 8; /* Higher than LuckyCat but lower than UI elements */
   pointer-events: none;
   width: 70px;
@@ -1391,12 +1391,6 @@ button:focus-visible,
   align-items: center;
 }
 
-.pirate-parrot-image {
-  width: 55px;
-  height: auto;
-  filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)); /* Cyan glow */
-}
-
 /* Mobile adjustments for Pirate Parrot */
 @media (max-width: 480px) {
   .pirate-parrot-image {
@@ -1404,8 +1398,8 @@ button:focus-visible,
   }
   
   .pirate-parrot-container {
-    bottom: 150px;
-    right: 80px; /* Adjust for mobile */
+    bottom: 70px; /* Такая же высота, как у кота и эндермена на мобильных */
+    right: 170px; /* Левее кота на мобильных (у кота right: 100px) */
   }
 }
 
