@@ -60,14 +60,6 @@ export const UpgradesPanel: React.FC = () => {
           onInfoClick={handleInfoClick}
         />
         
-        <UpgradeButton 
-          type="multiClick"
-          title="Multi-Click"
-          description="Multiplies the power of each click (+0.1x)"
-          purchaseQuantity={purchaseQuantity}
-          onInfoClick={handleInfoClick}
-        />
-        
         {/* Only show Enchanted Wood Shovel if player has at least one Wood Shovel */}
         {autoClickerCount > 0 && (
           <UpgradeButton 

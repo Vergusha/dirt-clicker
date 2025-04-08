@@ -11,15 +11,14 @@ export const useAutoClick = (
 ) => {
   const { 
     increaseDirtCount, 
-    autoClickerCount, 
-    multiAutoClickPower 
+    autoClickerCount
   } = useGameStore();
   
-  // Calculate the actual value added per tick based on auto clickers and multiplier
+  // Calculate the actual value added per tick based on auto clickers
   const getAutoClickValue = useCallback(() => {
     if (autoClickerCount <= 0) return 0;
-    return Math.floor(autoClickerCount * multiAutoClickPower);
-  }, [autoClickerCount, multiAutoClickPower]);
+    return autoClickerCount;
+  }, [autoClickerCount]);
   
   // Handle auto clicking at regular intervals
   useEffect(() => {

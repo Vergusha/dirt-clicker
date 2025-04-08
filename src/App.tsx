@@ -20,8 +20,6 @@ function App() {
     dirtCount, 
     clickPower, 
     autoClickerCount, 
-    multiClickPower,
-    multiAutoClickPower,
     friendlyEndermanCount,
     increaseDirtCount,
   } = useGameStore();
@@ -52,7 +50,7 @@ function App() {
     
     const interval = setInterval(() => {
       // Calculate total auto click power from wood shovels
-      const autoClickPower = autoClickerCount * multiAutoClickPower;
+      const autoClickPower = autoClickerCount;
       
       // Calculate extra dirt from Friendly Endermen (each enderman produces 5 dirt per second)
       const endermanPower = friendlyEndermanCount * 5;
@@ -93,7 +91,7 @@ function App() {
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [autoClickerCount, multiAutoClickPower, friendlyEndermanCount, increaseDirtCount, blockPosition, activeTab]);
+  }, [autoClickerCount, friendlyEndermanCount, increaseDirtCount, blockPosition, activeTab]);
 
   // Очистка анимаций при смене вкладки
   useEffect(() => {
@@ -106,8 +104,8 @@ function App() {
 
   // Обработчик клика по блоку земли
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    const power = clickPower * multiClickPower;
-    increaseDirtCount(power);
+    // Simply use clickPower directly without any multiplier
+    increaseDirtCount(clickPower);
     
     // Получаем позицию клика относительно документа
     const clickX = event.clientX;
@@ -118,7 +116,7 @@ function App() {
       id: Date.now(),
       x: clickX,
       y: clickY,
-      value: power
+      value: clickPower
     };
     
     setClickAnimations(prev => [...prev, newAnimation]);
@@ -130,7 +128,7 @@ function App() {
   };
 
   // Calculate total dirt per second from all sources
-  const totalAutoClickPower = autoClickerCount * multiAutoClickPower;
+  const totalAutoClickPower = autoClickerCount;
   const endermanPower = friendlyEndermanCount * 5;
   const totalDirtPerSecond = totalAutoClickPower + endermanPower;
 

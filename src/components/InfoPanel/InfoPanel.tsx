@@ -4,6 +4,11 @@ import { useGameStore } from '../../store/gameStore';
 import { UpgradeType } from '../../types';
 import { formatNumber } from '../../utils/formatNumber';
 import buttonImage from '../../assets/button.png';
+import cursorImage from '../../assets/cursor.webp';
+import enchantedCursorImage from '../../assets/enchanted_cursor.png';
+import woodShovelImage from '../../assets/wood_shovel.webp';
+import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
+import enderPearlImage from '../../assets/Ender_Pearl.webp';
 
 interface InfoPanelProps {
   type: UpgradeType;
@@ -16,15 +21,9 @@ interface InfoPanelProps {
 export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
   const { 
     clickPower,
-    multiClickPower,
     autoClickerCount,
     multiAutoClickPower,
-    clickPowerCost,
-    autoClickerCost,
-    multiClickCost,
-    multiAutoClickCost,
-    friendlyEndermanCount,
-    friendlyEndermanCost
+    friendlyEndermanCount
   } = useGameStore();
   
   // Блокировка прокрутки страницы при открытии инфопанели
@@ -46,70 +45,75 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     };
   }, []);
   
-  // Контент в зависимости от типа улучшения
-  const renderContent = () => {
-    switch(type) {
-      case 'clickPower':
-        return (
-          <>
-            <h3>Click Power</h3>
-            <p>Increases the power of each click by 1.</p>
-            <p>Current level: {formatNumber(clickPower)}</p>
-            <p>Current effect: +{formatNumber(clickPower)} dirt per click</p>
-            <p>Cost: {formatNumber(clickPowerCost)} dirt</p>
-            <p>Each level increases the base cost by 15%</p>
-          </>
-        );
-      case 'autoClicker':
-        const totalAutoClickPower = Math.floor(autoClickerCount * multiAutoClickPower);
-        return (
-          <>
-            <h3>Wood Shovel</h3>
-            <p>Automatically mines dirt once per second.</p>
-            <p>Current count: {formatNumber(autoClickerCount)}</p>
-            <p>Current effect: +{formatNumber(totalAutoClickPower)} dirt per second</p>
-            <p>Cost: {formatNumber(autoClickerCost)} dirt</p>
-            <p>Each shovel increases the base cost by 15%</p>
-          </>
-        );
-      case 'multiClick':
-        return (
-          <>
-            <h3>Multi-Click</h3>
-            <p>Multiplies the power of each click.</p>
-            <p>Current multiplier: {multiClickPower.toFixed(1)}x</p>
-            <p>Current effect: Your clicks are {multiClickPower.toFixed(1)}x more effective</p>
-            <p>Cost: {formatNumber(multiClickCost)} dirt</p>
-            <p>Each level adds +0.1x to the multiplier and increases the base cost by 30%</p>
-          </>
-        );
-      case 'multiAutoClick':
-        return (
-          <>
-            <h3>Enchanted Wood Shovel</h3>
-            <p>Multiplies the power of wood shovels.</p>
-            <p>Current multiplier: {multiAutoClickPower.toFixed(1)}x</p>
-            <p>Current effect: Your wood shovels are {multiAutoClickPower.toFixed(1)}x more effective</p>
-            <p>Cost: {formatNumber(multiAutoClickCost)} dirt</p>
-            <p>Each level adds +0.1x to the multiplier and increases the base cost by 30%</p>
-          </>
-        );
-      case 'friendlyEnderman':
-        const endermanPower = friendlyEndermanCount * 5;
-        return (
-          <>
-            <h3>Friendly Enderman</h3>
-            <p>A rare friendly Enderman who teleports dirt from the End dimension.</p>
-            <p>Current count: {formatNumber(friendlyEndermanCount)}</p>
-            <p>Current effect: +{formatNumber(endermanPower)} dirt per second</p>
-            <p>Each Enderman generates 5 dirt per second</p>
-            <p>Cost: {formatNumber(friendlyEndermanCost)} dirt</p>
-            <p>Each Enderman increases the base cost by 15%</p>
-            <p>Requires at least one Wood Shovel and Enchanted Wood Shovel</p>
-          </>
-        );
-    }
-  };
+  // Define content based on upgrade type
+  let title = '';
+  let description = '';
+  let image = '';
+  let stats: Array<{ label: string, value: string }> = [];
+  
+  switch (type) {
+    case 'clickPower':
+      title = 'Stronger Click';
+      description = 'Increases the power of each click, allowing you to collect more dirt with each tap.';
+      image = clickPower >= 10 ? enchantedCursorImage : cursorImage;
+      stats = [
+        { label: 'Current Level', value: formatNumber(clickPower) },
+        { label: 'Dirt Per Click', value: formatNumber(clickPower) },
+        { 
+          label: 'Total Click Power', 
+          value: formatNumber(clickPower) 
+        }
+      ];
+      break;
+      
+    case 'autoClicker':
+      title = 'Wood Shovel';
+      description = 'Wood shovels that automatically dig dirt for you. Each shovel generates one dirt per second.';
+      image = woodShovelImage;
+      stats = [
+        { label: 'Wood Shovels', value: formatNumber(autoClickerCount) },
+        { label: 'Base Production', value: `${formatNumber(autoClickerCount)} dirt/s` },
+        { 
+          label: 'Total Production', 
+          value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s` 
+        }
+      ];
+      break;
+      
+    case 'multiAutoClick':
+      title = 'Enchanted Wood Shovel';
+      description = 'Magical enchantments that make your wood shovels more efficient, multiplying their dirt production rate.';
+      image = enchantedWoodShovelImage;
+      stats = [
+        { 
+          label: 'Current Multiplier', 
+          value: `${multiAutoClickPower.toFixed(1)}x` 
+        },
+        { 
+          label: 'Base Production', 
+          value: `${formatNumber(autoClickerCount)} dirt/s` 
+        },
+        { 
+          label: 'Enhanced Production', 
+          value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s` 
+        }
+      ];
+      break;
+      
+    case 'friendlyEnderman':
+      title = 'Friendly Enderman';
+      description = 'Friendly Endermen that teleport dirt to you from the End dimension. Each Enderman produces 5 dirt per second.';
+      image = enderPearlImage;
+      stats = [
+        { label: 'Endermen', value: formatNumber(friendlyEndermanCount) },
+        { label: 'Production per Enderman', value: '5 dirt/s' },
+        { 
+          label: 'Total Production', 
+          value: `${formatNumber(friendlyEndermanCount * 5)} dirt/s` 
+        }
+      ];
+      break;
+  }
   
   return (
     <motion.div 
@@ -127,17 +131,27 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         onClick={e => e.stopPropagation()}
       >
         <div className="info-panel-header">
-          <h3>{type === 'clickPower' ? 'Click Power' : 
-               type === 'autoClicker' ? 'Wood Shovel' : 
-               type === 'multiClick' ? 'Multi-Click' : 
-               type === 'multiAutoClick' ? 'Enchanted Wood Shovel' : 
-               'Friendly Enderman'}</h3>
+          <h3>{title}</h3>
           <button className="close-button" onClick={onClose}>
             ✕
           </button>
         </div>
         <div className="info-content">
-          {renderContent()}
+          <div className="info-image-container">
+            <img src={image} alt={title} className="info-image" />
+          </div>
+          <div className="info-description">
+            {description}
+          </div>
+          <div className="info-stats">
+            <h3>Statistics</h3>
+            {stats.map((stat, index) => (
+              <div key={`stat-${index}`} className="stat-row">
+                <span className="stat-label">{stat.label}:</span>
+                <span className="stat-value">{stat.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="info-panel-footer">
           <button className="close-button-large" onClick={onClose}>

@@ -9,16 +9,14 @@ interface GameState {
   // Upgrades
   clickPower: number;
   autoClickerCount: number;
-  multiClickPower: number;
   multiAutoClickPower: number;
-  friendlyEndermanCount: number;  // New Friendly Enderman count
+  friendlyEndermanCount: number;
   
   // Costs
   clickPowerCost: number;
   autoClickerCost: number;
-  multiClickCost: number;
   multiAutoClickCost: number;
-  friendlyEndermanCost: number;   // New Friendly Enderman cost
+  friendlyEndermanCost: number;
   
   // Audio settings
   musicEnabled: boolean;
@@ -46,9 +44,8 @@ interface GameState {
   increaseDirtCount: (amount: number) => void;
   purchaseClickPower: (quantity: number) => void;
   purchaseAutoClicker: (quantity: number) => void;
-  purchaseMultiClick: (quantity: number) => void;
   purchaseMultiAutoClick: (quantity: number) => void;
-  purchaseFriendlyEnderman: (quantity: number) => void;  // New purchase function
+  purchaseFriendlyEnderman: (quantity: number) => void;
   
   // Helper to check if player can afford an upgrade
   canAfford: (cost: number) => boolean;
@@ -82,7 +79,6 @@ const fixFloatingPointNumbers = (state: any) => {
     'autoClickerCount',
     'clickPowerCost',
     'autoClickerCost',
-    'multiClickCost',
     'multiAutoClickCost',
     'friendlyEndermanCount',
     'friendlyEndermanCost'
@@ -95,10 +91,6 @@ const fixFloatingPointNumbers = (state: any) => {
   });
   
   // Округляем множители до 2 знаков
-  if (newState.multiClickPower !== undefined) {
-    newState.multiClickPower = Number(Number(newState.multiClickPower).toFixed(2));
-  }
-  
   if (newState.multiAutoClickPower !== undefined) {
     newState.multiAutoClickPower = Number(Number(newState.multiAutoClickPower).toFixed(2));
   }
@@ -114,13 +106,6 @@ const fixFloatingPointNumbers = (state: any) => {
     const baseCost = 15;
     const growthRate = 0.10;
     newState.autoClickerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.autoClickerCount));
-  }
-  
-  if (newState.multiClickPower !== undefined && newState.multiClickCost !== undefined) {
-    const baseCost = 50;
-    const growthRate = 0.15;
-    const currentLevel = Math.round((newState.multiClickPower - 1) * 10);
-    newState.multiClickCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
   }
   
   if (newState.multiAutoClickPower !== undefined && newState.multiAutoClickCost !== undefined) {
@@ -150,14 +135,12 @@ export const useGameStore = create<GameState>()(
       // Upgrades initial values
       clickPower: 1,
       autoClickerCount: 0,
-      multiClickPower: 1.0,
       multiAutoClickPower: 1.0,
       friendlyEndermanCount: 0,
       
-      // Base costs - более низкие начальные цены
+      // Base costs
       clickPowerCost: 5,
       autoClickerCost: 15, 
-      multiClickCost: 50,
       multiAutoClickCost: 100,
       friendlyEndermanCost: 500,
       
@@ -191,8 +174,8 @@ export const useGameStore = create<GameState>()(
       
       purchaseClickPower: (quantity) => {
         const state = get();
-        const baseCost = 5; // Снижена начальная стоимость
-        const growthRate = 0.08; // Снижен рост с 15% до 8% за уровень
+        const baseCost = 5;
+        const growthRate = 0.08;
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -213,8 +196,8 @@ export const useGameStore = create<GameState>()(
       
       purchaseAutoClicker: (quantity) => {
         const state = get();
-        const baseCost = 15; // Снижена начальная стоимость
-        const growthRate = 0.10; // Снижен рост с 15% до 10% за Wood Shovel
+        const baseCost = 15;
+        const growthRate = 0.10;
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -233,35 +216,11 @@ export const useGameStore = create<GameState>()(
         }
       },
       
-      // Округляем значения до 2 знаков после запятой для всех чисел с плавающей точкой
-      purchaseMultiClick: (quantity) => {
-        const state = get();
-        const baseCost = 50; // Снижена начальная стоимость
-        const growthRate = 0.15; // Снижен рост с 30% до 15% за уровень
-        
-        // Calculate cost for quantity upgrades from current level
-        const currentLevel = Math.round((state.multiClickPower - 1) * 10); // Convert to level (1.0 = 0, 1.1 = 1, etc)
-        const totalCost = calculateCost(
-          baseCost * Math.pow(1 + growthRate, currentLevel), 
-          growthRate, 
-          quantity
-        );
-        
-        // Check if player can afford
-        if (state.canAfford(totalCost)) {
-          set({
-            dirtCount: Math.floor(state.dirtCount - totalCost),
-            multiClickPower: parseFloat((state.multiClickPower + (quantity * 0.1)).toFixed(2)), // Округляем до 2 знаков
-            multiClickCost: Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel + quantity))
-          });
-        }
-      },
-      
-      // Округляем значения до 2 знаков после запятой для всех чисел с плавающей точкой
+      // Purchase Enchanted Wood Shovel (multiAutoClick)
       purchaseMultiAutoClick: (quantity) => {
         const state = get();
-        const baseCost = 100; // Снижена начальная стоимость
-        const growthRate = 0.15; // Снижен рост с 30% до 15% за уровень
+        const baseCost = 100;
+        const growthRate = 0.15;
         
         // Calculate cost for quantity upgrades from current level
         const currentLevel = Math.round((state.multiAutoClickPower - 1) * 10); // Convert to level (1.0 = 0, 1.1 = 1, etc)
@@ -281,7 +240,7 @@ export const useGameStore = create<GameState>()(
         }
       },
       
-      // New purchase function for Friendly Enderman
+      // Purchase Friendly Enderman
       purchaseFriendlyEnderman: (quantity) => {
         const state = get();
         const baseCost = 500;
@@ -310,18 +269,15 @@ export const useGameStore = create<GameState>()(
         let level = 0;
         
         // Определяем текущий уровень улучшения на основе базовой стоимости
-        if (baseCost === 5) { // Click Power - обновлено значение
+        if (baseCost === 5) { // Click Power
           level = state.clickPower - 1;
-          growthRate = 0.08; // Используем новый коэффициент роста
-        } else if (baseCost === 15) { // Wood Shovel - обновлено значение
+          growthRate = 0.08; 
+        } else if (baseCost === 15) { // Wood Shovel
           level = state.autoClickerCount;
-          growthRate = 0.10; // Используем новый коэффициент роста
-        } else if (baseCost === 50) { // Multi Click - обновлено значение
-          level = Math.round((state.multiClickPower - 1) * 10);
-          growthRate = 0.15; // Используем новый коэффициент роста
-        } else if (baseCost === 100) { // Enchanted Wood Shovel - обновлено значение
+          growthRate = 0.10;
+        } else if (baseCost === 100) { // Enchanted Wood Shovel
           level = Math.round((state.multiAutoClickPower - 1) * 10);
-          growthRate = 0.15; // Используем новый коэффициент роста
+          growthRate = 0.15;
         } else if (baseCost === 500) { // Friendly Enderman
           level = state.friendlyEndermanCount;
           growthRate = 0.15;
@@ -345,13 +301,11 @@ export const useGameStore = create<GameState>()(
           totalDirtCollected: 0,
           clickPower: 1,
           autoClickerCount: 0,
-          multiClickPower: 1.0,
           multiAutoClickPower: 1.0,
           friendlyEndermanCount: 0,
-          clickPowerCost: 5, // Обновлено значение
-          autoClickerCost: 15, // Обновлено значение
-          multiClickCost: 50, // Обновлено значение
-          multiAutoClickCost: 100, // Обновлено значение
+          clickPowerCost: 5,
+          autoClickerCost: 15,
+          multiAutoClickCost: 100,
           friendlyEndermanCost: 500,
           usedPromoCodes: [],
         });
