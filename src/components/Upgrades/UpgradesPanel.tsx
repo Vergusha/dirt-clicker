@@ -47,7 +47,7 @@ export const UpgradesPanel: React.FC = () => {
         
         <UpgradeButton 
           type="autoClicker"
-          title="Auto Clicker"
+          title="Wood Shovel"
           description="Automatically mines dirt once per second"
           purchaseQuantity={purchaseQuantity}
           onInfoClick={handleInfoClick}
@@ -63,7 +63,7 @@ export const UpgradesPanel: React.FC = () => {
         
         <UpgradeButton 
           type="multiAutoClick"
-          title="Multi-AutoClick"
+          title="Enchanted Wood Shovel"
           description="Multiplies auto-clicker efficiency (+0.1x)"
           purchaseQuantity={purchaseQuantity}
           onInfoClick={handleInfoClick}

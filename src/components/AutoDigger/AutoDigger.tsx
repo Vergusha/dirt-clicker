@@ -10,7 +10,7 @@ interface AutoDiggerProps {
 
 /**
  * Компонент AutoDigger для анимации автоматического копания
- * Лопаты размещаются вокруг блока земли и анимированно "копают" его
+ * Лопаты (Wood Shovels) размещаются вокруг блока земли и анимированно "копают" его
  */
 export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
   const { autoClickerCount } = useGameStore();

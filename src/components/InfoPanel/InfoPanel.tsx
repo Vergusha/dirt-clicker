@@ -62,12 +62,12 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         const totalAutoClickPower = Math.floor(autoClickerCount * multiAutoClickPower);
         return (
           <>
-            <h3>Auto Clicker</h3>
+            <h3>Wood Shovel</h3>
             <p>Automatically mines dirt once per second.</p>
             <p>Current count: {formatNumber(autoClickerCount)}</p>
             <p>Current effect: +{formatNumber(totalAutoClickPower)} dirt per second</p>
             <p>Cost: {formatNumber(autoClickerCost)} dirt</p>
-            <p>Each auto-clicker increases the base cost by 15%</p>
+            <p>Each shovel increases the base cost by 15%</p>
           </>
         );
       case 'multiClick':
@@ -84,10 +84,10 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       case 'multiAutoClick':
         return (
           <>
-            <h3>Multi-AutoClick</h3>
-            <p>Multiplies the power of auto-clickers.</p>
+            <h3>Enchanted Wood Shovel</h3>
+            <p>Multiplies the power of wood shovels.</p>
             <p>Current multiplier: {multiAutoClickPower.toFixed(1)}x</p>
-            <p>Current effect: Your auto-clickers are {multiAutoClickPower.toFixed(1)}x more effective</p>
+            <p>Current effect: Your wood shovels are {multiAutoClickPower.toFixed(1)}x more effective</p>
             <p>Cost: {formatNumber(multiAutoClickCost)} dirt</p>
             <p>Each level adds +0.1x to the multiplier and increases the base cost by 30%</p>
           </>
@@ -112,8 +112,8 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       >
         <div className="info-panel-header">
           <h3>{type === 'clickPower' ? 'Click Power' : 
-               type === 'autoClicker' ? 'Auto Clicker' : 
-               type === 'multiClick' ? 'Multi-Click' : 'Multi-AutoClick'}</h3>
+               type === 'autoClicker' ? 'Wood Shovel' : 
+               type === 'multiClick' ? 'Multi-Click' : 'Enchanted Wood Shovel'}</h3>
           <button className="close-button" onClick={onClose}>
             ✕
           </button>
