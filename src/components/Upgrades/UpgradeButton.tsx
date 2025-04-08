@@ -6,7 +6,6 @@ import slotImage from '../../assets/slot.webp';
 import woodenShovelNormalImage from '../../assets/wooden_shovel_normal.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 import cursorImage from '../../assets/cursor.webp';
-import enchantedCursorImage from '../../assets/enchanted_cursor.png';
 import enderPearlImage from '../../assets/Ender_Pearl.webp';
 
 interface UpgradeButtonProps {
@@ -31,12 +30,10 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     dirtCount,
     purchaseClickPower,
     purchaseAutoClicker,
-    purchaseMultiClick,
     purchaseMultiAutoClick,
     purchaseFriendlyEnderman,
     clickPower,
     autoClickerCount,
-    multiClickPower,
     multiAutoClickPower,
     friendlyEndermanCount,
     calculateTotalPrice // Добавляем импорт функции calculateTotalPrice из gameStore
@@ -52,10 +49,6 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'autoClicker':
         // Расчет для Wood Shovel с учетом прогрессии
         return calculateTotalPrice(15, purchaseQuantity, 0.10);
-
-      case 'multiClick':
-        // Расчет для Multi-Click с учетом прогрессии
-        return calculateTotalPrice(50, purchaseQuantity, 0.15);
 
       case 'multiAutoClick':
         // Расчет для Enchanted Wood Shovel с учетом прогрессии
@@ -74,8 +67,6 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return clickPower - 1; // -1 потому что начальное значение 1
       case 'autoClicker':
         return autoClickerCount;
-      case 'multiClick':
-        return Math.round((multiClickPower - 1) * 10); // Преобразуем множитель в уровни
       case 'multiAutoClick':
         return Math.round((multiAutoClickPower - 1) * 10); // Преобразуем множитель в уровни
       case 'friendlyEnderman':
@@ -94,9 +85,6 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'autoClicker':
         purchaseAutoClicker(purchaseQuantity);
         break;
-      case 'multiClick':
-        purchaseMultiClick(purchaseQuantity);
-        break;
       case 'multiAutoClick':
         purchaseMultiAutoClick(purchaseQuantity);
         break;
@@ -113,8 +101,6 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return cursorImage;
       case 'autoClicker':
         return woodenShovelNormalImage;
-      case 'multiClick':
-        return enchantedCursorImage;
       case 'multiAutoClick':
         return enchantedWoodShovelImage;
       case 'friendlyEnderman':
@@ -125,7 +111,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   };
 
   // Check if the current upgrade type is a cursor type that needs rotation
-  const isCursorType = type === 'clickPower' || type === 'multiClick';
+  const isCursorType = type === 'clickPower';
   const upgradeCount = getUpgradeCount();
 
   const cost = getCost();
