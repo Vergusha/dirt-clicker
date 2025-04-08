@@ -55,7 +55,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     case 'clickPower':
       title = 'Stronger Click';
       description = 'Increases the power of each click, allowing you to collect more dirt with each tap.';
-      image = clickPower >= 10 ? enchantedCursorImage : cursorImage;
+      image = cursorImage; // Always show the regular cursor image regardless of click power
       stats = [
         { label: 'Current Level', value: formatNumber(clickPower) },
         { label: 'Dirt Per Click', value: formatNumber(clickPower) },
