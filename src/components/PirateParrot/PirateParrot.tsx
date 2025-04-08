@@ -63,16 +63,16 @@ export const PirateParrot: React.FC = () => {
           zIndex: 8, // Higher than LuckyCat (7) but lower than other important UI
         }}
       >
-        <motion.img
-          src={currentImage}
-          alt="Pirate Parrot"
-          className="pirate-parrot-image"
+        <motion.div 
+          className="parrot-image-container"
           style={{
             width: window.innerWidth <= 480 ? '45px' : '55px',
-            height: 'auto',
-            filter: musicEnabled 
-              ? 'drop-shadow(0 0 5px rgba(255, 0, 0, 0.7))' // Red glow for dancing
-              : 'drop-shadow(0 0 5px rgba(0, 255, 255, 0.5))' // Cyan glow for static
+            height: window.innerWidth <= 480 ? '45px' : '55px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+            position: 'relative'
           }}
           animate={{
             // Different animations based on music status
@@ -96,7 +96,21 @@ export const PirateParrot: React.FC = () => {
             repeatType: "loop",
             ease: "easeInOut",
           }}
-        />
+        >
+          <motion.img
+            src={currentImage}
+            alt="Pirate Parrot"
+            className="pirate-parrot-image"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain', // Это гарантирует, что оба изображения поместятся в контейнер
+              filter: musicEnabled 
+                ? 'drop-shadow(0 0 5px rgba(255, 0, 0, 0.7))' // Red glow for dancing
+                : 'drop-shadow(0 0 5px rgba(0, 255, 255, 0.5))' // Cyan glow for static
+            }}
+          />
+        </motion.div>
       </motion.div>
     </div>
   );
