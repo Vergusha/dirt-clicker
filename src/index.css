@@ -322,6 +322,32 @@ input:disabled + .toggle-slider {
   font-style: italic;
 }
 
+.promo-message {
+  font-size: 0.7rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  text-align: center;
+  border: 1px solid;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.promo-message.success {
+  background-color: rgba(0, 100, 0, 0.3);
+  border-color: #006400;
+  color: #8aff8a;
+}
+
+.promo-message.error {
+  background-color: rgba(100, 0, 0, 0.3);
+  border-color: #640000;
+  color: #ff8a8a;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .version-info {
   text-align: center;
   font-size: 0.8rem;

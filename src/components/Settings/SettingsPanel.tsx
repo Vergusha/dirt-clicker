@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { formatNumber } from '../../utils/formatNumber';
 
@@ -6,7 +6,30 @@ import { formatNumber } from '../../utils/formatNumber';
  * Компонент для отображения настроек и статистики игры
  */
 export const SettingsPanel: React.FC = () => {
-  const { totalDirtCollected } = useGameStore();
+  const { totalDirtCollected, applyPromoCode } = useGameStore();
+  const [promoCode, setPromoCode] = useState('');
+  const [promoMessage, setPromoMessage] = useState<{ text: string; success: boolean } | null>(null);
+  
+  // Обработчик применения промокода
+  const handlePromoCodeApply = () => {
+    if (promoCode.trim()) {
+      const result = applyPromoCode(promoCode);
+      setPromoMessage({
+        text: result.message,
+        success: result.success
+      });
+      
+      // Очистить поле ввода после успешного применения
+      if (result.success) {
+        setPromoCode('');
+      }
+      
+      // Очистить сообщение через 5 секунд
+      setTimeout(() => {
+        setPromoMessage(null);
+      }, 5000);
+    }
+  };
   
   return (
     <div className="settings-panel">
@@ -48,10 +71,17 @@ export const SettingsPanel: React.FC = () => {
             type="text" 
             className="promo-input"
             placeholder="Enter promo code"
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handlePromoCodeApply()}
           />
-          <button className="promo-button">Apply</button>
+          <button className="promo-button" onClick={handlePromoCodeApply}>Apply</button>
         </div>
-        <span className="coming-soon">Coming Soon</span>
+        {promoMessage && (
+          <div className={`promo-message ${promoMessage.success ? 'success' : 'error'}`}>
+            {promoMessage.text}
+          </div>
+        )}
       </div>
       
       <div className="settings-section">

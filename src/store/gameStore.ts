@@ -18,6 +18,10 @@ interface GameState {
   multiClickCost: number;
   multiAutoClickCost: number;
   
+  // Promo codes
+  usedPromoCodes: string[];
+  applyPromoCode: (code: string) => { success: boolean, message: string };
+  
   // Actions
   increaseDirtCount: (amount: number) => void;
   purchaseClickPower: (quantity: number) => void;
@@ -125,6 +129,9 @@ export const useGameStore = create<GameState>()(
       autoClickerCost: 15, 
       multiClickCost: 50,
       multiAutoClickCost: 100,
+      
+      // Promo codes initial values
+      usedPromoCodes: [],
       
       // Actions
       increaseDirtCount: (amount) => {
@@ -278,7 +285,54 @@ export const useGameStore = create<GameState>()(
           autoClickerCost: 15, // Обновлено значение
           multiClickCost: 50, // Обновлено значение
           multiAutoClickCost: 100, // Обновлено значение
+          usedPromoCodes: [],
         });
+      },
+      
+      // Apply promo code
+      applyPromoCode: (code) => {
+        const state = get();
+        
+        // Специальный промокод для 50 триллионов земли
+        if (code.toLowerCase() === "get50trilliondirt") {
+          const amount = 50000000000000; // 50 триллионов
+          set({
+            dirtCount: state.dirtCount + amount,
+            totalDirtCollected: state.totalDirtCollected + amount,
+          });
+          return { success: true, message: "WOW! You received 50 trillion dirt!" };
+        }
+        
+        // Обычные промокоды (с ограничением на однократное использование)
+        const promoCodes: Record<string, { dirt: number, message: string, oneTime?: boolean }> = {
+          "PROMO10": { dirt: 10, message: "You received 10 dirt!", oneTime: true },
+          "PROMO50": { dirt: 50, message: "You received 50 dirt!", oneTime: true },
+          "PROMO100": { dirt: 100, message: "You received 100 dirt!", oneTime: true }
+        };
+        
+        const normalizedCode = code.toUpperCase();
+        
+        if (promoCodes[normalizedCode]) {
+          // Проверить, использовался ли уже этот промокод, если он одноразовый
+          if (promoCodes[normalizedCode].oneTime && state.usedPromoCodes.includes(normalizedCode)) {
+            return { success: false, message: "Promo code already used." };
+          }
+          
+          // Добавить землю
+          const dirtAmount = promoCodes[normalizedCode].dirt;
+          set({
+            dirtCount: state.dirtCount + dirtAmount,
+            totalDirtCollected: state.totalDirtCollected + dirtAmount,
+            // Добавляем код в список использованных, только если он одноразовый
+            usedPromoCodes: promoCodes[normalizedCode].oneTime 
+              ? [...state.usedPromoCodes, normalizedCode] 
+              : state.usedPromoCodes
+          });
+          
+          return { success: true, message: promoCodes[normalizedCode].message };
+        } else {
+          return { success: false, message: "Invalid promo code." };
+        }
       },
     }),
     {
