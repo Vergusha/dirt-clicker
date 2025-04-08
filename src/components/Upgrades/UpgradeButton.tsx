@@ -8,6 +8,7 @@ import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp'
 import cursorImage from '../../assets/cursor.webp';
 import enderPearlImage from '../../assets/invicon_enderman.webp';
 import allayImage from '../../assets/invicon_allay.webp';
+import catImage from '../../assets/invicon_cat.webp';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -34,11 +35,13 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     purchaseMultiAutoClick,
     purchaseFriendlyEnderman,
     purchaseAllay,
+    purchaseLuckyCat,
     clickPower,
     autoClickerCount,
     multiAutoClickPower,
     friendlyEndermanCount,
     allayCount,
+    luckyCatCount,
     calculateTotalPrice // Добавляем импорт функции calculateTotalPrice из gameStore
   } = useGameStore();
 
@@ -64,6 +67,9 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'allay':
         // Расчет для Allay с учетом прогрессии
         return calculateTotalPrice(1000, purchaseQuantity, 0.20);
+      case 'luckyCat':
+        // Расчет для Lucky Cat с учетом прогрессии 
+        return calculateTotalPrice(2000, purchaseQuantity, 0.25);
     }
   };
 
@@ -80,6 +86,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return friendlyEndermanCount;
       case 'allay':
         return allayCount;
+      case 'luckyCat':
+        return luckyCatCount;
       default:
         return 0;
     }
@@ -103,6 +111,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'allay':
         purchaseAllay(purchaseQuantity);
         break;
+      case 'luckyCat':
+        purchaseLuckyCat(purchaseQuantity);
     }
   };
 
@@ -119,6 +129,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return enderPearlImage;
       case 'allay':
         return allayImage;
+      case 'luckyCat':
+        return catImage;
       default:
         return slotImage;
     }

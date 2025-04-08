@@ -12,6 +12,7 @@ interface GameState {
   multiAutoClickPower: number;
   friendlyEndermanCount: number;
   allayCount: number;
+  luckyCatCount: number;
   
   // Costs
   clickPowerCost: number;
@@ -19,6 +20,7 @@ interface GameState {
   multiAutoClickCost: number;
   friendlyEndermanCost: number;
   allayCost: number;
+  luckyCatCost: number;
   
   // Audio settings
   musicEnabled: boolean;
@@ -49,6 +51,7 @@ interface GameState {
   purchaseMultiAutoClick: (quantity: number) => void;
   purchaseFriendlyEnderman: (quantity: number) => void;
   purchaseAllay: (quantity: number) => void;
+  purchaseLuckyCat: (quantity: number) => void;
   
   // Helper to check if player can afford an upgrade
   canAfford: (cost: number) => boolean;
@@ -86,7 +89,9 @@ const fixFloatingPointNumbers = (state: any) => {
     'friendlyEndermanCount',
     'friendlyEndermanCost',
     'allayCount',
-    'allayCost'
+    'allayCost',
+    'luckyCatCount',
+    'luckyCatCost'
   ];
   
   integerFields.forEach(field => {
@@ -132,6 +137,12 @@ const fixFloatingPointNumbers = (state: any) => {
     newState.allayCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.allayCount));
   }
   
+  if (newState.luckyCatCount !== undefined && newState.luckyCatCost !== undefined) {
+    const baseCost = 2000;
+    const growthRate = 0.25;
+    newState.luckyCatCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.luckyCatCount));
+  }
+  
   return newState;
 };
 
@@ -149,6 +160,7 @@ export const useGameStore = create<GameState>()(
       multiAutoClickPower: 1.0,
       friendlyEndermanCount: 0,
       allayCount: 0,
+      luckyCatCount: 0,
       
       // Base costs
       clickPowerCost: 5,
@@ -156,6 +168,7 @@ export const useGameStore = create<GameState>()(
       multiAutoClickCost: 100,
       friendlyEndermanCost: 500,
       allayCost: 1000,
+      luckyCatCost: 2000,
       
       // Audio settings initial values
       musicEnabled: true,
@@ -298,6 +311,29 @@ export const useGameStore = create<GameState>()(
           });
         }
       },
+
+      // Purchase Lucky Cat
+      purchaseLuckyCat: (quantity) => {
+        const state = get();
+        const baseCost = 2000;
+        const growthRate = 0.25;
+        
+        // Calculate cost for quantity upgrades from current level
+        const totalCost = calculateCost(
+          baseCost * Math.pow(1 + growthRate, state.luckyCatCount), 
+          growthRate, 
+          quantity
+        );
+        
+        // Check if player can afford
+        if (state.canAfford(totalCost)) {
+          set({
+            dirtCount: Math.floor(state.dirtCount - totalCost),
+            luckyCatCount: state.luckyCatCount + quantity,
+            luckyCatCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.luckyCatCount + quantity))
+          });
+        }
+      },
       
       // Helper to calculate total price for multiple purchases
       calculateTotalPrice: (baseCost, quantity, growthRate) => {
@@ -343,11 +379,13 @@ export const useGameStore = create<GameState>()(
           multiAutoClickPower: 1.0,
           friendlyEndermanCount: 0,
           allayCount: 0,
+          luckyCatCount: 0,
           clickPowerCost: 5,
           autoClickerCost: 15,
           multiAutoClickCost: 100,
           friendlyEndermanCost: 500,
           allayCost: 1000,
+          luckyCatCost: 2000,
           usedPromoCodes: [],
         });
       },

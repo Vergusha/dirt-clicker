@@ -15,6 +15,7 @@ import { AudioPlayer } from './components/AudioPlayer';
 import { ShovelSoundPlayer } from './components/ShovelSoundPlayer';
 import { EndermanAnimation } from './components/EndermanAnimation';
 import { AllayHelper } from './components/AllayHelper';
+import { LuckyCat } from './components/LuckyCat';
 
 function App() {
   const { 
@@ -23,6 +24,7 @@ function App() {
     autoClickerCount, 
     friendlyEndermanCount,
     allayCount,
+    luckyCatCount,
     increaseDirtCount,
   } = useGameStore();
   
@@ -150,6 +152,9 @@ function App() {
           <EndermanAnimation />
           {allayCount > 0 && (
             <AllayHelper blockPosition={blockPosition} />
+          )}
+          {luckyCatCount > 0 && (
+            <LuckyCat />
           )}
         </>
       )}

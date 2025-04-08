@@ -7,9 +7,9 @@ import buttonImage from '../../assets/button.png';
 import cursorImage from '../../assets/cursor.webp';
 import woodShovelImage from '../../assets/wood_shovel.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
-import enderPearlImage from '../../assets/Ender_Pearl.webp';
 import endermanDefaultImage from '../../assets/enderman_default.webp';
 import allayImage from '../../assets/allay.webp';
+import luckyCatImage from '../../assets/cat.webp';
 
 interface InfoPanelProps {
   type: UpgradeType;
@@ -25,7 +25,8 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     autoClickerCount, 
     multiAutoClickPower, 
     friendlyEndermanCount,
-    allayCount 
+    allayCount,
+    luckyCatCount 
   } = useGameStore();
   
   // Блокировка прокрутки страницы при открытии инфопанели
@@ -129,6 +130,20 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         }
       ];
       break;
+
+    case 'luckyCat':
+      title = 'Lucky Cat';
+      description = 'This golden lucky cat brings fortune to your digging adventures! Each Lucky Cat increases the chance of getting double dirt from clicks by 5% and improves the chance of finding rare treasures while digging.';
+      image = luckyCatImage;
+      stats = [
+        { label: 'Lucky Cats', value: formatNumber(luckyCatCount) },
+        { label: 'Double Dirt Chance', value: `${formatNumber(luckyCatCount * 5)}%` },
+        { 
+          label: 'Treasure Find Chance', 
+          value: `${formatNumber(luckyCatCount * 2)}%` 
+        }
+      ];
+      break;
   }
   
   return (
@@ -154,7 +169,16 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         </div>
         <div className="info-content">
           <div className="info-image-container">
-            <img src={image} alt={title} className="info-image" />
+            <img 
+              src={image} 
+              alt={title} 
+              className="info-image" 
+              style={{ 
+                maxWidth: '100%', 
+                height: 'auto', 
+                display: 'block'
+              }} 
+            />
           </div>
           <div className="info-description">
             {description}

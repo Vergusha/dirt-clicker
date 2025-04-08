@@ -11,7 +11,7 @@ interface AllayHelperProps {
  * Component for animating an Allay helper positioned at the top-right, above the Enderman
  * Allays increase passive income from all sources
  */
-export const AllayHelper: React.FC<AllayHelperProps> = ({ blockPosition }) => {
+export const AllayHelper: React.FC<AllayHelperProps> = ({ }) => {
   const { allayCount } = useGameStore();
   
   // Animation duration for floating
