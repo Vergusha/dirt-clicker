@@ -1272,7 +1272,7 @@ button:focus-visible,
   right: 20px;
   z-index: 5;
   pointer-events: none;
-  width: 90px;
+  width: 70px;
   height: auto;
   display: flex;
   justify-content: center;
@@ -1280,18 +1280,19 @@ button:focus-visible,
 }
 
 .enderman-image {
-  width: 90px;
+  width: 70px;
   height: auto;
+  filter: drop-shadow(0 0 3px rgba(148, 0, 211, 0.7)); /* Добавляем фиолетовую подсветку для Эндермена */
 }
 
 /* Styles for Allay Helper positioning */
 .allay-container {
   position: fixed;
-  bottom: 250px; /* Position above the Enderman */
-  right: 0px;
-  z-index: 40; /* Higher than Enderman to appear above it */
+  bottom: 230px; /* Position above the Enderman */
+  right: 20px;
+  z-index: 6; /* Higher than Enderman to appear above it */
   pointer-events: none;
-  width: 90px;
+  width: 70px;
   height: auto;
   display: flex;
   justify-content: center;
