@@ -13,6 +13,7 @@ import { SettingsPanel } from './components/Settings';
 import { TabNavigation } from './components/TabNavigation';
 import { AudioPlayer } from './components/AudioPlayer';
 import { ShovelSoundPlayer } from './components/ShovelSoundPlayer';
+import { EndermanAnimation } from './components/EndermanAnimation';
 
 function App() {
   const { 
@@ -222,6 +223,11 @@ function App() {
             {/* Лопаты вокруг блока земли */}
             {autoClickerCount > 0 && (
               <AutoDigger blockPosition={blockPosition} />
+            )}
+            
+            {/* Enderman animation when the player has at least one */}
+            {activeTab === 'game' && (
+              <EndermanAnimation />
             )}
           </div>
         )}

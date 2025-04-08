@@ -1264,3 +1264,44 @@ button:focus-visible,
 * {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Enderman animation styles */
+.enderman-container {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  z-index: 40;
+  pointer-events: none; /* Allow clicks to pass through */
+  width: 130px;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.enderman-animation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.enderman-image {
+  height: 250px;
+  width: auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* Mobile adjustments for Enderman */
+@media (max-width: 768px) {
+  .enderman-container {
+    right: 10px;
+    bottom: 10px;
+    width: 90px;
+    height: 170px;
+  }
+  
+  .enderman-image {
+    height: 170px;
+  }
+}
