@@ -36,10 +36,11 @@ interface GameState {
 }
 
 // Calculates cost for a specific quantity of upgrades
-const calculateCost = (baseCost: number, growthRate: number, quantity: number): number => {
+const calculateCost = (baseCost: number, growthRate: number, quantity: number, startLevel: number = 0): number => {
   let totalCost = 0;
   for (let i = 0; i < quantity; i++) {
-    totalCost += Math.floor(baseCost * Math.pow(1 + growthRate, i));
+    // Каждое следующее улучшение дороже предыдущего на коэффициент growthRate
+    totalCost += Math.floor(baseCost * Math.pow(1 + growthRate, startLevel + i));
   }
   return totalCost;
 };

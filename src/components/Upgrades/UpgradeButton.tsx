@@ -39,35 +39,28 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     clickPowerCost,
     autoClickerCost,
     multiClickCost,
-    multiAutoClickCost
+    multiAutoClickCost,
+    calculateTotalPrice // Добавляем импорт функции calculateTotalPrice из gameStore
   } = useGameStore();
 
   // Get the cost of the upgrade based on its type
   const getCost = () => {
     switch (type) {
       case 'clickPower':
-        const clickLevel = clickPower - 1;
-        const clickBaseCost = 5;
-        const clickGrowthRate = 0.08;
-        return Math.floor(clickBaseCost * Math.pow(1 + clickGrowthRate, clickLevel) * purchaseQuantity);
+        // Расчет для Click Power с учетом прогрессии
+        return calculateTotalPrice(5, purchaseQuantity, 0.08);
 
       case 'autoClicker':
-        const autoLevel = autoClickerCount;
-        const autoBaseCost = 15;
-        const autoGrowthRate = 0.10;
-        return Math.floor(autoBaseCost * Math.pow(1 + autoGrowthRate, autoLevel) * purchaseQuantity);
+        // Расчет для Wood Shovel с учетом прогрессии
+        return calculateTotalPrice(15, purchaseQuantity, 0.10);
 
       case 'multiClick':
-        const multiClickLevel = Math.round((multiClickPower - 1) * 10);
-        const multiClickBaseCost = 50;
-        const multiClickGrowthRate = 0.15;
-        return Math.floor(multiClickCost * purchaseQuantity);
+        // Расчет для Multi-Click с учетом прогрессии
+        return calculateTotalPrice(50, purchaseQuantity, 0.15);
 
       case 'multiAutoClick':
-        const multiAutoLevel = Math.round((multiAutoClickPower - 1) * 10);
-        const multiAutoBaseCost = 100;
-        const multiAutoGrowthRate = 0.15;
-        return Math.floor(multiAutoClickCost * purchaseQuantity);
+        // Расчет для Enchanted Wood Shovel с учетом прогрессии
+        return calculateTotalPrice(100, purchaseQuantity, 0.15);
     }
   };
 
