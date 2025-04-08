@@ -9,8 +9,13 @@ import teleportSound from '../../audio/tp-enderman.mp3';
  * Component for displaying Enderman animations when the player has Friendly Endermen
  */
 export const EndermanAnimation: React.FC = () => {
-  // Get the game state
-  const { friendlyEndermanCount, soundEffectsEnabled } = useGameStore();
+  // Get the game state including the enderman sound settings
+  const { 
+    friendlyEndermanCount, 
+    soundEffectsEnabled, 
+    endermanSoundsEnabled,
+    endermanSoundsVolume
+  } = useGameStore();
   
   // Define the states for the animation cycle
   type EndermanState = 'hidden' | 'default' | 'enderman';
@@ -30,7 +35,11 @@ export const EndermanAnimation: React.FC = () => {
   // Initialize audio
   useEffect(() => {
     audioRef.current = new Audio(teleportSound);
-    audioRef.current.volume = 0.5; // Set default volume
+    
+    // Set initial volume based on settings
+    if (audioRef.current) {
+      audioRef.current.volume = endermanSoundsVolume;
+    }
     
     // Cleanup when component unmounts
     return () => {
@@ -40,10 +49,18 @@ export const EndermanAnimation: React.FC = () => {
       }
     };
   }, []);
+  
+  // Update audio volume when settings change
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = endermanSoundsVolume;
+    }
+  }, [endermanSoundsVolume]);
 
   // Play teleport sound
   const playTeleportSound = () => {
-    if (audioRef.current && soundEffectsEnabled) {
+    // Only play sound if sound effects and enderman sounds are enabled
+    if (audioRef.current && soundEffectsEnabled && endermanSoundsEnabled) {
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(err => console.error('Error playing teleport sound:', err));
     }
@@ -83,7 +100,7 @@ export const EndermanAnimation: React.FC = () => {
     
     // Clear the interval when component unmounts or when friendlyEndermanCount changes
     return () => clearInterval(interval);
-  }, [friendlyEndermanCount, soundEffectsEnabled]);
+  }, [friendlyEndermanCount, soundEffectsEnabled, endermanSoundsEnabled]);
 
   // Don't render anything if player doesn't have any Friendly Endermen
   if (friendlyEndermanCount <= 0) {

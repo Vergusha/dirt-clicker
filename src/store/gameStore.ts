@@ -26,6 +26,8 @@ interface GameState {
   soundEffectsEnabled: boolean;
   shovelSoundsEnabled: boolean;
   shovelSoundsVolume: number;
+  endermanSoundsEnabled: boolean;
+  endermanSoundsVolume: number;
   
   // Audio controls
   setMusicEnabled: (enabled: boolean) => void;
@@ -33,6 +35,8 @@ interface GameState {
   setSoundEffectsEnabled: (enabled: boolean) => void;
   setShovelSoundsEnabled: (enabled: boolean) => void;
   setShovelSoundsVolume: (volume: number) => void;
+  setEndermanSoundsEnabled: (enabled: boolean) => void;
+  setEndermanSoundsVolume: (volume: number) => void;
   
   // Promo codes
   usedPromoCodes: string[];
@@ -163,6 +167,8 @@ export const useGameStore = create<GameState>()(
       soundEffectsEnabled: true,
       shovelSoundsEnabled: true,
       shovelSoundsVolume: 0.5,
+      endermanSoundsEnabled: true,
+      endermanSoundsVolume: 0.5,
       
       // Promo codes initial values
       usedPromoCodes: [],
@@ -416,6 +422,14 @@ export const useGameStore = create<GameState>()(
 
       setShovelSoundsVolume: (volume) => {
         set({ shovelSoundsVolume: volume });
+      },
+      
+      setEndermanSoundsEnabled: (enabled) => {
+        set({ endermanSoundsEnabled: enabled });
+      },
+
+      setEndermanSoundsVolume: (volume) => {
+        set({ endermanSoundsVolume: volume });
       },
     }),
     {

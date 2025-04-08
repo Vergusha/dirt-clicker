@@ -14,11 +14,15 @@ export const SettingsPanel: React.FC = () => {
     soundEffectsEnabled,
     shovelSoundsEnabled,
     shovelSoundsVolume,
+    endermanSoundsEnabled,
+    endermanSoundsVolume,
     setMusicEnabled,
     setMusicVolume,
     setSoundEffectsEnabled,
     setShovelSoundsEnabled,
-    setShovelSoundsVolume
+    setShovelSoundsVolume,
+    setEndermanSoundsEnabled,
+    setEndermanSoundsVolume
   } = useGameStore();
   
   const [promoCode, setPromoCode] = useState('');
@@ -55,6 +59,12 @@ export const SettingsPanel: React.FC = () => {
   const handleShovelVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setShovelSoundsVolume(newVolume);
+  };
+  
+  // Обработчик изменения громкости звуков эндермена
+  const handleEndermanVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setEndermanSoundsVolume(newVolume);
   };
   
   return (
@@ -142,6 +152,37 @@ export const SettingsPanel: React.FC = () => {
               disabled={!soundEffectsEnabled || !shovelSoundsEnabled}
             />
             <div className="volume-value">{Math.round(shovelSoundsVolume * 100)}%</div>
+          </div>
+        </div>
+        
+        {/* New Enderman sound settings */}
+        <div className="setting-item sound-subitem">
+          <span className="setting-label">Enderman Sounds:</span>
+          <label className="toggle-switch">
+            <input 
+              type="checkbox"
+              checked={endermanSoundsEnabled}
+              onChange={(e) => setEndermanSoundsEnabled(e.target.checked)}
+              disabled={!soundEffectsEnabled}
+            />
+            <span className="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div className="setting-item sound-subitem">
+          <span className="setting-label">Enderman Volume:</span>
+          <div className="volume-slider-container">
+            <input 
+              type="range" 
+              min="0" 
+              max="1" 
+              step="0.01" 
+              value={endermanSoundsVolume}
+              onChange={handleEndermanVolumeChange}
+              className="volume-slider"
+              disabled={!soundEffectsEnabled || !endermanSoundsEnabled}
+            />
+            <div className="volume-value">{Math.round(endermanSoundsVolume * 100)}%</div>
           </div>
         </div>
       </div>

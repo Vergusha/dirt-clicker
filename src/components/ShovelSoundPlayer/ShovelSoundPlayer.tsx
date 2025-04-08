@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
+import { TabType } from '../../types';
 
 // Импортируем звуковые файлы
 import shovelSound1 from '../../audio/Shovel_flatten1.ogg';
@@ -7,10 +8,14 @@ import shovelSound2 from '../../audio/Shovel_flatten2.ogg';
 import shovelSound3 from '../../audio/Shovel_flatten3.ogg';
 import shovelSound4 from '../../audio/Shovel_flatten4.ogg';
 
+interface ShovelSoundPlayerProps {
+  activeTab: TabType;
+}
+
 /**
  * Компонент для проигрывания звуков лопат при наличии автоматических копателей
  */
-export const ShovelSoundPlayer: React.FC = () => {
+export const ShovelSoundPlayer: React.FC<ShovelSoundPlayerProps> = ({ activeTab }) => {
   const { autoClickerCount, soundEffectsEnabled, shovelSoundsEnabled, shovelSoundsVolume } = useGameStore();
   const soundsArray = [shovelSound1, shovelSound2, shovelSound3, shovelSound4];
   const audioRefs = useRef<HTMLAudioElement[]>([]);
@@ -18,7 +23,8 @@ export const ShovelSoundPlayer: React.FC = () => {
   const intervalRef = useRef<number | null>(null);
   
   // Проверяем, можно ли воспроизводить звуки лопат
-  const shouldPlayShovelSounds = soundEffectsEnabled && shovelSoundsEnabled && autoClickerCount > 0;
+  // Добавляем проверку, что активная вкладка - game
+  const shouldPlayShovelSounds = soundEffectsEnabled && shovelSoundsEnabled && autoClickerCount > 0 && activeTab === 'game';
   
   // Подготавливаем аудио элементы при монтировании
   useEffect(() => {
@@ -71,7 +77,7 @@ export const ShovelSoundPlayer: React.FC = () => {
   
   // Запускаем и останавливаем воспроизведение звуков в зависимости от настроек и наличия лопат
   useEffect(() => {
-    // Если звуки включены и есть лопаты - начинаем воспроизведение
+    // Если звуки включены и есть лопаты и активная вкладка - game - начинаем воспроизведение
     if (shouldPlayShovelSounds) {
       // Немедленное воспроизведение звука при активации
       playRandomShovelSound();
@@ -89,7 +95,7 @@ export const ShovelSoundPlayer: React.FC = () => {
         intervalRef.current = null;
       };
     } else {
-      // Если звуки отключены или нет лопат - останавливаем все звуки
+      // Если звуки отключены или нет лопат или мы не на вкладке game - останавливаем все звуки
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -103,7 +109,7 @@ export const ShovelSoundPlayer: React.FC = () => {
         }
       });
     }
-  }, [shouldPlayShovelSounds, shovelSoundsVolume]);
+  }, [shouldPlayShovelSounds, shovelSoundsVolume, activeTab]);
   
   // Компонент не отображает никаких элементов интерфейса
   return null;

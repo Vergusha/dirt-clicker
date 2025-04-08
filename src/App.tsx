@@ -138,7 +138,7 @@ function App() {
     <div className="game-container">
       {/* Аудиокомпоненты */}
       <AudioPlayer />
-      <ShovelSoundPlayer />
+      <ShovelSoundPlayer activeTab={activeTab} />
       
       {/* Fixed header with game title and dirt counter */}
       <header className="game-header fixed-header">
