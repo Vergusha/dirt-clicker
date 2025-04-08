@@ -14,6 +14,7 @@ interface GameState {
   friendlyEndermanCount: number;
   allayCount: number;
   luckyCatCount: number;
+  pirateParrotCount: number;  // Добавляем счетчик для Пиратских Попугаев
   
   // Costs
   clickPowerCost: number;
@@ -22,6 +23,7 @@ interface GameState {
   friendlyEndermanCost: number;
   allayCost: number;
   luckyCatCost: number;
+  pirateParrotCost: number;  // Добавляем стоимость для Пиратских Попугаев
   
   // Audio settings
   musicEnabled: boolean;
@@ -53,6 +55,7 @@ interface GameState {
   purchaseFriendlyEnderman: (quantity: number) => void;
   purchaseAllay: (quantity: number) => void;
   purchaseLuckyCat: (quantity: number) => void;
+  purchasePirateParrot: (quantity: number) => void;  // Добавляем метод покупки Пиратского Попугая
   
   // Helper to check if player can afford an upgrade
   canAfford: (cost: number) => boolean;
@@ -92,7 +95,9 @@ const fixFloatingPointNumbers = (state: any) => {
     'allayCount',
     'allayCost',
     'luckyCatCount',
-    'luckyCatCost'
+    'luckyCatCost',
+    'pirateParrotCount',
+    'pirateParrotCost'
   ];
   
   integerFields.forEach(field => {
@@ -165,6 +170,7 @@ export const useGameStore = create<GameState>()(
       friendlyEndermanCount: 0,
       allayCount: 0,
       luckyCatCount: 0,
+      pirateParrotCount: 0,  // Начальное значение для Пиратских Попугаев
       
       // Base costs
       clickPowerCost: 5,
@@ -173,6 +179,7 @@ export const useGameStore = create<GameState>()(
       friendlyEndermanCost: 500,
       allayCost: 1000,
       luckyCatCost: 2000,
+      pirateParrotCost: 3500,  // Базовая стоимость Пиратского Попугая
       
       // Audio settings initial values
       musicEnabled: true,
@@ -339,6 +346,29 @@ export const useGameStore = create<GameState>()(
           });
         }
       },
+
+      // Purchase Pirate Parrot
+      purchasePirateParrot: (quantity) => {
+        const state = get();
+        const baseCost = 3500;
+        const growthRate = 0.30;
+        
+        // Calculate cost for quantity upgrades from current level
+        const totalCost = calculateCost(
+          baseCost * Math.pow(1 + growthRate, state.pirateParrotCount), 
+          growthRate, 
+          quantity
+        );
+        
+        // Check if player can afford
+        if (state.canAfford(totalCost)) {
+          set({
+            dirtCount: Math.floor(state.dirtCount - totalCost),
+            pirateParrotCount: state.pirateParrotCount + quantity,
+            pirateParrotCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.pirateParrotCount + quantity))
+          });
+        }
+      },
       
       // Helper to calculate total price for multiple purchases
       calculateTotalPrice: (baseCost, quantity, growthRate) => {
@@ -364,6 +394,9 @@ export const useGameStore = create<GameState>()(
         } else if (baseCost === 2000) { // Lucky Cat
           level = state.luckyCatCount;
           growthRate = 0.25;
+        } else if (baseCost === 3500) { // Pirate Parrot
+          level = state.pirateParrotCount;
+          growthRate = 0.30;
         }
         
         // Рассчитываем общую стоимость с учетом текущего уровня
@@ -388,12 +421,14 @@ export const useGameStore = create<GameState>()(
           friendlyEndermanCount: 0,
           allayCount: 0,
           luckyCatCount: 0,
+          pirateParrotCount: 0,
           clickPowerCost: 5,
           autoClickerCost: 15,
           multiAutoClickCost: 100,
           friendlyEndermanCost: 500,
           allayCost: 1000,
           luckyCatCost: 2000,
+          pirateParrotCost: 3500,
           usedPromoCodes: [],
         });
       },

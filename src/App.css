@@ -1377,6 +1377,38 @@ button:focus-visible,
   filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.6)); /* Golden glow */
 }
 
+/* Styles for Pirate Parrot positioning */
+.pirate-parrot-container {
+  position: fixed;
+  bottom: 160px; /* Position above LuckyCat */
+  right: 150px; /* Position to the left of other helpers */
+  z-index: 8; /* Higher than LuckyCat but lower than UI elements */
+  pointer-events: none;
+  width: 70px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pirate-parrot-image {
+  width: 55px;
+  height: auto;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)); /* Cyan glow */
+}
+
+/* Mobile adjustments for Pirate Parrot */
+@media (max-width: 480px) {
+  .pirate-parrot-image {
+    width: 45px;
+  }
+  
+  .pirate-parrot-container {
+    bottom: 150px;
+    right: 80px; /* Adjust for mobile */
+  }
+}
+
 /* Mobile responsive styles for Allay */
 @media (max-width: 480px) {
   .allay-image {

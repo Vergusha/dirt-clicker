@@ -10,6 +10,7 @@ import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp'
 import endermanDefaultImage from '../../assets/enderman_default.webp';
 import allayImage from '../../assets/allay.webp';
 import luckyCatImage from '../../assets/cat.webp';
+import parrotImage from '../../assets/parrot.webp';
 
 interface InfoPanelProps {
   type: UpgradeType;
@@ -26,7 +27,9 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     multiAutoClickPower, 
     friendlyEndermanCount,
     allayCount,
-    luckyCatCount 
+    luckyCatCount,
+    pirateParrotCount,
+    musicEnabled
   } = useGameStore();
   
   // Блокировка прокрутки страницы при открытии инфопанели
@@ -141,6 +144,27 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         { 
           label: 'Treasure Find Chance', 
           value: `${formatNumber(luckyCatCount * 2)}%` 
+        }
+      ];
+      break;
+
+    case 'pirateParrot':
+      title = 'Pirate Parrot';
+      description = 'This colorful avian companion has a knack for finding buried treasures! Each Pirate Parrot adds 30 dirt per second to your collection. The parrot dances when music is playing, showing its excitement for treasure hunting!';
+      image = parrotImage;
+      stats = [
+        { label: 'Parrots Owned', value: formatNumber(pirateParrotCount) },
+        { 
+          label: 'Base Production', 
+          value: `${formatNumber(pirateParrotCount * 30)} dirt/s` 
+        },
+        { 
+          label: 'With Allay Bonus', 
+          value: `${formatNumber(pirateParrotCount * 30 * (1 + allayCount * 0.2))} dirt/s` 
+        },
+        {
+          label: 'Current State',
+          value: musicEnabled ? 'Dancing (Music On)' : 'Resting (Music Off)'
         }
       ];
       break;

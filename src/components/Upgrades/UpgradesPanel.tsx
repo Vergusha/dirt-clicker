@@ -10,7 +10,7 @@ import { useGameStore } from '../../store/gameStore';
  */
 export const UpgradesPanel: React.FC = () => {
   // Get counts from game store to check if player has Wood Shovels and Enchanted Wood Shovels
-  const { autoClickerCount, multiAutoClickPower, friendlyEndermanCount, allayCount } = useGameStore();
+  const { autoClickerCount, multiAutoClickPower, friendlyEndermanCount, allayCount, luckyCatCount } = useGameStore();
   
   // State for purchase quantity selector
   const [purchaseQuantity, setPurchaseQuantity] = useState<PurchaseQuantity>(1);
@@ -41,6 +41,10 @@ export const UpgradesPanel: React.FC = () => {
   // Check if player can see the Lucky Cat upgrade
   // Player needs to have at least one Allay
   const canSeeLuckyCatUpgrade = allayCount > 0;
+
+  // Check if player can see the Pirate Parrot upgrade
+  // Player needs to have at least one Lucky Cat
+  const canSeePirateParrotUpgrade = luckyCatCount > 0;
   
   return (
     <div className="upgrades-panel">
@@ -107,6 +111,17 @@ export const UpgradesPanel: React.FC = () => {
             type="luckyCat"
             title="Lucky Cat"
             description="Increases luck and doubles random dirt drops"
+            purchaseQuantity={purchaseQuantity}
+            onInfoClick={handleInfoClick}
+          />
+        )}
+
+        {/* Only show Pirate Parrot if player has at least one Lucky Cat */}
+        {canSeePirateParrotUpgrade && (
+          <UpgradeButton 
+            type="pirateParrot"
+            title="Pirate Parrot"
+            description="Adds +30 dirt per second to your treasure"
             purchaseQuantity={purchaseQuantity}
             onInfoClick={handleInfoClick}
           />

@@ -9,6 +9,7 @@ import cursorImage from '../../assets/cursor.webp';
 import enderPearlImage from '../../assets/invicon_enderman.webp';
 import allayImage from '../../assets/invicon_allay.webp';
 import catImage from '../../assets/invicon_cat.webp';
+import parrotImage from '../../assets/invicon_parrot.webp'; // Добавляем изображение попугая
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -36,13 +37,15 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     purchaseFriendlyEnderman,
     purchaseAllay,
     purchaseLuckyCat,
+    purchasePirateParrot, // Добавляем метод для покупки попугая
     clickPower,
     autoClickerCount,
     multiAutoClickPower,
     friendlyEndermanCount,
     allayCount,
     luckyCatCount,
-    calculateTotalPrice // Добавляем импорт функции calculateTotalPrice из gameStore
+    pirateParrotCount, // Добавляем счетчик для попугая
+    calculateTotalPrice
   } = useGameStore();
 
   // Get the cost of the upgrade based on its type
@@ -67,9 +70,17 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'allay':
         // Расчет для Allay с учетом прогрессии
         return calculateTotalPrice(1000, purchaseQuantity, 0.20);
+        
       case 'luckyCat':
         // Расчет для Lucky Cat с учетом прогрессии 
         return calculateTotalPrice(2000, purchaseQuantity, 0.25);
+        
+      case 'pirateParrot':
+        // Расчет для Pirate Parrot с учетом прогрессии
+        return calculateTotalPrice(3500, purchaseQuantity, 0.30);
+        
+      default:
+        return 0;
     }
   };
 
@@ -88,6 +99,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return allayCount;
       case 'luckyCat':
         return luckyCatCount;
+      case 'pirateParrot':
+        return pirateParrotCount;
       default:
         return 0;
     }
@@ -113,6 +126,10 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         break;
       case 'luckyCat':
         purchaseLuckyCat(purchaseQuantity);
+        break;
+      case 'pirateParrot':
+        purchasePirateParrot(purchaseQuantity);
+        break;
     }
   };
 
@@ -131,6 +148,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return allayImage;
       case 'luckyCat':
         return catImage;
+      case 'pirateParrot':
+        return parrotImage;
       default:
         return slotImage;
     }
