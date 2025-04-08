@@ -71,6 +71,22 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     }
   };
 
+  // Get the level or count of the upgrade
+  const getUpgradeCount = () => {
+    switch (type) {
+      case 'clickPower':
+        return clickPower - 1; // -1 потому что начальное значение 1
+      case 'autoClicker':
+        return autoClickerCount;
+      case 'multiClick':
+        return Math.round((multiClickPower - 1) * 10); // Преобразуем множитель в уровни
+      case 'multiAutoClick':
+        return Math.round((multiAutoClickPower - 1) * 10); // Преобразуем множитель в уровни
+      default:
+        return 0;
+    }
+  };
+
   // Handle purchasing the upgrade
   const buyUpgrade = () => {
     switch (type) {
@@ -107,6 +123,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
 
   // Check if the current upgrade type is a cursor type that needs rotation
   const isCursorType = type === 'clickPower' || type === 'multiClick';
+  const upgradeCount = getUpgradeCount();
 
   const cost = getCost();
   const formattedCost = formatNumber(cost);
@@ -126,7 +143,12 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         </div>
         <div className="upgrade-info">
           <div className="upgrade-header">
-            <h3>{title}</h3>
+            <h3>
+              {title}
+              {upgradeCount > 0 && (
+                <span className="upgrade-count-header"> ({formatNumber(upgradeCount)})</span>
+              )}
+            </h3>
             <button 
               className="info-button"
               onClick={() => onInfoClick(type)}

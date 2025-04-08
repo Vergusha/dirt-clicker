@@ -100,3 +100,25 @@ button:focus-visible {
 .cursor-icon {
   transform: rotate(45deg);
 }
+
+.upgrade-count {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  color: #f8c471;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 0px 4px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 16px;
+  z-index: 3;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+}
+
+.upgrade-count-header {
+  color: #f8c471;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+}
