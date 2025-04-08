@@ -96,3 +96,7 @@ button:focus-visible {
   object-fit: contain;
   z-index: 2;
 }
+
+.cursor-icon {
+  transform: rotate(45deg);
+}

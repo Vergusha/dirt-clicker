@@ -3,8 +3,10 @@ import { useGameStore } from '../../store/gameStore';
 import { UpgradeType, PurchaseQuantity } from '../../types';
 import { formatNumber } from '../../utils/formatNumber';
 import slotImage from '../../assets/slot.webp';
-import woodShovelNormalImage from '../../assets/wooden_shovel_normal.webp';
+import woodenShovelNormalImage from '../../assets/wooden_shovel_normal.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
+import cursorImage from '../../assets/cursor.webp';
+import enchantedCursorImage from '../../assets/enchanted_cursor.png';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -87,17 +89,24 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     }
   };
 
-  // Get the appropriate slot image based on upgrade type
+  // Get the appropriate slot image and determine if it needs the cursor class
   const getUpgradeImage = () => {
     switch (type) {
+      case 'clickPower':
+        return cursorImage;
       case 'autoClicker':
-        return woodShovelNormalImage; // Используем wood_shovel_normal.webp
+        return woodenShovelNormalImage;
+      case 'multiClick':
+        return enchantedCursorImage;
       case 'multiAutoClick':
         return enchantedWoodShovelImage;
       default:
         return slotImage;
     }
   };
+
+  // Check if the current upgrade type is a cursor type that needs rotation
+  const isCursorType = type === 'clickPower' || type === 'multiClick';
 
   const cost = getCost();
   const formattedCost = formatNumber(cost);
@@ -109,7 +118,11 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       <div className="upgrade-content-wrapper">
         <div className="upgrade-slot-wrapper">
           <img src={slotImage} alt="slot" className="slot-image" />
-          <img src={upgradeImage} alt="upgrade" className="upgrade-icon" />
+          <img 
+            src={upgradeImage} 
+            alt="upgrade" 
+            className={`upgrade-icon ${isCursorType ? 'cursor-icon' : ''}`} 
+          />
         </div>
         <div className="upgrade-info">
           <div className="upgrade-header">
