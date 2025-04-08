@@ -1265,43 +1265,73 @@ button:focus-visible,
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Enderman animation styles */
+/* Enderman and Allay positioning styles */
 .enderman-container {
-  position: absolute;
+  position: fixed;
+  bottom: 80px; /* Position at the bottom of the screen, above the tab navigation */
   right: 20px;
-  bottom: 20px;
-  z-index: 40;
-  pointer-events: none; /* Allow clicks to pass through */
-  width: 130px;
-  height: 250px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-}
-
-.enderman-animation {
+  z-index: 5;
+  pointer-events: none;
+  width: 70px;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .enderman-image {
-  height: 250px;
-  width: auto;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  width: 70px;
+  height: auto;
 }
 
-/* Mobile adjustments for Enderman */
-@media (max-width: 768px) {
-  .enderman-container {
-    right: 10px;
-    bottom: 10px;
-    width: 90px;
-    height: 170px;
+/* Styles for Allay Helper positioning */
+.allay-container {
+  position: fixed;
+  bottom: 150px; /* Position above the Enderman */
+  right: 20px;
+  z-index: 6; /* Higher than Enderman to appear above it */
+  pointer-events: none;
+  width: 70px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.allay-image {
+  width: 48px;
+  height: auto;
+  filter: drop-shadow(0 0 5px rgba(165, 220, 255, 0.7));
+}
+
+/* Mobile responsive styles for Allay */
+@media (max-width: 480px) {
+  .allay-image {
+    width: 38px;
   }
   
+  .allay-container {
+    bottom: 130px; /* Adjust position on mobile */
+  }
+}
+
+/* Mobile adjustments for Enderman and Allay */
+@media (max-width: 480px) {
   .enderman-image {
-    height: 170px;
+    width: 60px;
+  }
+  
+  .allay-image {
+    width: 38px;
+  }
+  
+  .enderman-container {
+    bottom: 70px;
+    right: 10px;
+  }
+  
+  .allay-container {
+    top: 70px;
+    right: 10px;
   }
 }

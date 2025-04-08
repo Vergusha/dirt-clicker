@@ -5,10 +5,10 @@ import { UpgradeType } from '../../types';
 import { formatNumber } from '../../utils/formatNumber';
 import buttonImage from '../../assets/button.png';
 import cursorImage from '../../assets/cursor.webp';
-import enchantedCursorImage from '../../assets/enchanted_cursor.png';
 import woodShovelImage from '../../assets/wood_shovel.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 import enderPearlImage from '../../assets/Ender_Pearl.webp';
+import allayImage from '../../assets/allay.webp';
 
 interface InfoPanelProps {
   type: UpgradeType;
@@ -20,10 +20,11 @@ interface InfoPanelProps {
  */
 export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
   const { 
-    clickPower,
-    autoClickerCount,
-    multiAutoClickPower,
-    friendlyEndermanCount
+    clickPower, 
+    autoClickerCount, 
+    multiAutoClickPower, 
+    friendlyEndermanCount,
+    allayCount 
   } = useGameStore();
   
   // Блокировка прокрутки страницы при открытии инфопанели
@@ -110,6 +111,20 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         { 
           label: 'Total Production', 
           value: `${formatNumber(friendlyEndermanCount * 5)} dirt/s` 
+        }
+      ];
+      break;
+
+    case 'allay':
+      title = 'Allay';
+      description = 'These helpful flying creatures boost your passive dirt generation. Each Allay increases all passive dirt generation by 20%.';
+      image = allayImage;
+      stats = [
+        { label: 'Allays', value: formatNumber(allayCount) },
+        { label: 'Boost per Allay', value: '20%' },
+        { 
+          label: 'Total Multiplier', 
+          value: `${formatNumber((1 + allayCount * 0.2))}x` 
         }
       ];
       break;

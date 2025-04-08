@@ -7,6 +7,7 @@ import woodenShovelNormalImage from '../../assets/wooden_shovel_normal.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 import cursorImage from '../../assets/cursor.webp';
 import enderPearlImage from '../../assets/Ender_Pearl.webp';
+import allayImage from '../../assets/allay.webp';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -32,10 +33,12 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     purchaseAutoClicker,
     purchaseMultiAutoClick,
     purchaseFriendlyEnderman,
+    purchaseAllay,
     clickPower,
     autoClickerCount,
     multiAutoClickPower,
     friendlyEndermanCount,
+    allayCount,
     calculateTotalPrice // Добавляем импорт функции calculateTotalPrice из gameStore
   } = useGameStore();
 
@@ -57,6 +60,10 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'friendlyEnderman':
         // Расчет для Friendly Enderman с учетом прогрессии
         return calculateTotalPrice(500, purchaseQuantity, 0.15);
+        
+      case 'allay':
+        // Расчет для Allay с учетом прогрессии
+        return calculateTotalPrice(1000, purchaseQuantity, 0.20);
     }
   };
 
@@ -71,6 +78,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return Math.round((multiAutoClickPower - 1) * 10); // Преобразуем множитель в уровни
       case 'friendlyEnderman':
         return friendlyEndermanCount;
+      case 'allay':
+        return allayCount;
       default:
         return 0;
     }
@@ -91,6 +100,9 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'friendlyEnderman':
         purchaseFriendlyEnderman(purchaseQuantity);
         break;
+      case 'allay':
+        purchaseAllay(purchaseQuantity);
+        break;
     }
   };
 
@@ -105,6 +117,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return enchantedWoodShovelImage;
       case 'friendlyEnderman':
         return enderPearlImage;
+      case 'allay':
+        return allayImage;
       default:
         return slotImage;
     }

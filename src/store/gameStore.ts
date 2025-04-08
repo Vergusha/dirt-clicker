@@ -11,12 +11,14 @@ interface GameState {
   autoClickerCount: number;
   multiAutoClickPower: number;
   friendlyEndermanCount: number;
+  allayCount: number;
   
   // Costs
   clickPowerCost: number;
   autoClickerCost: number;
   multiAutoClickCost: number;
   friendlyEndermanCost: number;
+  allayCost: number;
   
   // Audio settings
   musicEnabled: boolean;
@@ -46,6 +48,7 @@ interface GameState {
   purchaseAutoClicker: (quantity: number) => void;
   purchaseMultiAutoClick: (quantity: number) => void;
   purchaseFriendlyEnderman: (quantity: number) => void;
+  purchaseAllay: (quantity: number) => void;
   
   // Helper to check if player can afford an upgrade
   canAfford: (cost: number) => boolean;
@@ -81,7 +84,9 @@ const fixFloatingPointNumbers = (state: any) => {
     'autoClickerCost',
     'multiAutoClickCost',
     'friendlyEndermanCount',
-    'friendlyEndermanCost'
+    'friendlyEndermanCost',
+    'allayCount',
+    'allayCost'
   ];
   
   integerFields.forEach(field => {
@@ -121,6 +126,12 @@ const fixFloatingPointNumbers = (state: any) => {
     newState.friendlyEndermanCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.friendlyEndermanCount));
   }
   
+  if (newState.allayCount !== undefined && newState.allayCost !== undefined) {
+    const baseCost = 1000;
+    const growthRate = 0.20;
+    newState.allayCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.allayCount));
+  }
+  
   return newState;
 };
 
@@ -137,12 +148,14 @@ export const useGameStore = create<GameState>()(
       autoClickerCount: 0,
       multiAutoClickPower: 1.0,
       friendlyEndermanCount: 0,
+      allayCount: 0,
       
       // Base costs
       clickPowerCost: 5,
       autoClickerCost: 15, 
       multiAutoClickCost: 100,
       friendlyEndermanCost: 500,
+      allayCost: 1000,
       
       // Audio settings initial values
       musicEnabled: true,
@@ -263,6 +276,29 @@ export const useGameStore = create<GameState>()(
         }
       },
       
+      // Purchase Allay
+      purchaseAllay: (quantity) => {
+        const state = get();
+        const baseCost = 1000;
+        const growthRate = 0.20;
+        
+        // Calculate cost for quantity upgrades from current level
+        const totalCost = calculateCost(
+          baseCost * Math.pow(1 + growthRate, state.allayCount), 
+          growthRate, 
+          quantity
+        );
+        
+        // Check if player can afford
+        if (state.canAfford(totalCost)) {
+          set({
+            dirtCount: Math.floor(state.dirtCount - totalCost),
+            allayCount: state.allayCount + quantity,
+            allayCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.allayCount + quantity))
+          });
+        }
+      },
+      
       // Helper to calculate total price for multiple purchases
       calculateTotalPrice: (baseCost, quantity, growthRate) => {
         const state = get();
@@ -281,6 +317,9 @@ export const useGameStore = create<GameState>()(
         } else if (baseCost === 500) { // Friendly Enderman
           level = state.friendlyEndermanCount;
           growthRate = 0.15;
+        } else if (baseCost === 1000) { // Allay
+          level = state.allayCount;
+          growthRate = 0.20;
         }
         
         // Рассчитываем общую стоимость с учетом текущего уровня
@@ -303,10 +342,12 @@ export const useGameStore = create<GameState>()(
           autoClickerCount: 0,
           multiAutoClickPower: 1.0,
           friendlyEndermanCount: 0,
+          allayCount: 0,
           clickPowerCost: 5,
           autoClickerCost: 15,
           multiAutoClickCost: 100,
           friendlyEndermanCost: 500,
+          allayCost: 1000,
           usedPromoCodes: [],
         });
       },
