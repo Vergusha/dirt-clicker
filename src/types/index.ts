@@ -18,7 +18,7 @@ export interface ClickAnimationProps {
 }
 
 // Типы вкладок для навигации
-export type TabType = 'game' | 'upgrades';
+export type TabType = 'game' | 'upgrades' | 'settings';
 
 export type GameTab = 'upgrades' | 'achievements' | 'settings';
 

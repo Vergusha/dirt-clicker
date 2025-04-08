@@ -24,6 +24,12 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, setActi
       >
         Upgrades
       </button>
+      <button 
+        className={`tab-button ${activeTab === 'settings' ? 'active' : ''}`}
+        onClick={() => setActiveTab('settings')}
+      >
+        Settings
+      </button>
     </div>
   );
 };

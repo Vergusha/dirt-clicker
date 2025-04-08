@@ -9,6 +9,8 @@ import { AutoDigger } from './components/AutoDigger';
 import { TabType, ClickAnimation, UpgradeType } from './types';
 import { InfoPanel } from './components/InfoPanel';
 import { UpgradesPanel } from './components/Upgrades/UpgradesPanel';
+import { SettingsPanel } from './components/Settings';
+import { TabNavigation } from './components/TabNavigation';
 
 function App() {
   const { 
@@ -213,22 +215,18 @@ function App() {
             <UpgradesPanel />
           </div>
         )}
+        
+        {/* Settings Tab Content */}
+        {activeTab === 'settings' && (
+          <div className="settings-area">
+            <SettingsPanel />
+          </div>
+        )}
       </main>
       
       {/* Tab Navigation */}
       <nav className="tab-navigation">
-        <button 
-          className={`tab-button ${activeTab === 'game' ? 'active' : ''}`} 
-          onClick={() => setActiveTab('game')}
-        >
-          Game
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'upgrades' ? 'active' : ''}`} 
-          onClick={() => setActiveTab('upgrades')}
-        >
-          Upgrades
-        </button>
+        <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
       </nav>
     </div>
   );

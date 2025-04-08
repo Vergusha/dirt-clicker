@@ -122,3 +122,255 @@ button:focus-visible {
   font-weight: bold;
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
 }
+
+/* Стили для панели настроек */
+.settings-area {
+  background-color: #2a2a2a;
+  border: 3px solid #181818;
+  border-radius: 0px;
+  padding: 1rem;
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
+  image-rendering: pixelated;
+  width: 95%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.settings-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settings-panel h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #e2c08d;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
+  letter-spacing: 2px;
+  font-size: 1.4rem;
+  width: 100%;
+  text-align: center;
+}
+
+.settings-section {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  background-color: #3d2b1f;
+  border: 2px solid #2a1a10;
+  border-radius: 0px;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.settings-section h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  color: #f8c471;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+  font-size: 0.9rem;
+  text-align: center;
+  border-bottom: 2px solid #2a1a10;
+  padding-bottom: 0.5rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.stat-label {
+  color: #ccc;
+  font-size: 0.8rem;
+}
+
+.stat-value {
+  color: #f8c471;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #2a1a10;
+  position: relative;
+}
+
+.setting-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.setting-label {
+  flex: 1;
+  color: #ccc;
+  font-size: 0.8rem;
+}
+
+/* Стили для переключателя */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 20px;
+  margin: 0 10px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #444;
+  transition: .4s;
+  border: 2px solid #2a1a10;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+input:checked + .toggle-slider {
+  background-color: #6b4731;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+  background-color: #f8c471;
+}
+
+input:disabled + .toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Стили для промо-кодов */
+.promo-code-container {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.promo-input {
+  flex: 1;
+  background-color: #1e1308;
+  border: 2px solid #3d2b1f;
+  color: #fff;
+  padding: 0.5rem;
+  font-family: 'Press Start 2P', 'VT323', monospace;
+  font-size: 0.7rem;
+  border-radius: 0;
+  image-rendering: pixelated;
+}
+
+.promo-input::placeholder {
+  color: #666;
+}
+
+.promo-button {
+  background-color: #6b4731;
+  border: 2px solid #3d2b1f;
+  color: #fff;
+  padding: 0 1rem;
+  font-family: 'Press Start 2P', 'VT323', monospace;
+  font-size: 0.7rem;
+  cursor: pointer;
+  border-radius: 0;
+  margin-left: 0.5rem;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+}
+
+.promo-button:hover:not(:disabled) {
+  background-color: #7d5842;
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+}
+
+.promo-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.4);
+}
+
+.coming-soon {
+  font-size: 0.7rem;
+  color: #8aff8a;
+  margin-top: 0.3rem;
+  display: block;
+  text-align: center;
+  font-style: italic;
+}
+
+.version-info {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* Мобильные адаптации */
+@media (max-width: 480px) {
+  .settings-section {
+    padding: 0.8rem;
+  }
+  
+  .settings-section h3 {
+    font-size: 0.8rem;
+  }
+  
+  .stat-label, .setting-label {
+    font-size: 0.7rem;
+  }
+  
+  .stat-value {
+    font-size: 0.8rem;
+  }
+  
+  .toggle-switch {
+    width: 40px;
+    height: 18px;
+  }
+  
+  .toggle-slider:before {
+    height: 14px;
+    width: 14px;
+  }
+  
+  input:checked + .toggle-slider:before {
+    transform: translateX(22px);
+  }
+  
+  .promo-input, .promo-button {
+    font-size: 0.65rem;
+    padding: 0.4rem;
+  }
+  
+  .coming-soon {
+    font-size: 0.65rem;
+  }
+  
+  .version-info {
+    font-size: 0.7rem;
+  }
+}
