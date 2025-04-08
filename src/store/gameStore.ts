@@ -18,6 +18,16 @@ interface GameState {
   multiClickCost: number;
   multiAutoClickCost: number;
   
+  // Audio settings
+  musicEnabled: boolean;
+  musicVolume: number;
+  soundEffectsEnabled: boolean;
+  
+  // Audio controls
+  setMusicEnabled: (enabled: boolean) => void;
+  setMusicVolume: (volume: number) => void;
+  setSoundEffectsEnabled: (enabled: boolean) => void;
+  
   // Promo codes
   usedPromoCodes: string[];
   applyPromoCode: (code: string) => { success: boolean, message: string };
@@ -129,6 +139,11 @@ export const useGameStore = create<GameState>()(
       autoClickerCost: 15, 
       multiClickCost: 50,
       multiAutoClickCost: 100,
+      
+      // Audio settings initial values
+      musicEnabled: true,
+      musicVolume: 0.5,
+      soundEffectsEnabled: true,
       
       // Promo codes initial values
       usedPromoCodes: [],
@@ -333,6 +348,19 @@ export const useGameStore = create<GameState>()(
         } else {
           return { success: false, message: "Invalid promo code." };
         }
+      },
+      
+      // Audio controls
+      setMusicEnabled: (enabled) => {
+        set({ musicEnabled: enabled });
+      },
+      
+      setMusicVolume: (volume) => {
+        set({ musicVolume: volume });
+      },
+      
+      setSoundEffectsEnabled: (enabled) => {
+        set({ soundEffectsEnabled: enabled });
       },
     }),
     {

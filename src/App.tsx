@@ -11,6 +11,7 @@ import { InfoPanel } from './components/InfoPanel';
 import { UpgradesPanel } from './components/Upgrades/UpgradesPanel';
 import { SettingsPanel } from './components/Settings';
 import { TabNavigation } from './components/TabNavigation';
+import { AudioPlayer } from './components/AudioPlayer';
 
 function App() {
   const { 
@@ -122,6 +123,9 @@ function App() {
 
   return (
     <div className="game-container">
+      {/* AudioPlayer для фоновой музыки */}
+      <AudioPlayer />
+      
       {/* Fixed header with game title and dirt counter */}
       <header className="game-header fixed-header">
         <h1>Dirt Clicker</h1>

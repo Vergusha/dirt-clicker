@@ -355,6 +355,60 @@ input:disabled + .toggle-slider {
   font-style: italic;
 }
 
+/* Стили для ползунка громкости */
+.volume-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-left: 10px;
+}
+
+.volume-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  background: #444;
+  border: 2px solid #2a1a10;
+  border-radius: 0px;
+  outline: none;
+  opacity: 1;
+  transition: opacity .2s;
+}
+
+.volume-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #f8c471;
+  border: 2px solid #3d2b1f;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #f8c471;
+  border: 2px solid #3d2b1f;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+}
+
+.volume-value {
+  font-size: 0.7rem;
+  color: #f8c471;
+  min-width: 40px;
+  text-align: right;
+  font-weight: bold;
+}
+
 /* Мобильные адаптации */
 @media (max-width: 480px) {
   .settings-section {
@@ -398,5 +452,24 @@ input:disabled + .toggle-slider {
   
   .version-info {
     font-size: 0.7rem;
+  }
+  
+  .volume-slider {
+    height: 8px;
+  }
+  
+  .volume-slider::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .volume-value {
+    font-size: 0.65rem;
+    min-width: 35px;
   }
 }
