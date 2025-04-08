@@ -32,6 +32,36 @@ export const EndermanAnimation: React.FC = () => {
   // Time for each state (in milliseconds)
   const stateDuration = 5000; // 5 seconds
 
+  // Animation parameters for subtle movement
+  const [animationDuration, setAnimationDuration] = useState(4.0);
+  
+  // Update animation duration based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 480) {
+        // Mobile devices
+        setAnimationDuration(4.2);
+      } else if (window.innerWidth <= 768) {
+        // Tablets
+        setAnimationDuration(4.0);
+      } else {
+        // Desktop
+        setAnimationDuration(3.8);
+      }
+    };
+    
+    // Initial setup
+    handleResize();
+    
+    // Listen for window resize events
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   // Initialize audio
   useEffect(() => {
     audioRef.current = new Audio(teleportSound);
@@ -118,10 +148,21 @@ export const EndermanAnimation: React.FC = () => {
             exit={{ opacity: 0, scale: 0.3 }}
             transition={{ duration: 0.3 }}
           >
-            <img 
+            <motion.img 
               src={currentState === 'default' ? endermanDefaultImage : endermanImage} 
               alt="Enderman"
               className="enderman-image"
+              animate={{
+                y: [0, -7, 0, -4, 0], // Небольшое движение вверх-вниз
+                rotate: [0, 2, 0, -2, 0], // Легкое покачивание
+                scale: [1, 1.03, 1, 1.02, 1], // Легкое изменение размера
+              }}
+              transition={{
+                duration: animationDuration,
+                repeat: Infinity,
+                repeatType: "loop",
+                ease: "easeInOut",
+              }}
             />
           </motion.div>
         )}
