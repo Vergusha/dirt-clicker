@@ -12,9 +12,11 @@ export const SettingsPanel: React.FC = () => {
     musicEnabled,
     musicVolume,
     soundEffectsEnabled,
+    shovelSoundsEnabled,
     setMusicEnabled,
     setMusicVolume,
-    setSoundEffectsEnabled
+    setSoundEffectsEnabled,
+    setShovelSoundsEnabled
   } = useGameStore();
   
   const [promoCode, setPromoCode] = useState('');
@@ -88,6 +90,18 @@ export const SettingsPanel: React.FC = () => {
             />
             <div className="volume-value">{Math.round(musicVolume * 100)}%</div>
           </div>
+        </div>
+        
+        <div className="setting-item">
+          <span className="setting-label">Shovel Sounds:</span>
+          <label className="toggle-switch">
+            <input 
+              type="checkbox"
+              checked={shovelSoundsEnabled}
+              onChange={(e) => setShovelSoundsEnabled(e.target.checked)}
+            />
+            <span className="toggle-slider"></span>
+          </label>
         </div>
         
         <div className="setting-item">

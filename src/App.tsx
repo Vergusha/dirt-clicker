@@ -12,6 +12,7 @@ import { UpgradesPanel } from './components/Upgrades/UpgradesPanel';
 import { SettingsPanel } from './components/Settings';
 import { TabNavigation } from './components/TabNavigation';
 import { AudioPlayer } from './components/AudioPlayer';
+import { ShovelSoundPlayer } from './components/ShovelSoundPlayer';
 
 function App() {
   const { 
@@ -123,8 +124,9 @@ function App() {
 
   return (
     <div className="game-container">
-      {/* AudioPlayer для фоновой музыки */}
+      {/* Аудиокомпоненты */}
       <AudioPlayer />
+      <ShovelSoundPlayer />
       
       {/* Fixed header with game title and dirt counter */}
       <header className="game-header fixed-header">
