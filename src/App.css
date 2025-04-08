@@ -1272,7 +1272,7 @@ button:focus-visible,
   right: 20px;
   z-index: 5;
   pointer-events: none;
-  width: 70px;
+  width: 90px;
   height: auto;
   display: flex;
   justify-content: center;
@@ -1280,18 +1280,18 @@ button:focus-visible,
 }
 
 .enderman-image {
-  width: 70px;
+  width: 90px;
   height: auto;
 }
 
 /* Styles for Allay Helper positioning */
 .allay-container {
   position: fixed;
-  bottom: 150px; /* Position above the Enderman */
-  right: 20px;
-  z-index: 6; /* Higher than Enderman to appear above it */
+  bottom: 250px; /* Position above the Enderman */
+  right: 0px;
+  z-index: 40; /* Higher than Enderman to appear above it */
   pointer-events: none;
-  width: 70px;
+  width: 90px;
   height: auto;
   display: flex;
   justify-content: center;
@@ -1307,11 +1307,11 @@ button:focus-visible,
 /* Mobile responsive styles for Allay */
 @media (max-width: 480px) {
   .allay-image {
-    width: 38px;
+    width: 40px;
   }
   
   .allay-container {
-    bottom: 130px; /* Adjust position on mobile */
+    bottom: 20px; /* Adjust position on mobile */
   }
 }
 
