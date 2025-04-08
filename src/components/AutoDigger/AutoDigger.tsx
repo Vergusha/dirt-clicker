@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import shovelImage from '../../assets/wood_shovel.webp';
-import { BlockPosition } from '../../types';
 import { useEffect, useState, useCallback } from 'react';
 
 interface AutoDiggerProps {

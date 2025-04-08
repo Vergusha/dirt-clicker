@@ -36,10 +36,6 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     autoClickerCount,
     multiClickPower,
     multiAutoClickPower,
-    clickPowerCost,
-    autoClickerCost,
-    multiClickCost,
-    multiAutoClickCost,
     calculateTotalPrice // Добавляем импорт функции calculateTotalPrice из gameStore
   } = useGameStore();
 

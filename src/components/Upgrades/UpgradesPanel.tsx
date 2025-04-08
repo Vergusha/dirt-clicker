@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import { PurchaseQuantity, UpgradeType } from '../../types';
 import { UpgradeButton } from './UpgradeButton';
 import { PurchaseQuantitySelector } from './PurchaseQuantitySelector';

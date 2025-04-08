@@ -286,10 +286,11 @@ export const useGameStore = create<GameState>()(
       onRehydrateStorage: () => (state) => {
         // Исправляем числа с плавающей запятой при загрузке сохраненных данных
         if (state) {
-          const fixedState = fixFloatingPointNumbers(state);
+          const fixedState = fixFloatingPointNumbers(state) as Partial<GameState>;
           Object.keys(fixedState).forEach(key => {
-            if (state[key] !== fixedState[key]) {
-              state[key] = fixedState[key];
+            const typedKey = key as keyof GameState;
+            if ((state as any)[typedKey] !== fixedState[typedKey]) {
+              (state as any)[typedKey] = fixedState[typedKey];
             }
           });
         }
