@@ -167,7 +167,7 @@ export const useGameStore = create<GameState>()(
       purchaseAutoClicker: (quantity) => {
         const state = get();
         const baseCost = 15; // Снижена начальная стоимость
-        const growthRate = 0.10; // Снижен рост с 15% до 10% за автокликер
+        const growthRate = 0.10; // Снижен рост с 15% до 10% за Wood Shovel
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -243,13 +243,13 @@ export const useGameStore = create<GameState>()(
         if (baseCost === 5) { // Click Power - обновлено значение
           level = state.clickPower - 1;
           growthRate = 0.08; // Используем новый коэффициент роста
-        } else if (baseCost === 15) { // Auto Clicker - обновлено значение
+        } else if (baseCost === 15) { // Wood Shovel - обновлено значение
           level = state.autoClickerCount;
           growthRate = 0.10; // Используем новый коэффициент роста
         } else if (baseCost === 50) { // Multi Click - обновлено значение
           level = Math.round((state.multiClickPower - 1) * 10);
           growthRate = 0.15; // Используем новый коэффициент роста
-        } else if (baseCost === 100) { // Multi AutoClick - обновлено значение
+        } else if (baseCost === 100) { // Enchanted Wood Shovel - обновлено значение
           level = Math.round((state.multiAutoClickPower - 1) * 10);
           growthRate = 0.15; // Используем новый коэффициент роста
         }

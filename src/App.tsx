@@ -58,11 +58,11 @@ function App() {
     
     const interval = setInterval(() => {
       if (autoClickerCount > 0) {
-        // Общее количество земли от автокликеров с учетом множителя
+        // Общее количество земли от деревянных лопат (Wood Shovels) с учетом множителя
         const autoClickPower = autoClickerCount * multiAutoClickPower;
         increaseDirtCount(autoClickPower);
         
-        // Создаем анимацию для автоклика с фиксированным размером
+        // Создаем анимацию для автоматического копания с фиксированным размером
         if (blockPosition) {
           // Случайный угол для позиционирования анимации вокруг блока
           const randomAngle = Math.random() * Math.PI * 2;
