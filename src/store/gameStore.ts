@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { fixFloatingPoint } from '../utils/formatNumber';
 
 interface GameState {
   // Game state
@@ -96,13 +97,16 @@ const fixFloatingPointNumbers = (state: any) => {
   
   integerFields.forEach(field => {
     if (newState[field] !== undefined) {
-      newState[field] = Math.floor(Number(newState[field]));
+      // Сначала исправляем проблемы с плавающей запятой, потом округляем
+      newState[field] = Math.floor(fixFloatingPoint(Number(newState[field])));
     }
   });
   
   // Округляем множители до 2 знаков
   if (newState.multiAutoClickPower !== undefined) {
-    newState.multiAutoClickPower = Number(Number(newState.multiAutoClickPower).toFixed(2));
+    // Исправляем проблемы с плавающей запятой, затем форматируем до 2 знаков
+    newState.multiAutoClickPower = fixFloatingPoint(Number(newState.multiAutoClickPower));
+    newState.multiAutoClickPower = Number(newState.multiAutoClickPower.toFixed(2));
   }
   
   // Пересчитываем стоимости, если они некорректные
@@ -185,11 +189,12 @@ export const useGameStore = create<GameState>()(
       // Actions
       increaseDirtCount: (amount) => {
         set((state) => {
-          const newDirtCount = Math.floor(state.dirtCount + amount);
-          const newTotalCollected = Math.floor(state.totalDirtCollected + amount);
+          // Используем fixFloatingPoint чтобы избежать проблем с числами с плавающей запятой
+          const newDirtCount = fixFloatingPoint(state.dirtCount + amount);
+          const newTotalCollected = fixFloatingPoint(state.totalDirtCollected + amount);
           return { 
-            dirtCount: newDirtCount,
-            totalDirtCollected: newTotalCollected
+            dirtCount: Math.floor(newDirtCount),
+            totalDirtCollected: Math.floor(newTotalCollected)
           };
         });
       },
@@ -401,8 +406,8 @@ export const useGameStore = create<GameState>()(
         if (code.toLowerCase() === "get50trilliondirt") {
           const amount = 50000000000000; // 50 триллионов
           set({
-            dirtCount: state.dirtCount + amount,
-            totalDirtCollected: state.totalDirtCollected + amount,
+            dirtCount: fixFloatingPoint(state.dirtCount + amount),
+            totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + amount),
           });
           return { success: true, message: "WOW! You received 50 trillion dirt!" };
         }
@@ -425,8 +430,8 @@ export const useGameStore = create<GameState>()(
           // Добавить землю
           const dirtAmount = promoCodes[normalizedCode].dirt;
           set({
-            dirtCount: state.dirtCount + dirtAmount,
-            totalDirtCollected: state.totalDirtCollected + dirtAmount,
+            dirtCount: fixFloatingPoint(state.dirtCount + dirtAmount),
+            totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + dirtAmount),
             // Добавляем код в список использованных, только если он одноразовый
             usedPromoCodes: promoCodes[normalizedCode].oneTime 
               ? [...state.usedPromoCodes, normalizedCode] 

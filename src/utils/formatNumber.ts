@@ -1,6 +1,19 @@
 const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
 
+/**
+ * Исправляет число с плавающей запятой, удаляя неточности представления
+ * @param num Число для фиксации
+ * @returns Число без неточностей представления
+ */
+export function fixFloatingPoint(num: number): number {
+  // Преобразуем в строку с фиксированной точностью, затем обратно в число
+  return parseFloat(Number(num).toFixed(6));
+}
+
 export function formatNumber(num: number): string {
+  // Сначала исправляем возможные неточности плавающей запятой
+  num = fixFloatingPoint(num);
+  
   // Округляем до целых чисел
   num = Math.floor(num);
   
