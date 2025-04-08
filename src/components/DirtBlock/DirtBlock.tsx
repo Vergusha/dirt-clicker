@@ -1,10 +1,9 @@
 import { RefObject, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import dirtImage from '../../assets/dirt.webp';
-import { useGameStore } from '../../store/gameStore';
 
 interface DirtBlockProps {
-  blockRef: RefObject<HTMLDivElement>;
+  blockRef: RefObject<HTMLDivElement | null>;
   onBlockClick: (event: React.MouseEvent<HTMLDivElement>) => void;
   onPositionUpdate?: (position: { x: number, y: number, width: number, height: number }) => void;
 }

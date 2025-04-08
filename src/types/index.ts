@@ -4,7 +4,7 @@
  * Information for a single click animation
  */
 export interface ClickAnimation {
-  id: string;
+  id: number | string;
   x: number;
   y: number;
   value: number;

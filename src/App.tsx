@@ -17,16 +17,7 @@ function App() {
     autoClickerCount, 
     multiClickPower,
     multiAutoClickPower,
-    increaseDirtCount, 
-    purchaseClickPower, 
-    purchaseAutoClicker,
-    purchaseMultiClick,
-    purchaseMultiAutoClick,
-    clickPowerCost,
-    autoClickerCost,
-    multiClickCost,
-    multiAutoClickCost,
-    calculateTotalPrice
+    increaseDirtCount,
   } = useGameStore();
   
   // State for click animations
@@ -35,9 +26,6 @@ function App() {
   
   // State for active tab
   const [activeTab, setActiveTab] = useState<TabType>('game');
-  
-  // State for purchase quantity
-  const [purchaseQuantity, setPurchaseQuantity] = useState<1 | 10 | 50 | 100>(1);
   
   // State for active info panel
   const [activeInfoPanel, setActiveInfoPanel] = useState<UpgradeType | null>(null);
@@ -126,12 +114,6 @@ function App() {
       setClickAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
     }, 800);
   };
-
-  // Calculate total prices based on current purchase quantity
-  const totalClickPowerPrice = calculateTotalPrice(clickPowerCost, purchaseQuantity, 1.15);
-  const totalAutoClickerPrice = calculateTotalPrice(autoClickerCost, purchaseQuantity, 1.15);
-  const totalMultiClickPrice = calculateTotalPrice(multiClickCost, purchaseQuantity, 1.25);
-  const totalMultiAutoClickPrice = calculateTotalPrice(multiAutoClickCost, purchaseQuantity, 1.25);
 
   // Общая мощность автокликеров с учетом множителя
   const totalAutoClickPower = autoClickerCount * multiAutoClickPower;
