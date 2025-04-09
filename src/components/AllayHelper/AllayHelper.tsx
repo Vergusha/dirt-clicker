@@ -2,6 +2,11 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import allayImage from '../../assets/allay.webp';
 import { useEffect, useState, useCallback } from 'react';
+import { useSoundEffect } from '../SoundEffects/useSoundEffect';
+import allaySound1 from '../../audio/Allay_item_given1.ogg';
+import allaySound2 from '../../audio/Allay_item_given2.ogg';
+import allaySound3 from '../../audio/Allay_item_given3.ogg';
+import allaySound4 from '../../audio/Allay_item_given4.ogg';
 
 interface AllayHelperProps {
   blockPosition: { x: number, y: number, width: number, height: number } | null;
@@ -11,8 +16,9 @@ interface AllayHelperProps {
  * Component for animating an Allay helper positioned at the top-right, above the Enderman
  * Allays increase passive income from all sources
  */
-export const AllayHelper: React.FC<AllayHelperProps> = ({ }) => {
+export const AllayHelper: React.FC<AllayHelperProps> = ({ blockPosition }) => {
   const { allayCount } = useGameStore();
+  const playSound = useSoundEffect([allaySound1, allaySound2, allaySound3, allaySound4], 0.5);
   
   // Animation duration for floating
   const [animationDuration, setAnimationDuration] = useState(3.0);
@@ -46,16 +52,27 @@ export const AllayHelper: React.FC<AllayHelperProps> = ({ }) => {
     };
   }, [updateResponsiveValues]);
 
+  // Add debug console log
+  useEffect(() => {
+    console.log('Allay count:', allayCount);
+    console.log('Block position:', blockPosition);
+  }, [allayCount, blockPosition]);
+
   // Don't render if no allays
-  if (allayCount <= 0) return null;
+  if (allayCount <= 0 || !blockPosition) return null;
 
   return (
     <div className="allay-container">
       <motion.div
         className="allay-helper"
-        style={{
-          pointerEvents: 'none',
-          zIndex: 6, // Higher than Enderman to appear above it
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        onClick={playSound}
+        style={{ 
+          cursor: 'pointer',
+          pointerEvents: 'auto',
+          zIndex: 10
         }}
       >
         <motion.img

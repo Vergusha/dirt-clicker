@@ -1331,7 +1331,7 @@ button,
   bottom: 230px; /* Position above the Enderman */
   right: 20px;
   z-index: 6; /* Higher than Enderman to appear above it */
-  pointer-events: none;
+  pointer-events: auto;
   width: 70px;
   height: auto;
   display: flex;
@@ -1351,7 +1351,7 @@ button,
   bottom: 80px; /* Same height as Enderman */
   right: 120px; /* Position to the left of Enderman (right: 20px) */
   z-index: 7; /* Higher than both Enderman and Allay */
-  pointer-events: none;
+  pointer-events: auto;
   width: 70px;
   height: auto;
   display: flex;
@@ -1362,7 +1362,28 @@ button,
 .lucky-cat-image {
   width: 55px;
   height: auto;
-  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.6)); /* Golden glow */
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .allay-image {
+    width: 38px;
+  }
+  
+  .lucky-cat-image {
+    width: 45px;
+  }
+  
+  .allay-container {
+    bottom: 180px; /* Adjust position on mobile */
+    right: 10px;
+  }
+  
+  .lucky-cat-container {
+    bottom: 70px; /* Same height as Enderman on mobile */
+    right: 100px; /* Position to the left of Enderman */
+  }
 }
 
 /* Styles for Pirate Parrot positioning */

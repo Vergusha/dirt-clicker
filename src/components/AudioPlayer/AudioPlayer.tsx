@@ -20,14 +20,24 @@ export const AudioPlayer: React.FC = () => {
     audio.loop = true;  // Зацикливаем воспроизведение
     audio.volume = musicVolume;  // Устанавливаем начальную громкость
     
+    // Если музыка была включена до обновления страницы, начинаем воспроизведение
+    if (musicEnabled) {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log('Initial play prevented:', error);
+        });
+      }
+    }
+    
     // Добавляем обработчик события окончания воспроизведения
-    // (дополнительная страховка на случай, если loop не сработает)
     const handleEnded = () => {
-      console.log('Audio playback ended, restarting...');
-      audio.currentTime = 0; // Перематываем на начало
-      audio.play().catch(error => {
-        console.log('Replay after end prevented:', error);
-      });
+      if (musicEnabled) {
+        audio.currentTime = 0;
+        audio.play().catch(error => {
+          console.log('Replay after end prevented:', error);
+        });
+      }
     };
     
     audio.addEventListener('ended', handleEnded);
@@ -39,7 +49,6 @@ export const AudioPlayer: React.FC = () => {
     // Очистка при размонтировании компонента
     return () => {
       if (audioRef.current) {
-        // Удаляем обработчик события перед уничтожением
         audioRef.current.removeEventListener('ended', handleEnded);
         audioRef.current.pause();
         audioRef.current = null;
@@ -48,29 +57,23 @@ export const AudioPlayer: React.FC = () => {
     };
   }, []); // Выполняется только при монтировании
 
-  // Обработка восстановления состояния после загрузки страницы 
-  // и обновления состояния воспроизведения при изменении настроек
+  // Обработка изменения состояния воспроизведения
   useEffect(() => {
     if (!audioRef.current) return;
     
     if (musicEnabled) {
-      // Проверяем, не закончилось ли воспроизведение
-      if (audioRef.current.ended || audioRef.current.paused) {
-        const playPromise = audioRef.current.play();
-        
-        // Обрабатываем возможные проблемы с воспроизведением
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log('Play prevented:', error);
-          });
-        }
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log('Play prevented:', error);
+        });
       }
     } else {
       audioRef.current.pause();
     }
   }, [musicEnabled]);
 
-  // Обновляем громкость при изменении настроек без перезапуска воспроизведения
+  // Обновляем громкость при изменении настроек
   useEffect(() => {
     if (!audioRef.current) return;
     audioRef.current.volume = musicVolume;

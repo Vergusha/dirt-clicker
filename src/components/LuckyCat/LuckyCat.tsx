@@ -2,6 +2,9 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import catImage from '../../assets/cat.webp';
 import { useEffect, useState, useCallback } from 'react';
+import { useSoundEffect } from '../SoundEffects/useSoundEffect';
+import catSound1 from '../../audio/Cat_purreow1.ogg';
+import catSound2 from '../../audio/Cat_purreow2.ogg';
 
 /**
  * Component for displaying a Lucky Cat on screen when the player has the upgrade
@@ -9,10 +12,16 @@ import { useEffect, useState, useCallback } from 'react';
  */
 export const LuckyCat: React.FC = () => {
   const { luckyCatCount } = useGameStore();
+  const playSound = useSoundEffect([catSound1, catSound2], 0.5);
   
   // Animation parameters
   const [animationDuration, setAnimationDuration] = useState(4.0);
   const [catSize, setCatSize] = useState(55);
+
+  // Add debug console log
+  useEffect(() => {
+    console.log('LuckyCat count:', luckyCatCount);
+  }, [luckyCatCount]);
 
   // Update responsive values based on screen size
   const updateResponsiveValues = useCallback(() => {
@@ -53,9 +62,14 @@ export const LuckyCat: React.FC = () => {
     <div className="lucky-cat-container">
       <motion.div
         className="lucky-cat"
-        style={{
-          pointerEvents: 'none',
-          zIndex: 7, // Higher than Enderman but lower than Allay
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        onClick={playSound}
+        style={{ 
+          cursor: 'pointer',
+          pointerEvents: 'auto',
+          zIndex: 10
         }}
       >
         <motion.img

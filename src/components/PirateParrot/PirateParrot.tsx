@@ -3,6 +3,11 @@ import { useGameStore } from '../../store/gameStore';
 import parrotImage from '../../assets/parrot.webp';
 import dancingParrotImage from '../../assets/dancing_parrot.webp';
 import { useEffect, useState, useCallback } from 'react';
+import { useSoundEffect } from '../SoundEffects/useSoundEffect';
+import parrotSound1 from '../../audio/Parrot_idle1.ogg';
+import parrotSound2 from '../../audio/Parrot_idle2.ogg';
+import parrotSound3 from '../../audio/Parrot_idle3.ogg';
+import parrotSound4 from '../../audio/Parrot_idle4.ogg';
 
 /**
  * Component for displaying a Pirate Parrot on screen when the player has the upgrade
@@ -11,6 +16,7 @@ import { useEffect, useState, useCallback } from 'react';
  */
 export const PirateParrot: React.FC = () => {
   const { pirateParrotCount, musicEnabled, musicVolume } = useGameStore();
+  const playSound = useSoundEffect([parrotSound1, parrotSound2, parrotSound3, parrotSound4], 0.5);
   
   // Animation parameters
   const [animationDuration, setAnimationDuration] = useState(4.0);
@@ -62,22 +68,25 @@ export const PirateParrot: React.FC = () => {
       <motion.div
         className="pirate-parrot"
         style={{
-          pointerEvents: 'none',
-          zIndex: 8, // Higher than LuckyCat (7) but lower than other important UI
+          pointerEvents: 'auto',
+          zIndex: 8,
         }}
       >
         <motion.div 
           className="parrot-image-container"
           style={{
-            width: window.innerWidth <= 480 ? '45px' : '55px',
-            height: window.innerWidth <= 480 ? '45px' : '55px',
+            width: `${parrotSize}px`,
+            height: `${parrotSize}px`,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             overflow: 'hidden',
-            position: 'relative'
+            position: 'relative',
+            cursor: 'pointer'
           }}
-          animate={{
+          onClick={playSound}
+          initial={{ scale: 0 }}
+          animate={{ 
             // Different animations based on music status and volume
             ...(isParrotDancing
               ? {
@@ -94,7 +103,7 @@ export const PirateParrot: React.FC = () => {
                 }),
           }}
           transition={{
-            duration: isParrotDancing ? animationDuration * 0.8 : animationDuration, // Faster when dancing
+            duration: isParrotDancing ? animationDuration * 0.8 : animationDuration,
             repeat: Infinity,
             repeatType: "loop",
             ease: "easeInOut",
@@ -107,10 +116,10 @@ export const PirateParrot: React.FC = () => {
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'contain', // Это гарантирует, что оба изображения поместятся в контейнер
+              objectFit: 'contain',
               filter: isParrotDancing 
-                ? 'drop-shadow(0 0 5px rgba(255, 0, 0, 0.7))' // Red glow for dancing
-                : 'drop-shadow(0 0 5px rgba(0, 255, 255, 0.5))' // Cyan glow for static
+                ? 'drop-shadow(0 0 5px rgba(255, 0, 0, 0.7))'
+                : 'drop-shadow(0 0 5px rgba(0, 255, 255, 0.5))'
             }}
           />
         </motion.div>

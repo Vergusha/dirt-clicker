@@ -199,19 +199,13 @@ function App() {
       <AudioPlayer />
       <ShovelSoundPlayer activeTab={activeTab} />
       
-      {/* Enderman and Allay animations will always be visible when you have them */}
+      {/* Enderman and Allay animations will only be visible in game tab */}
       {activeTab === 'game' && (
         <>
           <EndermanAnimation />
-          {allayCount > 0 && (
-            <AllayHelper blockPosition={blockPosition} />
-          )}
-          {luckyCatCount > 0 && (
-            <LuckyCat />
-          )}
-          {pirateParrotCount > 0 && (
-            <PirateParrot />
-          )}
+          {allayCount > 0 && <AllayHelper blockPosition={blockPosition} />}
+          {luckyCatCount > 0 && <LuckyCat />}
+          {pirateParrotCount > 0 && <PirateParrot />}
         </>
       )}
       
@@ -301,8 +295,6 @@ function App() {
                 <AutoDigger blockPosition={blockPosition} />
               </div>
             )}
-            
-            {/* Enderman animation now handled at the top-level */}
           </div>
         )}
 
