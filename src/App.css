@@ -1209,49 +1209,125 @@ button {
 
 /* Mobile optimization for upgrades */
 @media (max-width: 480px) {
-  .upgrade-slot {
+  .upgrades-area,
+  .settings-area {
+    width: 100%;
+    padding: 0.5rem;
+    border-width: 2px;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+  }
+
+  .upgrade-content-wrapper {
+    gap: 8px;
+  }
+
+  .upgrade-slot-wrapper {
     width: 40px;
     height: 40px;
     min-width: 40px;
-    padding: 2px;
+    margin-right: 8px;
   }
-  
+
+  .upgrade-info {
+    flex: 1;
+    min-width: 0;
+  }
+
   .upgrade-header h3 {
     font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  
-  .info-button {
-    width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
-  }
-  
+
   .upgrade-description {
     font-size: 0.65rem;
-    margin: 6px 0 10px;
+    margin: 6px 0;
+    line-height: 1.2;
   }
-  
+
+  .upgrade-footer {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
   .cost {
     font-size: 0.65rem;
   }
-  
+
   .buy-button {
     font-size: 0.65rem;
     padding: 4px 8px;
   }
-  
-  .upgrades-panel {
-    padding: 0 5px; /* Добавляем небольшие отступы на мобильных */
+
+  .quantity-selector {
+    padding: 0.5rem;
   }
-  
-  .upgrades-grid {
-    gap: 0.8rem;
+
+  .quantity-buttons {
+    gap: 5px;
   }
-  
-  /* Исправляем выравнивание для области улучшений */
-  .upgrades-area {
+
+  .quantity-btn {
+    padding: 0;
+  }
+
+  .quantity-btn-text {
+    font-size: 0.65rem;
+  }
+
+  .info-button {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+    min-width: 20px;
+  }
+
+  /* Settings panel mobile optimization */
+  .settings-panel {
+    padding: 0.5rem;
+  }
+
+  .settings-section {
     padding: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .setting-group {
+    margin-bottom: 0.8rem;
+  }
+
+  .setting-label {
+    font-size: 0.7rem;
+    gap: 5px;
+  }
+
+  .volume-control {
+    margin-top: 5px;
+    padding: 5px;
+  }
+
+  .sub-settings {
+    margin-top: 10px;
+    padding-left: 10px;
+    gap: 8px;
+  }
+
+  .promo-form {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .promo-input,
+  .promo-button {
     width: 100%;
+    font-size: 0.7rem;
+    padding: 6px;
+  }
+
+  .version-info {
+    font-size: 0.65rem;
+    margin-top: 15px;
   }
 }
 

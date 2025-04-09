@@ -5,7 +5,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 20px;
+  padding: 10px;
   box-sizing: border-box;
 }
 
@@ -14,12 +14,13 @@
   background-color: #2a1a10;
   border: 4px solid #3d2b1f;
   border-radius: 0;
-  padding: 20px;
+  padding: 15px;
   color: #e2c08d;
   width: 100%;
   max-width: 600px;
   box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
   image-rendering: pixelated;
+  overflow-x: hidden;
 }
 
 .title {
@@ -191,24 +192,108 @@
 }
 
 @media (max-width: 480px) {
+  .settingsPanelContainer {
+    padding: 5px;
+  }
+
   .settingsPanel {
-    padding: 15px;
+    padding: 10px;
+    border-width: 2px;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
   }
 
   .title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
   }
 
   .subtitle {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .settingGroup,
+  .statsGroup {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-width: 2px;
+  }
+
+  .statItem {
+    margin-bottom: 8px;
+    padding: 6px;
+    font-size: 0.8rem;
   }
 
   .settingLabel {
     font-size: 0.8rem;
+    gap: 8px;
   }
 
-  .promoInput,
-  .promoButton {
+  .settingLabel input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+  }
+
+  .volumeControl {
+    margin-top: 8px;
+    padding: 8px;
+  }
+
+  .volumeControl input[type="range"] {
+    height: 4px;
+  }
+
+  .volumeControl input[type="range"]::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  .volumeControl input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  .subSettings {
+    margin-top: 10px;
+    padding-left: 15px;
+    gap: 8px;
+  }
+
+  .subSettings .settingLabel {
+    font-size: 0.75rem;
+  }
+
+  .promoGroup {
+    margin-bottom: 15px;
+    padding: 10px;
+  }
+
+  .promoForm {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .promoInput {
+    width: 100%;
+    padding: 6px;
     font-size: 0.8rem;
+  }
+
+  .promoButton {
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .promoMessage {
+    margin-top: 8px;
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+
+  .versionInfo {
+    margin-top: 15px;
+    font-size: 0.7rem;
   }
 } 
