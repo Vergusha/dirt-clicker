@@ -461,14 +461,14 @@ export const useGameStore = create<GameState>()(
           return { success: true, message: "Весь прогресс был сброшен!" };
         }
         
-        // Промокод Sasha (в 50 раз больше чем get50trilliondirt)
+        // Промокод Sasha (10^99 земли)
         if (code === "Sasha") {
-          const amount = 50000000000000 * 50; // 2.5 квадриллиона
+          const amount = Math.pow(10, 99); // 10^99 земли
           set({
             dirtCount: fixFloatingPoint(state.dirtCount + amount),
             totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + amount),
           });
-          return { success: true, message: "ВАУ! Вы получили 2.5 квадриллиона земли!" };
+          return { success: true, message: "ВАУ! Вы получили гуголплекс земли!" };
         }
         
         // Специальный промокод для 50 триллионов земли

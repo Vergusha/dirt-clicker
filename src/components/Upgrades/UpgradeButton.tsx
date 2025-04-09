@@ -192,21 +192,72 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
 
   const getShovelTitle = () => {
     if (type !== 'autoClicker') return title;
+    
+    // Определяем текущий тип лопаты
     if (autoClickerCount >= 1000) return 'Netherite Shovel';
     if (autoClickerCount >= 500) return 'Diamond Shovel';
     if (autoClickerCount >= 300) return 'Golden Shovel';
     if (autoClickerCount >= 200) return 'Iron Shovel';
     if (autoClickerCount >= 100) return 'Stone Shovel';
-    return 'Wood Shovel';
+    return 'Wooden Shovel';
   };
 
   const getShovelDescription = () => {
     if (type !== 'autoClicker') return description;
-    const upgradeInfo = getShovelUpgradeInfo(autoClickerCount);
-    if (upgradeInfo) {
-      return `Upgrade your shovel to ${upgradeInfo.name}!`;
+    
+    // Определяем следующий тип лопаты
+    if (autoClickerCount >= 1000) {
+      return 'Maximum level reached!';
+    } else if (autoClickerCount >= 500) {
+      return 'Upgrade your shovel to Netherite Shovel!';
+    } else if (autoClickerCount >= 300) {
+      return 'Upgrade your shovel to Diamond Shovel!';
+    } else if (autoClickerCount >= 200) {
+      return 'Upgrade your shovel to Golden Shovel!';
+    } else if (autoClickerCount >= 100) {
+      return 'Upgrade your shovel to Iron Shovel!';
+    } else if (autoClickerCount >= 0) {
+      return 'Upgrade your shovel to Stone Shovel!';
     }
     return description;
+  };
+
+  const getCurrentShovelInfo = () => {
+    if (type !== 'autoClicker') return { name: title, description };
+    
+    let currentShovel = {
+      name: 'Wooden Shovel',
+      description: 'Basic wooden shovel for digging.'
+    };
+    
+    if (autoClickerCount >= 1000) {
+      currentShovel = {
+        name: 'Netherite Shovel',
+        description: 'The ultimate shovel forged from ancient debris.'
+      };
+    } else if (autoClickerCount >= 500) {
+      currentShovel = {
+        name: 'Diamond Shovel',
+        description: 'A premium diamond-tipped shovel for efficient digging.'
+      };
+    } else if (autoClickerCount >= 300) {
+      currentShovel = {
+        name: 'Golden Shovel',
+        description: 'A golden shovel that brings fortune while digging.'
+      };
+    } else if (autoClickerCount >= 200) {
+      currentShovel = {
+        name: 'Iron Shovel',
+        description: 'A durable iron shovel for serious dirt collection.'
+      };
+    } else if (autoClickerCount >= 100) {
+      currentShovel = {
+        name: 'Stone Shovel',
+        description: 'An upgraded stone shovel for better digging.'
+      };
+    }
+    
+    return currentShovel;
   };
 
   return (
@@ -231,6 +282,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
             <button 
               className="info-button"
               onClick={() => onInfoClick(type)}
+              title={getCurrentShovelInfo().name}
+              aria-label={`Show information about ${getCurrentShovelInfo().name}`}
             >
               i
             </button>
