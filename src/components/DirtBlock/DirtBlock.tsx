@@ -1,6 +1,7 @@
 import { RefObject, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import dirtImage from '../../assets/dirt.webp';
+import { useGameStore } from '../../store/gameStore';
 
 interface DirtBlockProps {
   blockRef: RefObject<HTMLDivElement | null>;
@@ -13,8 +14,25 @@ interface DirtBlockProps {
  * Always positioned in the center of the screen
  */
 export const DirtBlock: React.FC<DirtBlockProps> = ({ blockRef, onBlockClick, onPositionUpdate }) => {
+  const { autoClickerCount } = useGameStore();
+  const controls = useAnimation();
+  
   // Keep track of the previous position to avoid unnecessary updates
   const prevPositionRef = useRef<{ x: number, y: number, width: number, height: number } | null>(null);
+  
+  // Анимация автоматической добычи
+  useEffect(() => {
+    if (autoClickerCount > 0) {
+      const interval = setInterval(() => {
+        controls.start({
+          scale: [1, 0.9, 1],
+          transition: { duration: 0.3 }
+        });
+      }, 2000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [autoClickerCount, controls]);
   
   // Helper function to check if positions are significantly different
   const hasPositionChanged = (
@@ -82,6 +100,7 @@ export const DirtBlock: React.FC<DirtBlockProps> = ({ blockRef, onBlockClick, on
     <motion.div 
       ref={blockRef}
       className="dirt-block-container"
+      animate={controls}
       whileTap={{ scale: 0.9 }}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
       onClick={onBlockClick}
