@@ -1052,27 +1052,10 @@ button {
 }
 
 .buy-button.disabled {
-  background-color: #808080;
-  border-color: #666666;
-  color: #cccccc;
+  opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.buy-button.disabled:hover {
-  background-color: #808080;
-  transform: none;
-  box-shadow: none;
-}
-
-.cost {
-  color: #4CAF50;
-  font-weight: bold;
-}
-
-.cost-not-enough {
-  color: #ff4444;
+  background-color: #555;
+  filter: brightness(0.8) grayscale(0.3);
 }
 
 .info-panel-overlay {
@@ -1496,4 +1479,107 @@ img {
   font-weight: bold;
   font-size: 1.3em;
   text-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+}
+
+/* Стили для оверлея офлайн-прогресса */
+.offline-progress-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.offline-progress-panel {
+  background-color: #2a1a10;
+  border: 4px solid #3d2b1f;
+  border-radius: 0;
+  padding: 20px;
+  width: 300px;
+  max-width: 90%;
+  text-align: center;
+  color: #e2c08d;
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
+}
+
+.offline-progress-panel h2 {
+  color: #f8c471;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
+  font-size: 1.4rem;
+  margin: 0 0 15px;
+}
+
+.offline-progress-panel p {
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.earned-dirt {
+  background-color: #3d2b1f;
+  padding: 15px;
+  border: 2px solid #2a1a10;
+  margin: 15px 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dirt-amount {
+  color: #8aff8a;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
+}
+
+.collect-button {
+  background-color: #6b4731;
+  border: 3px solid #3d2b1f;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 10px;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+}
+
+.collect-button:hover {
+  background-color: #7d5842;
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.5);
+}
+
+.collect-button:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile optimization for offline progress */
+@media (max-width: 480px) {
+  .offline-progress-panel {
+    padding: 15px;
+  }
+
+  .offline-progress-panel h2 {
+    font-size: 1.2rem;
+  }
+
+  .offline-progress-panel p {
+    font-size: 0.8rem;
+  }
+
+  .dirt-amount {
+    font-size: 1.1rem;
+  }
+
+  .collect-button {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
 }

@@ -68,6 +68,16 @@ interface GameState {
   
   // Пересчет стоимости лопат
   recalculateShovelCosts: () => void;
+  
+  lastVisitTime: number;
+  calculateOfflineProgress: () => { 
+    earnedDirt: number;
+    timeAwayInSeconds: number;
+  };
+  init: () => {
+    earnedDirt: number;
+    timeAwayInSeconds: number;
+  };
 }
 
 // Calculates cost for a specific quantity of upgrades
@@ -676,6 +686,48 @@ export const useGameStore = create<GameState>()(
           
           return newState;
         });
+      },
+      
+      lastVisitTime: Date.now(),
+      
+      calculateOfflineProgress: () => {
+        const currentTime = Date.now();
+        const lastVisitTime = get().lastVisitTime;
+        const timeAwayInSeconds = Math.floor((currentTime - lastVisitTime) / 1000);
+        
+        // Получаем текущую скорость добычи в секунду
+        const state = get();
+        
+        // Расчет всех источников дохода
+        const autoClickPower = state.autoClickerCount * (state.multiAutoClickPower > 1.0 ? state.multiAutoClickPower : 1.0);
+        const endermanPower = state.friendlyEndermanCount * 5;
+        const pirateParrotPower = state.pirateParrotCount * 10;
+        
+        // Применяем множитель от Allay
+        const allayMultiplier = state.allayCount > 0 ? 1 + (state.allayCount * 0.2) : 1;
+        
+        // Общая скорость добычи в секунду
+        const dirtPerSecond = (autoClickPower + endermanPower + pirateParrotPower) * allayMultiplier;
+        
+        // Рассчитываем заработанную землю
+        const earnedDirt = Math.floor(dirtPerSecond * timeAwayInSeconds);
+        
+        // Обновляем время последнего визита и добавляем заработанную землю
+        set({
+          lastVisitTime: currentTime,
+          dirtCount: state.dirtCount + earnedDirt
+        });
+        
+        return {
+          earnedDirt,
+          timeAwayInSeconds
+        };
+      },
+
+      // Обновляем существующую функцию init
+      init: () => {
+        const offlineProgress = get().calculateOfflineProgress();
+        return offlineProgress;
       },
     }),
     {

@@ -58,11 +58,8 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
     };
   }, [updateResponsiveValues]);
 
-  // Если нет деревянных лопат - не рендерим ничего
-  if (autoClickerCount <= 0) return null;
-
-  // Если мы не на вкладке game, не отображаем анимацию, но продолжаем добычу
-  if (!blockPosition) return null;
+  // Если нет деревянных лопат или отсутствует позиция блока - не рендерим ничего
+  if (autoClickerCount <= 0 || !blockPosition) return null;
 
   // Создаем массив лопат в соответствии с количеством деревянных лопат
   const shovels = Array.from({ length: Math.min(autoClickerCount, 12) }, (_, index) => {
