@@ -17,8 +17,8 @@ interface AllayHelperProps {
  * Allays increase passive income from all sources
  */
 export const AllayHelper: React.FC<AllayHelperProps> = ({ blockPosition }) => {
-  const { allayCount } = useGameStore();
-  const playSound = useSoundEffect([allaySound1, allaySound2, allaySound3, allaySound4], 0.5);
+  const { allayCount, allaySoundsEnabled, allaySoundsVolume } = useGameStore();
+  const playSound = useSoundEffect([allaySound1, allaySound2, allaySound3, allaySound4], allaySoundsVolume);
   
   // Animation duration for floating
   const [animationDuration, setAnimationDuration] = useState(3.0);
@@ -68,7 +68,7 @@ export const AllayHelper: React.FC<AllayHelperProps> = ({ blockPosition }) => {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        onClick={playSound}
+        onClick={() => allaySoundsEnabled && playSound()}
         style={{ 
           cursor: 'pointer',
           pointerEvents: 'auto',

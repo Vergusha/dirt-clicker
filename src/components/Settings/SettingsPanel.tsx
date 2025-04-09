@@ -17,13 +17,25 @@ export const SettingsPanel: React.FC = () => {
     shovelSoundsVolume,
     endermanSoundsEnabled,
     endermanSoundsVolume,
+    allaySoundsEnabled,
+    allaySoundsVolume,
+    catSoundsEnabled,
+    catSoundsVolume,
+    parrotSoundsEnabled,
+    parrotSoundsVolume,
     setMusicEnabled,
     setMusicVolume,
     setSoundEffectsEnabled,
     setShovelSoundsEnabled,
     setShovelSoundsVolume,
     setEndermanSoundsEnabled,
-    setEndermanSoundsVolume
+    setEndermanSoundsVolume,
+    setAllaySoundsEnabled,
+    setAllaySoundsVolume,
+    setCatSoundsEnabled,
+    setCatSoundsVolume,
+    setParrotSoundsEnabled,
+    setParrotSoundsVolume
   } = useGameStore();
   
   const [promoCode, setPromoCode] = useState('');
@@ -190,6 +202,111 @@ export const SettingsPanel: React.FC = () => {
                 disabled={!soundEffectsEnabled}
                 title="Enable/Disable Enderman Sounds"
                 aria-label="Enderman Sounds Toggle"
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div className="setting-item sub-setting">
+          <div className="setting-row">
+            <span className="setting-label">
+              <i className="fas fa-wind"></i>
+              Allay Sounds
+            </span>
+            <div className="volume-slider-container">
+              <input 
+                type="range" 
+                min="0" 
+                max="1" 
+                step="0.01" 
+                value={allaySoundsVolume}
+                onChange={(e) => setAllaySoundsVolume(parseFloat(e.target.value))}
+                className="volume-slider"
+                disabled={!soundEffectsEnabled || !allaySoundsEnabled}
+                title="Allay Sounds Volume"
+                aria-label="Allay Sounds Volume Slider"
+              />
+            </div>
+            <label className="toggle-switch" htmlFor="allay-sounds-toggle">
+              <input 
+                id="allay-sounds-toggle"
+                type="checkbox"
+                checked={allaySoundsEnabled}
+                onChange={(e) => setAllaySoundsEnabled(e.target.checked)}
+                disabled={!soundEffectsEnabled}
+                title="Enable/Disable Allay Sounds"
+                aria-label="Allay Sounds Toggle"
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div className="setting-item sub-setting">
+          <div className="setting-row">
+            <span className="setting-label">
+              <i className="fas fa-cat"></i>
+              Lucky Cat Sounds
+            </span>
+            <div className="volume-slider-container">
+              <input 
+                type="range" 
+                min="0" 
+                max="1" 
+                step="0.01" 
+                value={catSoundsVolume}
+                onChange={(e) => setCatSoundsVolume(parseFloat(e.target.value))}
+                className="volume-slider"
+                disabled={!soundEffectsEnabled || !catSoundsEnabled}
+                title="Lucky Cat Sounds Volume"
+                aria-label="Lucky Cat Sounds Volume Slider"
+              />
+            </div>
+            <label className="toggle-switch" htmlFor="cat-sounds-toggle">
+              <input 
+                id="cat-sounds-toggle"
+                type="checkbox"
+                checked={catSoundsEnabled}
+                onChange={(e) => setCatSoundsEnabled(e.target.checked)}
+                disabled={!soundEffectsEnabled}
+                title="Enable/Disable Lucky Cat Sounds"
+                aria-label="Lucky Cat Sounds Toggle"
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div className="setting-item sub-setting">
+          <div className="setting-row">
+            <span className="setting-label">
+              <i className="fas fa-feather"></i>
+              Pirate Parrot Sounds
+            </span>
+            <div className="volume-slider-container">
+              <input 
+                type="range" 
+                min="0" 
+                max="1" 
+                step="0.01" 
+                value={parrotSoundsVolume}
+                onChange={(e) => setParrotSoundsVolume(parseFloat(e.target.value))}
+                className="volume-slider"
+                disabled={!soundEffectsEnabled || !parrotSoundsEnabled}
+                title="Pirate Parrot Sounds Volume"
+                aria-label="Pirate Parrot Sounds Volume Slider"
+              />
+            </div>
+            <label className="toggle-switch" htmlFor="parrot-sounds-toggle">
+              <input 
+                id="parrot-sounds-toggle"
+                type="checkbox"
+                checked={parrotSoundsEnabled}
+                onChange={(e) => setParrotSoundsEnabled(e.target.checked)}
+                disabled={!soundEffectsEnabled}
+                title="Enable/Disable Pirate Parrot Sounds"
+                aria-label="Pirate Parrot Sounds Toggle"
               />
               <span className="toggle-slider"></span>
             </label>

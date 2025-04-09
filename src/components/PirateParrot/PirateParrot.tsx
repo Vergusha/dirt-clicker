@@ -15,8 +15,8 @@ import parrotSound4 from '../../audio/Parrot_idle4.ogg';
  * When music is enabled and volume is above minimum threshold, it shows a dancing parrot
  */
 export const PirateParrot: React.FC = () => {
-  const { pirateParrotCount, musicEnabled, musicVolume } = useGameStore();
-  const playSound = useSoundEffect([parrotSound1, parrotSound2, parrotSound3, parrotSound4], 0.5);
+  const { pirateParrotCount, parrotSoundsEnabled, parrotSoundsVolume } = useGameStore();
+  const playSound = useSoundEffect([parrotSound1, parrotSound2], parrotSoundsVolume);
   
   // Animation parameters
   const [animationDuration, setAnimationDuration] = useState(4.0);
@@ -58,7 +58,7 @@ export const PirateParrot: React.FC = () => {
   if (pirateParrotCount <= 0) return null;
 
   // Определяем, танцует ли попугай (музыка включена И громкость больше минимального порога)
-  const isParrotDancing = musicEnabled && musicVolume > 0.05;
+  const isParrotDancing = parrotSoundsEnabled && parrotSoundsVolume > 0.05;
 
   // Choose image based on music state and volume
   const currentImage = isParrotDancing ? dancingParrotImage : parrotImage;
@@ -84,7 +84,7 @@ export const PirateParrot: React.FC = () => {
             position: 'relative',
             cursor: 'pointer'
           }}
-          onClick={playSound}
+          onClick={() => parrotSoundsEnabled && playSound()}
           initial={{ scale: 0 }}
           animate={{ 
             // Different animations based on music status and volume

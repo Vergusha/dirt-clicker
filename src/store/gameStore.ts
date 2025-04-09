@@ -33,6 +33,12 @@ interface GameState {
   shovelSoundsVolume: number;
   endermanSoundsEnabled: boolean;
   endermanSoundsVolume: number;
+  allaySoundsEnabled: boolean;
+  allaySoundsVolume: number;
+  catSoundsEnabled: boolean;
+  catSoundsVolume: number;
+  parrotSoundsEnabled: boolean;
+  parrotSoundsVolume: number;
   
   // Audio controls
   setMusicEnabled: (enabled: boolean) => void;
@@ -42,6 +48,12 @@ interface GameState {
   setShovelSoundsVolume: (volume: number) => void;
   setEndermanSoundsEnabled: (enabled: boolean) => void;
   setEndermanSoundsVolume: (volume: number) => void;
+  setAllaySoundsEnabled: (enabled: boolean) => void;
+  setAllaySoundsVolume: (volume: number) => void;
+  setCatSoundsEnabled: (enabled: boolean) => void;
+  setCatSoundsVolume: (volume: number) => void;
+  setParrotSoundsEnabled: (enabled: boolean) => void;
+  setParrotSoundsVolume: (volume: number) => void;
   
   // Promo codes
   usedPromoCodes: string[];
@@ -213,6 +225,12 @@ export const useGameStore = create<GameState>()(
       shovelSoundsVolume: 0.5,
       endermanSoundsEnabled: true,
       endermanSoundsVolume: 0.5,
+      allaySoundsEnabled: true,
+      allaySoundsVolume: 0.5,
+      catSoundsEnabled: true,
+      catSoundsVolume: 0.5,
+      parrotSoundsEnabled: true,
+      parrotSoundsVolume: 0.5,
       
       // Promo codes initial values
       usedPromoCodes: [],
@@ -576,34 +594,20 @@ export const useGameStore = create<GameState>()(
       },
       
       // Audio controls
-      setMusicEnabled: (enabled) => {
-        set({ musicEnabled: enabled });
-      },
+      setMusicEnabled: (enabled) => set({ musicEnabled: enabled }),
+      setMusicVolume: (volume) => set({ musicVolume: volume }),
+      setSoundEffectsEnabled: (enabled) => set({ soundEffectsEnabled: enabled }),
+      setShovelSoundsEnabled: (enabled) => set({ shovelSoundsEnabled: enabled }),
+      setShovelSoundsVolume: (volume) => set({ shovelSoundsVolume: volume }),
+      setEndermanSoundsEnabled: (enabled) => set({ endermanSoundsEnabled: enabled }),
+      setEndermanSoundsVolume: (volume) => set({ endermanSoundsVolume: volume }),
+      setAllaySoundsEnabled: (enabled) => set({ allaySoundsEnabled: enabled }),
+      setAllaySoundsVolume: (volume) => set({ allaySoundsVolume: volume }),
+      setCatSoundsEnabled: (enabled) => set({ catSoundsEnabled: enabled }),
+      setCatSoundsVolume: (volume) => set({ catSoundsVolume: volume }),
+      setParrotSoundsEnabled: (enabled) => set({ parrotSoundsEnabled: enabled }),
+      setParrotSoundsVolume: (volume) => set({ parrotSoundsVolume: volume }),
       
-      setMusicVolume: (volume) => {
-        set({ musicVolume: volume });
-      },
-      
-      setSoundEffectsEnabled: (enabled) => {
-        set({ soundEffectsEnabled: enabled });
-      },
-
-      setShovelSoundsEnabled: (enabled) => {
-        set({ shovelSoundsEnabled: enabled });
-      },
-
-      setShovelSoundsVolume: (volume) => {
-        set({ shovelSoundsVolume: volume });
-      },
-      
-      setEndermanSoundsEnabled: (enabled) => {
-        set({ endermanSoundsEnabled: enabled });
-      },
-
-      setEndermanSoundsVolume: (volume) => {
-        set({ endermanSoundsVolume: volume });
-      },
-
       fixFloatingPointNumbers: () => {
         set((state) => {
           const newState = { ...state };

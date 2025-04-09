@@ -11,8 +11,8 @@ import catSound2 from '../../audio/Cat_purreow2.ogg';
  * Lucky Cat doubles random dirt drops and increases luck
  */
 export const LuckyCat: React.FC = () => {
-  const { luckyCatCount } = useGameStore();
-  const playSound = useSoundEffect([catSound1, catSound2], 0.5);
+  const { luckyCatCount, catSoundsEnabled, catSoundsVolume } = useGameStore();
+  const playSound = useSoundEffect([catSound1, catSound2], catSoundsVolume);
   
   // Animation parameters
   const [animationDuration, setAnimationDuration] = useState(4.0);
@@ -65,7 +65,7 @@ export const LuckyCat: React.FC = () => {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        onClick={playSound}
+        onClick={() => catSoundsEnabled && playSound()}
         style={{ 
           cursor: 'pointer',
           pointerEvents: 'auto',
