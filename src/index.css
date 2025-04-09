@@ -868,3 +868,35 @@ textarea:focus {
     font-size: 10px;
   }
 }
+
+.buy-button {
+  background-color: #6b4731;
+  border: 2px solid #3d2b1f;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 0px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+}
+
+/* Стили для кнопки улучшения */
+.buy-button:contains("Upgrade") {
+  background-color: #4a6741;
+  border-color: #2a4a1d;
+  color: #8aff8a;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+}
+
+.buy-button:contains("Upgrade"):hover:not(:disabled) {
+  background-color: #5a7751;
+  border-color: #3a5a2d;
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+}
+
+.buy-button:contains("Upgrade"):active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.4);
+}

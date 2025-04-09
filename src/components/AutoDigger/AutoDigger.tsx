@@ -1,6 +1,11 @@
 import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
-import shovelImage from '../../assets/wood_shovel.webp';
+import woodenShovelImage from '../../assets/wood_shovel.webp';
+import stoneShovelImage from '../../assets/stone_shovel.webp';
+import ironShovelImage from '../../assets/iron_shovel.webp';
+import goldenShovelImage from '../../assets/golden_shovel.webp';
+import diamondShovelImage from '../../assets/diamond_shovel.webp';
+import netheriteShovelImage from '../../assets/netherite_shovel.webp';
 import { useEffect, useState, useCallback } from 'react';
 
 interface AutoDiggerProps {
@@ -84,57 +89,75 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
     };
   });
 
-  return (
-    <div className="shovels-container">
-      {shovels.map(shovel => {
-        // Вычисляем направление движения к центру блока для анимации "копания"
-        // Уменьшаем глубину движения с -35 до -20 для более легкой анимации
-        const moveX = Math.cos(shovel.angle) * -15; 
-        const moveY = Math.sin(shovel.angle) * -15;
-        
-        // Итоговый поворот = базовая ориентация + базовый поворот изображения + индивидуальная вариация
-        const finalRotation = shovel.rotation + baseImageRotation + shovel.individualRotation;
+  const getShovelImage = () => {
+    if (autoClickerCount >= 1000) return netheriteShovelImage;
+    if (autoClickerCount >= 500) return diamondShovelImage;
+    if (autoClickerCount >= 300) return goldenShovelImage;
+    if (autoClickerCount >= 200) return ironShovelImage;
+    if (autoClickerCount >= 100) return stoneShovelImage;
+    return woodenShovelImage;
+  };
 
-        return (
-          <motion.div
-            key={`digger-${shovel.id}`}
-            className="auto-digger"
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              transform: `translate(calc(-50% + ${shovel.position.x}px), calc(-50% + ${shovel.position.y}px))`,
-              pointerEvents: 'none',
-            }}
-          >
-            <motion.img
-              src={shovelImage}
-              alt="Wooden Shovel"
-              className="shovel-image"
+  // Получаем дополнительный угол поворота в зависимости от типа лопаты
+  const getAdditionalRotation = () => {
+    if (autoClickerCount >= 1000) return 90; // Незеритовая
+    if (autoClickerCount >= 500) return 90; // Алмазная
+    if (autoClickerCount >= 300) return 90; // Золотая
+    if (autoClickerCount >= 200) return 90; // Железная
+    if (autoClickerCount >= 100) return 90; // Каменная
+    return 0; // Деревянная
+  };
+
+  return (
+    <div className="global-shovels-container">
+      <div className="shovels-container">
+        {shovels.map(shovel => {
+          const moveX = Math.cos(shovel.angle) * -15;
+          const moveY = Math.sin(shovel.angle) * -15;
+          
+          const finalRotation = shovel.rotation + baseImageRotation + shovel.individualRotation + getAdditionalRotation();
+
+          return (
+            <motion.div
+              key={`digger-${shovel.id}`}
+              className="auto-digger"
               style={{
-                width: window.innerWidth <= 480 ? '40px' : '34px',
-                height: 'auto',
-                transformOrigin: '50% 75%', // Точка вращения ближе к нижней части лопаты
-                transform: `rotate(${finalRotation}deg)` // Поворачиваем лопату с учетом всех углов
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                transform: `translate(calc(-50% + ${shovel.position.x}px), calc(-50% + ${shovel.position.y}px))`,
+                pointerEvents: 'none',
               }}
-              animate={{
-                // Анимация "копания" - движение к центру и обратно с меньшей глубиной
-                x: [0, moveX, 0],
-                y: [0, moveY, 0],
-                // Уменьшаем амплитуду поворота с 20 до 12 градусов
-                rotate: [finalRotation, finalRotation - 12, finalRotation]
-              }}
-              transition={{
-                duration: animationDuration,
-                repeat: Infinity,
-                repeatDelay: 0.6, // Уменьшили с 0.8 до 0.6 для более частого копания
-                delay: shovel.delay, // Индивидуальная задержка для каждой лопаты
-                ease: "easeInOut", // Более плавная анимация
-              }}
-            />
-          </motion.div>
-        );
-      })}
+            >
+              <motion.img
+                src={getShovelImage()}
+                alt="Shovel"
+                className="shovel-image"
+                style={{
+                  width: window.innerWidth <= 480 ? '28px' : '34px',
+                  height: 'auto',
+                  transformOrigin: '50% 75%',
+                  transform: `rotate(${finalRotation}deg)`
+                }}
+                animate={{
+                  // Анимация "копания" - движение к центру и обратно с меньшей глубиной
+                  x: [0, moveX, 0],
+                  y: [0, moveY, 0],
+                  // Уменьшаем амплитуду поворота с 20 до 12 градусов
+                  rotate: [finalRotation, finalRotation - 12, finalRotation]
+                }}
+                transition={{
+                  duration: animationDuration,
+                  repeat: Infinity,
+                  repeatDelay: 0.6, // Уменьшили с 0.8 до 0.6 для более частого копания
+                  delay: shovel.delay, // Индивидуальная задержка для каждой лопаты
+                  ease: "easeInOut", // Более плавная анимация
+                }}
+              />
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 };

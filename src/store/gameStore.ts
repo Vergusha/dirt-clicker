@@ -50,7 +50,7 @@ interface GameState {
   // Actions
   increaseDirtCount: (amount: number) => void;
   purchaseClickPower: (quantity: number) => void;
-  purchaseAutoClicker: (quantity: number) => void;
+  purchaseAutoClicker: (quantity: number) => boolean;
   purchaseMultiAutoClick: (quantity: number) => void;
   purchaseFriendlyEnderman: (quantity: number) => void;
   purchaseAllay: (quantity: number) => void;
@@ -65,15 +65,22 @@ interface GameState {
   
   // Reset game (for testing)
   resetGame: () => void;
+  
+  // Пересчет стоимости лопат
+  recalculateShovelCosts: () => void;
 }
 
 // Calculates cost for a specific quantity of upgrades
 const calculateCost = (baseCost: number, growthRate: number, quantity: number, startLevel: number = 0): number => {
   let totalCost = 0;
+  
   for (let i = 0; i < quantity; i++) {
-    // Каждое следующее улучшение дороже предыдущего на коэффициент growthRate
-    totalCost += Math.floor(baseCost * Math.pow(1 + growthRate, startLevel + i));
+    const currentLevel = startLevel + i;
+    // Просто рассчитываем стоимость с учетом роста 15%
+    const levelCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
+    totalCost += levelCost;
   }
+  
   return totalCost;
 };
 
@@ -210,6 +217,21 @@ export const useGameStore = create<GameState>()(
         return get().dirtCount >= cost;
       },
       
+      // Пересчет стоимости лопат
+      recalculateShovelCosts: () => {
+        set((state) => {
+          const baseCost = 15;
+          const growthRate = 0.15;
+          
+          // Рассчитываем стоимость следующей покупки
+          const nextCost = calculateCost(baseCost, growthRate, 1, state.autoClickerCount);
+          
+          return {
+            autoClickerCost: nextCost
+          };
+        });
+      },
+      
       purchaseClickPower: (quantity) => {
         const state = get();
         const baseCost = 5;
@@ -232,26 +254,28 @@ export const useGameStore = create<GameState>()(
         }
       },
       
-      purchaseAutoClicker: (quantity) => {
+      purchaseAutoClicker: (amount: number = 1) => {
         const state = get();
         const baseCost = 15;
         const growthRate = 0.15;
         
-        // Calculate cost for quantity upgrades from current level
-        const totalCost = calculateCost(
-          baseCost * Math.pow(1 + growthRate, state.autoClickerCount), 
-          growthRate, 
-          quantity
-        );
+        // Рассчитываем общую стоимость для текущей покупки
+        const totalCost = calculateCost(baseCost, growthRate, amount, state.autoClickerCount);
         
-        // Check if player can afford
-        if (state.canAfford(totalCost)) {
+        if (state.dirtCount >= totalCost) {
+          const newCount = state.autoClickerCount + amount;
+          
+          // Рассчитываем стоимость следующей покупки
+          const nextCost = calculateCost(baseCost, growthRate, 1, newCount);
+          
           set({
-            dirtCount: Math.floor(state.dirtCount - totalCost),
-            autoClickerCount: state.autoClickerCount + quantity,
-            autoClickerCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.autoClickerCount + quantity))
+            dirtCount: fixFloatingPoint(state.dirtCount - totalCost),
+            autoClickerCount: newCount,
+            autoClickerCost: nextCost
           });
+          return true;
         }
+        return false;
       },
       
       // Purchase Enchanted Wood Shovel (multiAutoClick)
@@ -376,31 +400,32 @@ export const useGameStore = create<GameState>()(
         let level = 0;
         
         // Определяем текущий уровень улучшения на основе базовой стоимости
-        if (baseCost === 5) { // Click Power
-          level = state.clickPower - 1;
-        } else if (baseCost === 15) { // Wood Shovel
-          level = state.autoClickerCount;
-        } else if (baseCost === 100) { // Enchanted Wood Shovel
-          level = Math.round((state.multiAutoClickPower - 1) * 10);
-        } else if (baseCost === 500) { // Friendly Enderman
-          level = state.friendlyEndermanCount;
-        } else if (baseCost === 1000) { // Allay
-          level = state.allayCount;
-        } else if (baseCost === 2000) { // Lucky Cat
-          level = state.luckyCatCount;
-        } else if (baseCost === 3500) { // Pirate Parrot
-          level = state.pirateParrotCount;
+        switch (baseCost) {
+          case 15: // Wood Shovel
+            level = state.autoClickerCount;
+            break;
+          case 5: // Click Power
+            level = state.clickPower - 1;
+            break;
+          case 100: // Enchanted Wood Shovel
+            level = Math.round((state.multiAutoClickPower - 1) * 10);
+            break;
+          case 500: // Friendly Enderman
+            level = state.friendlyEndermanCount;
+            break;
+          case 1000: // Allay
+            level = state.allayCount;
+            break;
+          case 2000: // Lucky Cat
+            level = state.luckyCatCount;
+            break;
+          case 3500: // Pirate Parrot
+            level = state.pirateParrotCount;
+            break;
         }
         
-        // Используем единый коэффициент роста 0.15 для всех улучшений
-        const actualBaseCost = baseCost * Math.pow(1 + 0.15, level);
-        let totalCost = 0;
-        
-        for (let i = 0; i < quantity; i++) {
-          totalCost += Math.floor(actualBaseCost * Math.pow(1 + 0.15, i));
-        }
-        
-        return Math.floor(totalCost);
+        // Используем функцию calculateCost для расчета общей стоимости
+        return calculateCost(baseCost, growthRate, quantity, level);
       },
       
       // Reset game (for testing)
@@ -429,6 +454,22 @@ export const useGameStore = create<GameState>()(
       // Apply promo code
       applyPromoCode: (code) => {
         const state = get();
+        
+        // Промокод для сброса прогресса
+        if (code === "Dead") {
+          get().resetGame();
+          return { success: true, message: "Весь прогресс был сброшен!" };
+        }
+        
+        // Промокод Sasha (в 50 раз больше чем get50trilliondirt)
+        if (code === "Sasha") {
+          const amount = 50000000000000 * 50; // 2.5 квадриллиона
+          set({
+            dirtCount: fixFloatingPoint(state.dirtCount + amount),
+            totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + amount),
+          });
+          return { success: true, message: "ВАУ! Вы получили 2.5 квадриллиона земли!" };
+        }
         
         // Специальный промокод для 50 триллионов земли
         if (code.toLowerCase() === "get50trilliondirt") {
@@ -500,6 +541,85 @@ export const useGameStore = create<GameState>()(
       setEndermanSoundsVolume: (volume) => {
         set({ endermanSoundsVolume: volume });
       },
+
+      fixFloatingPointNumbers: () => {
+        set((state) => {
+          const newState = { ...state };
+          
+          // Всегда округляем до целых чисел для основных значений
+          const integerFields = [
+            'dirtCount',
+            'totalDirtCollected',
+            'clickPower',
+            'autoClickerCount',
+            'clickPowerCost',
+            'autoClickerCost',
+            'multiAutoClickCost',
+            'friendlyEndermanCount',
+            'friendlyEndermanCost',
+            'allayCount',
+            'allayCost',
+            'luckyCatCount',
+            'luckyCatCost',
+            'pirateParrotCount',
+            'pirateParrotCost'
+          ];
+          
+          integerFields.forEach(field => {
+            if (newState[field as keyof typeof newState] !== undefined) {
+              // Сначала исправляем проблемы с плавающей запятой, потом округляем
+              (newState as any)[field] = Math.floor(fixFloatingPoint(Number((newState as any)[field])));
+            }
+          });
+          
+          // Округляем множители до 2 знаков
+          if (newState.multiAutoClickPower !== undefined) {
+            // Исправляем проблемы с плавающей запятой, затем форматируем до 2 знаков
+            newState.multiAutoClickPower = fixFloatingPoint(Number(newState.multiAutoClickPower));
+            newState.multiAutoClickPower = Number(newState.multiAutoClickPower.toFixed(2));
+          }
+          
+          // Пересчитываем стоимости, если они некорректные
+          if (newState.clickPower !== undefined && newState.clickPowerCost !== undefined) {
+            const baseCost = 5;
+            const growthRate = 0.15;
+            newState.clickPowerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.clickPower - 1));
+          }
+          
+          if (newState.autoClickerCount !== undefined && newState.autoClickerCost !== undefined) {
+            const baseCost = 15;
+            const growthRate = 0.15;
+            newState.autoClickerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.autoClickerCount));
+          }
+          
+          if (newState.multiAutoClickPower !== undefined && newState.multiAutoClickCost !== undefined) {
+            const baseCost = 100;
+            const growthRate = 0.15;
+            const currentLevel = Math.round((newState.multiAutoClickPower - 1) * 10);
+            newState.multiAutoClickCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
+          }
+          
+          if (newState.friendlyEndermanCount !== undefined && newState.friendlyEndermanCost !== undefined) {
+            const baseCost = 500;
+            const growthRate = 0.15;
+            newState.friendlyEndermanCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.friendlyEndermanCount));
+          }
+          
+          if (newState.allayCount !== undefined && newState.allayCost !== undefined) {
+            const baseCost = 1000;
+            const growthRate = 0.15;
+            newState.allayCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.allayCount));
+          }
+          
+          if (newState.luckyCatCount !== undefined && newState.luckyCatCost !== undefined) {
+            const baseCost = 2000;
+            const growthRate = 0.15;
+            newState.luckyCatCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.luckyCatCount));
+          }
+          
+          return newState;
+        });
+      },
     }),
     {
       name: 'dirt-clicker-storage', // Name for localStorage
@@ -513,6 +633,9 @@ export const useGameStore = create<GameState>()(
               (state as any)[typedKey] = fixedState[typedKey];
             }
           });
+          
+          // Пересчитываем стоимость лопат
+          state.recalculateShovelCosts();
         }
       }
     }

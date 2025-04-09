@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { UpgradeType, PurchaseQuantity } from '../../types';
 import { formatNumber } from '../../utils/formatNumber';
 import slotImage from '../../assets/slot.webp';
 import woodenShovelNormalImage from '../../assets/wooden_shovel_normal.webp';
+import stoneShovelImage from '../../assets/stone_shovel.webp';
+import ironShovelImage from '../../assets/iron_shovel.webp';
+import goldenShovelImage from '../../assets/golden_shovel.webp';
+import diamondShovelImage from '../../assets/diamond_shovel.webp';
+import netheriteShovelImage from '../../assets/netherite_shovel.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 import cursorImage from '../../assets/cursor.webp';
 import enderPearlImage from '../../assets/invicon_enderman.webp';
@@ -30,7 +35,6 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   onInfoClick
 }) => {
   const {
-    dirtCount,
     purchaseClickPower,
     purchaseAutoClicker,
     purchaseMultiAutoClick,
@@ -45,20 +49,35 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     allayCount,
     luckyCatCount,
     pirateParrotCount, // Добавляем счетчик для попугая
-    calculateTotalPrice
+    calculateTotalPrice,
+    canAfford,
+    recalculateShovelCosts
   } = useGameStore();
+
+  // Добавляем useEffect для пересчета цен при монтировании
+  useEffect(() => {
+    recalculateShovelCosts();
+  }, [recalculateShovelCosts]);
+
+  // Функция для получения информации об улучшении лопаты
+  const getShovelUpgradeInfo = (count: number) => {
+    if (count === 99) return { level: 100, name: 'Stone Shovel' };
+    if (count === 199) return { level: 200, name: 'Iron Shovel' };
+    if (count === 299) return { level: 300, name: 'Golden Shovel' };
+    if (count === 499) return { level: 500, name: 'Diamond Shovel' };
+    if (count === 999) return { level: 1000, name: 'Netherite Shovel' };
+    return null;
+  };
 
   // Get the cost of the upgrade based on its type
   const getCost = () => {
     switch (type) {
       case 'clickPower':
-        // Расчет для Click Power с учетом прогрессии
         return calculateTotalPrice(5, purchaseQuantity, 0.15);
-
       case 'autoClicker':
-        // Расчет для Wood Shovel с учетом прогрессии
-        return calculateTotalPrice(15, purchaseQuantity, 0.15);
-
+        // Рассчитываем стоимость с учетом текущего уровня
+        let baseCost = 15;
+        return calculateTotalPrice(baseCost, purchaseQuantity, 0.15);
       case 'multiAutoClick':
         // Расчет для Enchanted Wood Shovel с учетом прогрессии
         return calculateTotalPrice(100, purchaseQuantity, 0.15);
@@ -139,6 +158,11 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'clickPower':
         return cursorImage;
       case 'autoClicker':
+        if (autoClickerCount >= 1000) return netheriteShovelImage;
+        if (autoClickerCount >= 500) return diamondShovelImage;
+        if (autoClickerCount >= 300) return goldenShovelImage;
+        if (autoClickerCount >= 200) return ironShovelImage;
+        if (autoClickerCount >= 100) return stoneShovelImage;
         return woodenShovelNormalImage;
       case 'multiAutoClick':
         return enchantedWoodShovelImage;
@@ -161,8 +185,29 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
 
   const cost = getCost();
   const formattedCost = formatNumber(cost);
-  const canAfford = dirtCount >= cost;
   const upgradeImage = getUpgradeImage();
+
+  // Определяем, показывать ли кнопку Upgrade вместо Buy
+  const showUpgradeButton = type === 'autoClicker' && getShovelUpgradeInfo(autoClickerCount) !== null;
+
+  const getShovelTitle = () => {
+    if (type !== 'autoClicker') return title;
+    if (autoClickerCount >= 1000) return 'Netherite Shovel';
+    if (autoClickerCount >= 500) return 'Diamond Shovel';
+    if (autoClickerCount >= 300) return 'Golden Shovel';
+    if (autoClickerCount >= 200) return 'Iron Shovel';
+    if (autoClickerCount >= 100) return 'Stone Shovel';
+    return 'Wood Shovel';
+  };
+
+  const getShovelDescription = () => {
+    if (type !== 'autoClicker') return description;
+    const upgradeInfo = getShovelUpgradeInfo(autoClickerCount);
+    if (upgradeInfo) {
+      return `Upgrade your shovel to ${upgradeInfo.name}!`;
+    }
+    return description;
+  };
 
   return (
     <div className={`upgrade-button ${!canAfford ? 'disabled' : ''}`}>
@@ -178,7 +223,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         <div className="upgrade-info">
           <div className="upgrade-header">
             <h3>
-              {title}
+              {getShovelTitle()}
               {upgradeCount > 0 && (
                 <span className="upgrade-count-header"> ({formatNumber(upgradeCount)})</span>
               )}
@@ -190,7 +235,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
               i
             </button>
           </div>
-          <p className="upgrade-description">{description}</p>
+          <p className="upgrade-description">{getShovelDescription()}</p>
           <div className="upgrade-footer">
             <span className="cost">
               Cost: {formattedCost}
@@ -200,7 +245,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
               disabled={!canAfford}
               className={`buy-button ${!canAfford ? 'disabled' : ''}`}
             >
-              Buy{purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}
+              {showUpgradeButton ? 'Upgrade' : `Buy${purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}`}
             </button>
           </div>
         </div>
