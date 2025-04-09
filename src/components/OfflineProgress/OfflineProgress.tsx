@@ -13,15 +13,15 @@ export const OfflineProgress: React.FC<OfflineProgressProps> = ({
   timeAwayInSeconds,
   onClose
 }) => {
-  // Форматируем время отсутствия
+  // Format time away
   const formatTime = (seconds: number) => {
-    if (seconds < 60) return `${seconds} секунд`;
+    if (seconds < 60) return `${seconds} seconds`;
     if (seconds < 3600) {
       const minutes = Math.floor(seconds / 60);
-      return `${minutes} ${minutes === 1 ? 'минуту' : 'минут'}`;
+      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
     }
     const hours = Math.floor(seconds / 3600);
-    return `${hours} ${hours === 1 ? 'час' : hours < 5 ? 'часа' : 'часов'}`;
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
   };
 
   return (
@@ -38,15 +38,15 @@ export const OfflineProgress: React.FC<OfflineProgressProps> = ({
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.8, y: 20 }}
         >
-          <h2>С возвращением!</h2>
-          <p>Вас не было {formatTime(timeAwayInSeconds)}</p>
+          <h2>Welcome Back!</h2>
+          <p>You were away for {formatTime(timeAwayInSeconds)}</p>
           <p className="earned-dirt">
-            Ваши лопаты накопали:
+            Your shovels have collected:
             <span className="dirt-amount">{formatNumber(earnedDirt)}</span>
-            земли
+            dirt
           </p>
           <button className="collect-button" onClick={onClose}>
-            Забрать
+            Collect
           </button>
         </motion.div>
       </motion.div>
