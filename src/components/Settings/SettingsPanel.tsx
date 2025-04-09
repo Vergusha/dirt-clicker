@@ -5,7 +5,7 @@ import { formatNumber } from '../../utils/formatNumber';
 import styles from './SettingsPanel.module.css';
 
 /**
- * Компонент для отображения настроек и статистики игры
+ * Component for displaying game settings and statistics
  */
 export const SettingsPanel = () => {
   const [promoCode, setPromoCode] = useState('');
@@ -49,22 +49,22 @@ export const SettingsPanel = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
     >
-      <h2 className={styles.title}>Настройки</h2>
+      <h2 className={styles.title}>Settings</h2>
 
-      {/* Статистика */}
+      {/* Statistics */}
       <div className={styles.statsGroup}>
-        <h3 className={styles.subtitle}>Статистика</h3>
+        <h3 className={styles.subtitle}>Statistics</h3>
         <div className={styles.statItem}>
-          <span>Всего земли добыто:</span>
+          <span>Total Dirt Collected:</span>
           <span className={styles.statValue}>{formatNumber(totalDirtCollected)}</span>
         </div>
         <div className={styles.statItem}>
-          <span>Текущее количество земли:</span>
+          <span>Current Dirt Amount:</span>
           <span className={styles.statValue}>{formatNumber(dirtCount)}</span>
         </div>
       </div>
 
-      {/* Настройки музыки */}
+      {/* Music Settings */}
       <div className={styles.settingGroup}>
         <label className={styles.settingLabel}>
           <input
@@ -72,7 +72,7 @@ export const SettingsPanel = () => {
             checked={musicEnabled}
             onChange={(e) => setMusicEnabled(e.target.checked)}
           />
-          Музыка
+          Music
         </label>
         <AnimatePresence>
           {musicEnabled && (
@@ -95,7 +95,7 @@ export const SettingsPanel = () => {
         </AnimatePresence>
       </div>
 
-      {/* Настройки звуковых эффектов */}
+      {/* Sound Effects Settings */}
       <div className={styles.settingGroup}>
         <label className={styles.settingLabel}>
           <input
@@ -103,7 +103,7 @@ export const SettingsPanel = () => {
             checked={soundEffectsEnabled}
             onChange={(e) => setSoundEffectsEnabled(e.target.checked)}
           />
-          Звуковые эффекты
+          Sound Effects
         </label>
         <AnimatePresence>
           {soundEffectsEnabled && (
@@ -129,7 +129,7 @@ export const SettingsPanel = () => {
                     checked={shovelSoundsEnabled}
                     onChange={(e) => setShovelSoundsEnabled(e.target.checked)}
                   />
-                  Звуки лопаты
+                  Shovel Sounds
                 </label>
                 <label className={styles.settingLabel}>
                   <input
@@ -137,7 +137,7 @@ export const SettingsPanel = () => {
                     checked={endermanSoundsEnabled}
                     onChange={(e) => setEndermanSoundsEnabled(e.target.checked)}
                   />
-                  Звуки эндермена
+                  Enderman Sounds
                 </label>
                 <label className={styles.settingLabel}>
                   <input
@@ -145,7 +145,7 @@ export const SettingsPanel = () => {
                     checked={allaySoundsEnabled}
                     onChange={(e) => setAllaySoundsEnabled(e.target.checked)}
                   />
-                  Звуки эллея
+                  Allay Sounds
                 </label>
                 <label className={styles.settingLabel}>
                   <input
@@ -153,7 +153,7 @@ export const SettingsPanel = () => {
                     checked={catSoundsEnabled}
                     onChange={(e) => setCatSoundsEnabled(e.target.checked)}
                   />
-                  Звуки кота
+                  Cat Sounds
                 </label>
                 <label className={styles.settingLabel}>
                   <input
@@ -161,7 +161,7 @@ export const SettingsPanel = () => {
                     checked={parrotSoundsEnabled}
                     onChange={(e) => setParrotSoundsEnabled(e.target.checked)}
                   />
-                  Звуки попугая
+                  Parrot Sounds
                 </label>
               </div>
             </motion.div>
@@ -169,19 +169,19 @@ export const SettingsPanel = () => {
         </AnimatePresence>
       </div>
 
-      {/* Ввод промокода */}
+      {/* Promo Code */}
       <div className={styles.promoGroup}>
-        <h3 className={styles.subtitle}>Промокод</h3>
+        <h3 className={styles.subtitle}>Promo Code</h3>
         <form onSubmit={handlePromoSubmit} className={styles.promoForm}>
           <input
             type="text"
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value)}
-            placeholder="Введите промокод"
+            placeholder="Enter promo code"
             className={styles.promoInput}
           />
           <button type="submit" className={styles.promoButton}>
-            Применить
+            Apply
           </button>
         </form>
         {promoMessage && (
@@ -191,9 +191,9 @@ export const SettingsPanel = () => {
         )}
       </div>
 
-      {/* Версия игры */}
+      {/* Game Version */}
       <div className={styles.versionInfo}>
-        Версия игры: 1.0.0
+        Game Version: 1.0.0
       </div>
     </motion.div>
   );
