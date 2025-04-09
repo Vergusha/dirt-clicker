@@ -15,6 +15,11 @@ import enderPearlImage from '../../assets/invicon_enderman.webp';
 import allayImage from '../../assets/invicon_allay.webp';
 import catImage from '../../assets/invicon_cat.webp';
 import parrotImage from '../../assets/invicon_parrot.webp'; // Добавляем изображение попугая
+import enchantedNetheriteShovelImage from '../../assets/enchanted_netherite_shovel.webp';
+import enchantedDiamondShovelImage from '../../assets/enchanted_diamond_shovel.webp';
+import enchantedGoldenShovelImage from '../../assets/enchanted_golden_shovel.webp';
+import enchantedIronShovelImage from '../../assets/enchanted_iron_shovel.webp';
+import enchantedStoneShovelImage from '../../assets/enchanted_stone_shovel.webp';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -116,9 +121,22 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'clickPower':
         return clickPower - 1; // -1 потому что начальное значение 1
       case 'autoClicker':
-        return autoClickerCount;
+        // Для лопат показываем текущий уровень вместо количества
+        if (autoClickerCount >= 1000) return 6; // Netherite Shovel
+        if (autoClickerCount >= 500) return 5;  // Diamond Shovel
+        if (autoClickerCount >= 300) return 4;  // Golden Shovel
+        if (autoClickerCount >= 200) return 3;  // Iron Shovel
+        if (autoClickerCount >= 100) return 2;  // Stone Shovel
+        return 1; // Wooden Shovel
       case 'multiAutoClick':
-        return Math.round((multiAutoClickPower - 1) * 10); // Преобразуем множитель в уровни
+        // Для Enchanted Shovel показываем уровень от 1 до 6
+        if (multiAutoClickPower >= 2.1) return 6; // Netherite
+        if (multiAutoClickPower >= 1.9) return 5; // Diamond
+        if (multiAutoClickPower >= 1.7) return 4; // Golden
+        if (multiAutoClickPower >= 1.5) return 3; // Iron
+        if (multiAutoClickPower >= 1.3) return 2; // Stone
+        if (multiAutoClickPower >= 1.15) return 1; // Wood
+        return 0; // Не куплен
       case 'friendlyEnderman':
         return friendlyEndermanCount;
       case 'allay':
@@ -172,7 +190,13 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         if (autoClickerCount >= 100) return stoneShovelImage;
         return woodenShovelNormalImage;
       case 'multiAutoClick':
-        return enchantedWoodShovelImage;
+        if (multiAutoClickPower >= 2.1) return enchantedNetheriteShovelImage;
+        if (multiAutoClickPower >= 1.9) return enchantedDiamondShovelImage;
+        if (multiAutoClickPower >= 1.7) return enchantedGoldenShovelImage;
+        if (multiAutoClickPower >= 1.5) return enchantedIronShovelImage;
+        if (multiAutoClickPower >= 1.3) return enchantedStoneShovelImage;
+        if (multiAutoClickPower >= 1.15) return enchantedWoodShovelImage;
+        return enchantedWoodShovelImage; // По умолчанию показываем Wood Shovel
       case 'friendlyEnderman':
         return enderPearlImage;
       case 'allay':
@@ -201,18 +225,20 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   const isEnchantedShovelPurchased = type === 'multiAutoClick' && multiAutoClickPower >= 1.15;
   // Определяем, достиг ли Lucky Cat максимального уровня
   const isLuckyCatMaxed = type === 'luckyCat' && luckyCatCount >= 10;
+  // Определяем, достиг ли Enchanted Shovel максимального уровня
+  const isEnchantedShovelMaxed = type === 'multiAutoClick' && multiAutoClickPower >= 2.1;
   // Определяем, должна ли кнопка быть неактивной
-  const isButtonDisabled = !canAfford(cost) || isLuckyCatMaxed;
+  const isButtonDisabled = !canAfford(cost) || isLuckyCatMaxed || isEnchantedShovelMaxed;
   
   const buttonText = showUpgradeButton 
     ? 'Upgrade' 
-    : isLuckyCatMaxed 
+    : isLuckyCatMaxed || isEnchantedShovelMaxed
       ? 'Max Level' 
       : `Buy${purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}`;
   
   // Для Enchanted Shovel показываем "Upgrade" вместо "Buy" если уже куплен
   const getButtonText = () => {
-    if (type === 'multiAutoClick' && isEnchantedShovelPurchased) {
+    if (type === 'multiAutoClick' && isEnchantedShovelPurchased && !isEnchantedShovelMaxed) {
       return 'Upgrade';
     }
     return buttonText;
@@ -287,6 +313,49 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     return currentShovel;
   };
 
+  // Получаем название и описание для Enchanted Shovel в зависимости от уровня
+  const getEnchantedShovelInfo = () => {
+    if (type !== 'multiAutoClick') return { title, description };
+    
+    // Определяем текущий уровень Enchanted Shovel
+    if (multiAutoClickPower >= 2.1) {
+      return {
+        title: 'Enchanted Netherite Shovel',
+        description: 'Maximum level reached!'
+      };
+    } else if (multiAutoClickPower >= 1.9) {
+      return {
+        title: 'Enchanted Diamond Shovel',
+        description: 'Upgrade to Enchanted Netherite Shovel!'
+      };
+    } else if (multiAutoClickPower >= 1.7) {
+      return {
+        title: 'Enchanted Golden Shovel',
+        description: 'Upgrade to Enchanted Diamond Shovel!'
+      };
+    } else if (multiAutoClickPower >= 1.5) {
+      return {
+        title: 'Enchanted Iron Shovel',
+        description: 'Upgrade to Enchanted Golden Shovel!'
+      };
+    } else if (multiAutoClickPower >= 1.3) {
+      return {
+        title: 'Enchanted Stone Shovel',
+        description: 'Upgrade to Enchanted Iron Shovel!'
+      };
+    } else if (multiAutoClickPower >= 1.15) {
+      return {
+        title: 'Enchanted Wood Shovel',
+        description: 'Upgrade to Enchanted Stone Shovel!'
+      };
+    } else {
+      return {
+        title: 'Enchanted Wood Shovel',
+        description: 'Magical enchantments that make your wood shovels more efficient. Gives a ×1.15 multiplier to your shovels production.'
+      };
+    }
+  };
+
   return (
     <div className={`upgrade-button ${!canAfford ? 'disabled' : ''}`}>
       <div className="upgrade-content-wrapper">
@@ -301,24 +370,33 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         <div className="upgrade-info">
           <div className="upgrade-header">
             <h3>
-              {getShovelTitle()}
+              {type === 'multiAutoClick' ? getEnchantedShovelInfo().title : getShovelTitle()}
               {upgradeCount > 0 && (
-                <span className="upgrade-count-header"> ({formatNumber(upgradeCount)})</span>
+                <span className="upgrade-count-header">
+                  {type === 'autoClicker' || type === 'multiAutoClick' 
+                    ? ` (Level ${formatNumber(upgradeCount)})` 
+                    : ` (${formatNumber(upgradeCount)})`}
+                </span>
               )}
             </h3>
             <button 
               className="info-button"
               onClick={() => onInfoClick(type)}
-              title={getCurrentShovelInfo().name}
-              aria-label={`Show information about ${getCurrentShovelInfo().name}`}
+              title={type === 'multiAutoClick' ? getEnchantedShovelInfo().title : getCurrentShovelInfo().name}
+              aria-label={`Show information about ${type === 'multiAutoClick' ? getEnchantedShovelInfo().title : getCurrentShovelInfo().name}`}
             >
               i
             </button>
           </div>
-          <p className="upgrade-description">{getShovelDescription()}</p>
+          <p className="upgrade-description">
+            {type === 'multiAutoClick' ? getEnchantedShovelInfo().description : getShovelDescription()}
+          </p>
           <div className="upgrade-footer">
             <span className="cost">
-              {isEnchantedShovelPurchased ? 'Purchased' : isLuckyCatMaxed ? 'Max Level' : `Cost: ${formattedCost}`}
+              {isEnchantedShovelPurchased && isEnchantedShovelMaxed ? 'Max Level' : 
+               isEnchantedShovelPurchased ? 'Purchased' : 
+               isLuckyCatMaxed ? 'Max Level' : 
+               `Cost: ${formattedCost}`}
             </span>
             <button 
               onClick={buyUpgrade}

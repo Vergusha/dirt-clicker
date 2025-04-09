@@ -16,6 +16,11 @@ import endermanDefaultImage from '../../assets/enderman_default.webp';
 import allayImage from '../../assets/allay.webp';
 import luckyCatImage from '../../assets/cat.webp';
 import parrotImage from '../../assets/parrot.webp';
+import enchantedNetheriteShovelImage from '../../assets/enchanted_netherite_shovel.webp';
+import enchantedDiamondShovelImage from '../../assets/enchanted_diamond_shovel.webp';
+import enchantedGoldenShovelImage from '../../assets/enchanted_golden_shovel.webp';
+import enchantedIronShovelImage from '../../assets/enchanted_iron_shovel.webp';
+import enchantedStoneShovelImage from '../../assets/enchanted_stone_shovel.webp';
 
 interface InfoPanelProps {
   type: UpgradeType;
@@ -145,18 +150,58 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       break;
       
     case 'multiAutoClick':
-      title = 'Enchanted Wood Shovel';
-      description = 'Magical enchantments that make your wood shovels more efficient. Gives a fixed ×1.15 multiplier to your shovels production.';
-      image = enchantedWoodShovelImage;
-      const isEnchantedPurchased = multiAutoClickPower >= 1.15;
+      // Определяем текущий уровень Enchanted Shovel
+      let enchantedShovelTitle = 'Enchanted Wood Shovel';
+      let enchantedShovelDescription = 'Magical enchantments that make your wood shovels more efficient. Gives a ×1.15 multiplier to your shovels production.';
+      let enchantedShovelMultiplier = '×1.15';
+      let enchantedShovelImage = enchantedWoodShovelImage;
+      
+      if (multiAutoClickPower >= 2.1) {
+        enchantedShovelTitle = 'Enchanted Netherite Shovel';
+        enchantedShovelDescription = 'The most powerful enchanted shovel, forged from ancient debris. Gives a ×2.1 multiplier to your shovels production.';
+        enchantedShovelMultiplier = '×2.1';
+        enchantedShovelImage = enchantedNetheriteShovelImage;
+      } else if (multiAutoClickPower >= 1.9) {
+        enchantedShovelTitle = 'Enchanted Diamond Shovel';
+        enchantedShovelDescription = 'A premium enchanted diamond shovel. Gives a ×1.9 multiplier to your shovels production.';
+        enchantedShovelMultiplier = '×1.9';
+        enchantedShovelImage = enchantedDiamondShovelImage;
+      } else if (multiAutoClickPower >= 1.7) {
+        enchantedShovelTitle = 'Enchanted Golden Shovel';
+        enchantedShovelDescription = 'A magical golden shovel with powerful enchantments. Gives a ×1.7 multiplier to your shovels production.';
+        enchantedShovelMultiplier = '×1.7';
+        enchantedShovelImage = enchantedGoldenShovelImage;
+      } else if (multiAutoClickPower >= 1.5) {
+        enchantedShovelTitle = 'Enchanted Iron Shovel';
+        enchantedShovelDescription = 'A durable enchanted iron shovel. Gives a ×1.5 multiplier to your shovels production.';
+        enchantedShovelMultiplier = '×1.5';
+        enchantedShovelImage = enchantedIronShovelImage;
+      } else if (multiAutoClickPower >= 1.3) {
+        enchantedShovelTitle = 'Enchanted Stone Shovel';
+        enchantedShovelDescription = 'A stronger enchanted shovel. Gives a ×1.3 multiplier to your shovels production.';
+        enchantedShovelMultiplier = '×1.3';
+        enchantedShovelImage = enchantedStoneShovelImage;
+      } else if (multiAutoClickPower >= 1.15) {
+        enchantedShovelTitle = 'Enchanted Wood Shovel';
+        enchantedShovelDescription = 'A magical enchanted wooden shovel. Gives a ×1.15 multiplier to your shovels production.';
+        enchantedShovelMultiplier = '×1.15';
+        enchantedShovelImage = enchantedWoodShovelImage;
+      }
+      
+      title = enchantedShovelTitle;
+      description = enchantedShovelDescription;
+      image = enchantedShovelImage;
+      const isEnchantedPurchased = multiAutoClickPower > 1.0;
+      const isMaxLevel = multiAutoClickPower >= 2.1;
+      
       stats = [
         { 
           label: 'Status', 
-          value: isEnchantedPurchased ? 'Purchased' : 'Not purchased' 
+          value: isEnchantedPurchased ? (isMaxLevel ? 'Maximum Level' : 'Purchased') : 'Not purchased' 
         },
         { 
           label: 'Multiplier', 
-          value: isEnchantedPurchased ? '×1.15' : '×1.0 (not active)' 
+          value: isEnchantedPurchased ? enchantedShovelMultiplier : '×1.0 (not active)' 
         },
         { 
           label: 'Base Production', 
@@ -164,7 +209,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         },
         { 
           label: 'Enhanced Production', 
-          value: `${formatNumber(autoClickerCount * (isEnchantedPurchased ? 1.15 : 1.0))} dirt/s` 
+          value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s` 
         }
       ];
       break;
