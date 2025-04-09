@@ -95,7 +95,26 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         break;
       case 'multiAutoClick':
         // Для Enchanted Shovel - фиксированная стоимость
-        totalPrice = 250;
+        // Проверяем, может ли игрок купить следующий уровень Enchanted Shovel
+        if (multiAutoClickPower >= 1.15 && multiAutoClickPower < 1.3 && autoClickerCount < 100) {
+          // Если у игрока нет Stone Shovel, показываем стоимость Stone Shovel
+          return calculateTotalPrice(50, 100 - autoClickerCount, 0.15);
+        } else if (multiAutoClickPower >= 1.3 && multiAutoClickPower < 1.5 && autoClickerCount < 200) {
+          // Если у игрока нет Iron Shovel, показываем стоимость Iron Shovel
+          return calculateTotalPrice(50, 200 - autoClickerCount, 0.15);
+        } else if (multiAutoClickPower >= 1.5 && multiAutoClickPower < 1.7 && autoClickerCount < 300) {
+          // Если у игрока нет Golden Shovel, показываем стоимость Golden Shovel
+          return calculateTotalPrice(50, 300 - autoClickerCount, 0.15);
+        } else if (multiAutoClickPower >= 1.7 && multiAutoClickPower < 1.9 && autoClickerCount < 500) {
+          // Если у игрока нет Diamond Shovel, показываем стоимость Diamond Shovel
+          return calculateTotalPrice(50, 500 - autoClickerCount, 0.15);
+        } else if (multiAutoClickPower >= 1.9 && multiAutoClickPower < 2.1 && autoClickerCount < 1000) {
+          // Если у игрока нет Netherite Shovel, показываем стоимость Netherite Shovel
+          return calculateTotalPrice(50, 1000 - autoClickerCount, 0.15);
+        } else {
+          // Если игрок может купить следующий уровень Enchanted Shovel, показываем его стоимость
+          totalPrice = 250;
+        }
         break;
       case 'friendlyEnderman':
         totalPrice = calculateTotalPrice(1000, purchaseQuantity, 0.15);
@@ -117,37 +136,29 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
 
   // Get the level or count of the upgrade
   const getUpgradeCount = () => {
-    switch (type) {
-      case 'clickPower':
-        return clickPower - 1; // -1 потому что начальное значение 1
-      case 'autoClicker':
-        // Для лопат показываем текущий уровень вместо количества
-        if (autoClickerCount >= 1000) return 6; // Netherite Shovel
-        if (autoClickerCount >= 500) return 5;  // Diamond Shovel
-        if (autoClickerCount >= 300) return 4;  // Golden Shovel
-        if (autoClickerCount >= 200) return 3;  // Iron Shovel
-        if (autoClickerCount >= 100) return 2;  // Stone Shovel
-        return 1; // Wooden Shovel
-      case 'multiAutoClick':
-        // Для Enchanted Shovel показываем уровень от 1 до 6
-        if (multiAutoClickPower >= 2.1) return 6; // Netherite
-        if (multiAutoClickPower >= 1.9) return 5; // Diamond
-        if (multiAutoClickPower >= 1.7) return 4; // Golden
-        if (multiAutoClickPower >= 1.5) return 3; // Iron
-        if (multiAutoClickPower >= 1.3) return 2; // Stone
-        if (multiAutoClickPower >= 1.15) return 1; // Wood
-        return 0; // Не куплен
-      case 'friendlyEnderman':
-        return friendlyEndermanCount;
-      case 'allay':
-        return allayCount;
-      case 'luckyCat':
-        return luckyCatCount;
-      case 'pirateParrot':
-        return pirateParrotCount;
-      default:
-        return 0;
+    if (type === 'clickPower') {
+      return clickPower - 1; // -1 потому что начальное значение 1
     }
+    if (type === 'autoClicker') {
+      return autoClickerCount;
+    }
+    if (type === 'multiAutoClick') {
+      // Для Enchanted Shovel показываем текущий уровень множителя
+      return multiAutoClickPower;
+    }
+    if (type === 'friendlyEnderman') {
+      return friendlyEndermanCount;
+    }
+    if (type === 'allay') {
+      return allayCount;
+    }
+    if (type === 'luckyCat') {
+      return luckyCatCount;
+    }
+    if (type === 'pirateParrot') {
+      return pirateParrotCount;
+    }
+    return 0;
   };
 
   // Handle purchasing the upgrade
@@ -160,7 +171,26 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         purchaseAutoClicker(purchaseQuantity);
         break;
       case 'multiAutoClick':
-        purchaseMultiAutoClick(purchaseQuantity);
+        // Проверяем, может ли игрок купить следующий уровень Enchanted Shovel
+        if (multiAutoClickPower >= 1.15 && multiAutoClickPower < 1.3 && autoClickerCount < 100) {
+          // Если у игрока нет Stone Shovel, покупаем Stone Shovel
+          purchaseAutoClicker(100 - autoClickerCount);
+        } else if (multiAutoClickPower >= 1.3 && multiAutoClickPower < 1.5 && autoClickerCount < 200) {
+          // Если у игрока нет Iron Shovel, покупаем Iron Shovel
+          purchaseAutoClicker(200 - autoClickerCount);
+        } else if (multiAutoClickPower >= 1.5 && multiAutoClickPower < 1.7 && autoClickerCount < 300) {
+          // Если у игрока нет Golden Shovel, покупаем Golden Shovel
+          purchaseAutoClicker(300 - autoClickerCount);
+        } else if (multiAutoClickPower >= 1.7 && multiAutoClickPower < 1.9 && autoClickerCount < 500) {
+          // Если у игрока нет Diamond Shovel, покупаем Diamond Shovel
+          purchaseAutoClicker(500 - autoClickerCount);
+        } else if (multiAutoClickPower >= 1.9 && multiAutoClickPower < 2.1 && autoClickerCount < 1000) {
+          // Если у игрока нет Netherite Shovel, покупаем Netherite Shovel
+          purchaseAutoClicker(1000 - autoClickerCount);
+        } else {
+          // Если игрок может купить следующий уровень Enchanted Shovel, покупаем его
+          purchaseMultiAutoClick(purchaseQuantity);
+        }
         break;
       case 'friendlyEnderman':
         purchaseFriendlyEnderman(purchaseQuantity);
@@ -227,21 +257,50 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   const isLuckyCatMaxed = type === 'luckyCat' && luckyCatCount >= 10;
   // Определяем, достиг ли Enchanted Shovel максимального уровня
   const isEnchantedShovelMaxed = type === 'multiAutoClick' && multiAutoClickPower >= 2.1;
-  // Определяем, должна ли кнопка быть неактивной
-  const isButtonDisabled = !canAfford(cost) || isLuckyCatMaxed || isEnchantedShovelMaxed;
   
-  const buttonText = showUpgradeButton 
-    ? 'Upgrade' 
-    : isLuckyCatMaxed || isEnchantedShovelMaxed
-      ? 'Max Level' 
-      : `Buy${purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}`;
-  
-  // Для Enchanted Shovel показываем "Upgrade" вместо "Buy" если уже куплен
-  const getButtonText = () => {
-    if (type === 'multiAutoClick' && isEnchantedShovelPurchased && !isEnchantedShovelMaxed) {
-      return 'Upgrade';
+  // Проверяем, нужно ли отключить кнопку
+  const isButtonDisabled = () => {
+    if (type === 'multiAutoClick') {
+      // Проверяем, достигнут ли максимальный уровень
+      if (isEnchantedShovelMaxed) {
+        return true;
+      }
+      
+      // Проверяем, может ли игрок позволить себе покупку
+      return !canAfford;
     }
-    return buttonText;
+    
+    // Для Lucky Cat
+    if (type === 'luckyCat') {
+      return isLuckyCatMaxed || !canAfford;
+    }
+    
+    // Для остальных улучшений
+    return !canAfford;
+  };
+  
+  const getButtonText = () => {
+    if (type === 'multiAutoClick') {
+      // Проверяем требования для каждого уровня зачарованной лопаты
+      if (multiAutoClickPower >= 1.15 && multiAutoClickPower < 1.3 && autoClickerCount < 100) {
+        return 'Need Stone Shovel (100)';
+      }
+      if (multiAutoClickPower >= 1.3 && multiAutoClickPower < 1.5 && autoClickerCount < 200) {
+        return 'Need Iron Shovel (200)';
+      }
+      if (multiAutoClickPower >= 1.5 && multiAutoClickPower < 1.7 && autoClickerCount < 300) {
+        return 'Need Golden Shovel (300)';
+      }
+      if (multiAutoClickPower >= 1.7 && multiAutoClickPower < 1.9 && autoClickerCount < 500) {
+        return 'Need Diamond Shovel (500)';
+      }
+      if (multiAutoClickPower >= 1.9 && multiAutoClickPower < 2.1 && autoClickerCount < 1000) {
+        return 'Need Netherite Shovel (1000)';
+      }
+      return multiAutoClickPower >= 2.1 ? 'Max Level' : 'Upgrade';
+    }
+    
+    return showUpgradeButton ? 'Upgrade' : `Buy${purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}`;
   };
 
   const getShovelTitle = () => {
@@ -324,26 +383,61 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         description: 'Maximum level reached!'
       };
     } else if (multiAutoClickPower >= 1.9) {
+      // Проверяем, есть ли у игрока Netherite Shovel
+      if (autoClickerCount < 1000) {
+        return {
+          title: 'Enchanted Diamond Shovel',
+          description: 'You need a Netherite Shovel to upgrade to Enchanted Netherite Shovel!'
+        };
+      }
       return {
         title: 'Enchanted Diamond Shovel',
         description: 'Upgrade to Enchanted Netherite Shovel!'
       };
     } else if (multiAutoClickPower >= 1.7) {
+      // Проверяем, есть ли у игрока Diamond Shovel
+      if (autoClickerCount < 500) {
+        return {
+          title: 'Enchanted Golden Shovel',
+          description: 'You need a Diamond Shovel to upgrade to Enchanted Diamond Shovel!'
+        };
+      }
       return {
         title: 'Enchanted Golden Shovel',
         description: 'Upgrade to Enchanted Diamond Shovel!'
       };
     } else if (multiAutoClickPower >= 1.5) {
+      // Проверяем, есть ли у игрока Golden Shovel
+      if (autoClickerCount < 300) {
+        return {
+          title: 'Enchanted Iron Shovel',
+          description: 'You need a Golden Shovel to upgrade to Enchanted Golden Shovel!'
+        };
+      }
       return {
         title: 'Enchanted Iron Shovel',
         description: 'Upgrade to Enchanted Golden Shovel!'
       };
     } else if (multiAutoClickPower >= 1.3) {
+      // Проверяем, есть ли у игрока Iron Shovel
+      if (autoClickerCount < 200) {
+        return {
+          title: 'Enchanted Stone Shovel',
+          description: 'You need an Iron Shovel to upgrade to Enchanted Iron Shovel!'
+        };
+      }
       return {
         title: 'Enchanted Stone Shovel',
         description: 'Upgrade to Enchanted Iron Shovel!'
       };
     } else if (multiAutoClickPower >= 1.15) {
+      // Проверяем, есть ли у игрока Stone Shovel
+      if (autoClickerCount < 100) {
+        return {
+          title: 'Enchanted Wood Shovel',
+          description: 'You need a Stone Shovel to upgrade to Enchanted Stone Shovel!'
+        };
+      }
       return {
         title: 'Enchanted Wood Shovel',
         description: 'Upgrade to Enchanted Stone Shovel!'
@@ -399,9 +493,9 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
                `Cost: ${formattedCost}`}
             </span>
             <button 
+              className={`buy-button ${isButtonDisabled() ? 'disabled' : ''}`}
               onClick={buyUpgrade}
-              disabled={isButtonDisabled}
-              className={`buy-button ${isButtonDisabled ? 'disabled' : ''}`}
+              disabled={isButtonDisabled()}
             >
               {getButtonText()}
             </button>

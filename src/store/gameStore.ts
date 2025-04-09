@@ -286,71 +286,57 @@ export const useGameStore = create<GameState>()(
       
       // Purchase Enchanted Wood Shovel (multiAutoClick)
       purchaseMultiAutoClick: (quantity) => {
-        const state = get();
-        const baseCost = 250; // Базовая стоимость
-        
-        // Определяем текущий уровень Enchanted Shovel
-        let currentLevel = 0;
-        if (state.multiAutoClickPower >= 1.0 && state.multiAutoClickPower < 1.15) {
-          currentLevel = 0; // Не куплен
-        } else if (state.multiAutoClickPower >= 1.15 && state.multiAutoClickPower < 1.3) {
-          currentLevel = 1; // Enchanted Wood Shovel
-        } else if (state.multiAutoClickPower >= 1.3 && state.multiAutoClickPower < 1.5) {
-          currentLevel = 2; // Enchanted Stone Shovel
-        } else if (state.multiAutoClickPower >= 1.5 && state.multiAutoClickPower < 1.7) {
-          currentLevel = 3; // Enchanted Iron Shovel
-        } else if (state.multiAutoClickPower >= 1.7 && state.multiAutoClickPower < 1.9) {
-          currentLevel = 4; // Enchanted Golden Shovel
-        } else if (state.multiAutoClickPower >= 1.9 && state.multiAutoClickPower < 2.1) {
-          currentLevel = 5; // Enchanted Diamond Shovel
-        } else if (state.multiAutoClickPower >= 2.1) {
-          currentLevel = 6; // Enchanted Netherite Shovel
-        }
-        
-        // Если уже достигнут максимальный уровень, выходим
-        if (currentLevel >= 6) {
-          return;
-        }
-        
-        // Рассчитываем стоимость в зависимости от уровня
-        let totalCost = 0;
-        if (currentLevel === 0) {
-          totalCost = baseCost; // 250 для первого уровня
-        } else if (currentLevel === 1) {
-          totalCost = baseCost * 2; // 500 для второго уровня
-        } else if (currentLevel === 2) {
-          totalCost = baseCost * 4; // 1000 для третьего уровня
-        } else if (currentLevel === 3) {
-          totalCost = baseCost * 8; // 2000 для четвертого уровня
-        } else if (currentLevel === 4) {
-          totalCost = baseCost * 16; // 4000 для пятого уровня
-        } else if (currentLevel === 5) {
-          totalCost = baseCost * 32; // 8000 для шестого уровня
-        }
-        
-        // Проверяем, может ли игрок себе это позволить
-        if (state.canAfford(totalCost)) {
-          // Определяем следующий уровень множителя
-          let nextMultiplier = 1.0;
-          if (currentLevel === 0) {
-            nextMultiplier = 1.15; // Enchanted Wood Shovel
-          } else if (currentLevel === 1) {
-            nextMultiplier = 1.3; // Enchanted Stone Shovel
-          } else if (currentLevel === 2) {
-            nextMultiplier = 1.5; // Enchanted Iron Shovel
-          } else if (currentLevel === 3) {
-            nextMultiplier = 1.7; // Enchanted Golden Shovel
-          } else if (currentLevel === 4) {
-            nextMultiplier = 1.9; // Enchanted Diamond Shovel
-          } else if (currentLevel === 5) {
-            nextMultiplier = 2.1; // Enchanted Netherite Shovel
+        const currentLevel = get().multiAutoClickPower;
+        let cost = 0;
+        let nextMultiplier = 1;
+
+        // Проверяем текущий уровень и необходимое количество обычных лопат
+        if (currentLevel < 1.15) {
+          cost = 250;
+          nextMultiplier = 1.15;
+        } else if (currentLevel >= 1.15 && currentLevel < 1.3) {
+          if (get().autoClickerCount < 100) {
+            console.log("Need Stone Shovel first!");
+            return;
           }
-          
-          set({
-            dirtCount: Math.floor(state.dirtCount - totalCost),
-            multiAutoClickPower: nextMultiplier,
-            multiAutoClickCost: 0 // Установим стоимость в 0, так как это одноразовая покупка
-          });
+          cost = 500;
+          nextMultiplier = 1.3;
+        } else if (currentLevel >= 1.3 && currentLevel < 1.5) {
+          if (get().autoClickerCount < 200) {
+            console.log("Need Iron Shovel first!");
+            return;
+          }
+          cost = 1000;
+          nextMultiplier = 1.5;
+        } else if (currentLevel >= 1.5 && currentLevel < 1.7) {
+          if (get().autoClickerCount < 300) {
+            console.log("Need Golden Shovel first!");
+            return;
+          }
+          cost = 2000;
+          nextMultiplier = 1.7;
+        } else if (currentLevel >= 1.7 && currentLevel < 1.9) {
+          if (get().autoClickerCount < 500) {
+            console.log("Need Diamond Shovel first!");
+            return;
+          }
+          cost = 4000;
+          nextMultiplier = 1.9;
+        } else if (currentLevel >= 1.9 && currentLevel < 2.1) {
+          if (get().autoClickerCount < 1000) {
+            console.log("Need Netherite Shovel first!");
+            return;
+          }
+          cost = 8000;
+          nextMultiplier = 2.1;
+        }
+
+        // Если игрок может позволить себе покупку
+        if (get().dirtCount >= cost) {
+          set((state) => ({
+            dirtCount: state.dirtCount - cost,
+            multiAutoClickPower: nextMultiplier
+          }));
         }
       },
       

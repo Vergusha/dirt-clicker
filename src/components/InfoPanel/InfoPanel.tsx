@@ -47,33 +47,39 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
   const getCurrentShovelInfo = () => {
     let currentShovel = {
       name: 'Wooden Shovel',
-      description: 'Wood shovels that automatically dig dirt for you. Each shovel generates one dirt per second.'
+      description: 'Wood shovels that automatically dig dirt for you. Each shovel generates one dirt per second.',
+      count: autoClickerCount
     };
 
     if (autoClickerCount >= 1000) {
       currentShovel = {
         name: 'Netherite Shovel',
-        description: 'The ultimate shovel forged from ancient debris. Each shovel generates one dirt per second.'
+        description: 'The ultimate shovel forged from ancient debris. Each shovel generates one dirt per second.',
+        count: autoClickerCount
       };
     } else if (autoClickerCount >= 500) {
       currentShovel = {
         name: 'Diamond Shovel',
-        description: 'A premium diamond-tipped shovel for efficient digging. Each shovel generates one dirt per second.'
+        description: 'A premium diamond-tipped shovel for efficient digging. Each shovel generates one dirt per second.',
+        count: autoClickerCount
       };
     } else if (autoClickerCount >= 300) {
       currentShovel = {
         name: 'Golden Shovel',
-        description: 'A golden shovel that brings fortune while digging. Each shovel generates one dirt per second.'
+        description: 'A golden shovel that brings fortune while digging. Each shovel generates one dirt per second.',
+        count: autoClickerCount
       };
     } else if (autoClickerCount >= 200) {
       currentShovel = {
         name: 'Iron Shovel',
-        description: 'A durable iron shovel for serious dirt collection. Each shovel generates one dirt per second.'
+        description: 'A durable iron shovel for serious dirt collection. Each shovel generates one dirt per second.',
+        count: autoClickerCount
       };
     } else if (autoClickerCount >= 100) {
       currentShovel = {
         name: 'Stone Shovel',
-        description: 'An upgraded stone shovel for better digging. Each shovel generates one dirt per second.'
+        description: 'An upgraded stone shovel for better digging. Each shovel generates one dirt per second.',
+        count: autoClickerCount
       };
     }
 
@@ -136,8 +142,12 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       description = `${currentShovelInfo.description} Base cost: 50 dirt, increasing by 15% with each level.`;
       image = getShovelImage();
       stats = [
-        { label: `${currentShovelInfo.name}s`, value: formatNumber(autoClickerCount) },
-        { label: 'Base Production', value: `${formatNumber(autoClickerCount)} dirt/s` },
+        { label: 'Total Shovels', value: formatNumber(autoClickerCount) },
+        { label: 'Current Type', value: currentShovelInfo.name },
+        { 
+          label: 'Base Production', 
+          value: `${formatNumber(autoClickerCount)} dirt/s` 
+        },
         { 
           label: 'Total Production', 
           value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s` 
