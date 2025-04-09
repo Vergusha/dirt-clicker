@@ -1604,3 +1604,42 @@ img {
     font-size: 0.8rem;
   }
 }
+
+.sub-settings-container {
+  overflow: hidden;
+  transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.sub-settings-container.collapsed {
+  height: 0;
+}
+
+.sound-effects-header {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.sound-effects-header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sound-effects-header .fa-chevron-down {
+  margin: 0 10px;
+  transition: transform 0.3s ease;
+}
+
+.sound-effects-header .fa-chevron-down.rotated {
+  transform: rotate(180deg);
+}
+
+.sub-setting {
+  padding-left: 20px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}

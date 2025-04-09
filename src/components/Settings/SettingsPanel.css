@@ -1,0 +1,85 @@
+.settings-panel {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  color: white;
+}
+
+.settings-panel h2 {
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  color: #ffd700;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.setting {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.setting:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.setting label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.setting input[type="range"] {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.sound-effects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.sound-effects-header:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sound-effects-header i {
+  transition: transform 0.3s ease;
+}
+
+.sound-effects-header i.rotated {
+  transform: rotate(180deg);
+}
+
+.sub-settings-container {
+  overflow: hidden;
+}
+
+.sub-settings {
+  padding: 10px 0;
+}
+
+.sub-setting {
+  padding: 8px 16px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.sub-settings-container[style*="height: 0"] .sub-setting {
+  opacity: 0;
+}
+
+.sub-settings-container:not([style*="height: 0"]) .sub-setting {
+  opacity: 1;
+} 

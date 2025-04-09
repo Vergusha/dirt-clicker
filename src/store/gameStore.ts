@@ -39,6 +39,7 @@ interface GameState {
   catSoundsVolume: number;
   parrotSoundsEnabled: boolean;
   parrotSoundsVolume: number;
+  soundEffectsVolume: number;
   
   // Audio controls
   setMusicEnabled: (enabled: boolean) => void;
@@ -54,6 +55,7 @@ interface GameState {
   setCatSoundsVolume: (volume: number) => void;
   setParrotSoundsEnabled: (enabled: boolean) => void;
   setParrotSoundsVolume: (volume: number) => void;
+  setSoundEffectsVolume: (volume: number) => void;
   
   // Promo codes
   usedPromoCodes: string[];
@@ -231,6 +233,7 @@ export const useGameStore = create<GameState>()(
       catSoundsVolume: 0.5,
       parrotSoundsEnabled: true,
       parrotSoundsVolume: 0.5,
+      soundEffectsVolume: 1,
       
       // Promo codes initial values
       usedPromoCodes: [],
@@ -607,6 +610,7 @@ export const useGameStore = create<GameState>()(
       setCatSoundsVolume: (volume) => set({ catSoundsVolume: volume }),
       setParrotSoundsEnabled: (enabled) => set({ parrotSoundsEnabled: enabled }),
       setParrotSoundsVolume: (volume) => set({ parrotSoundsVolume: volume }),
+      setSoundEffectsVolume: (volume) => set({ soundEffectsVolume: volume }),
       
       fixFloatingPointNumbers: () => {
         set((state) => {
