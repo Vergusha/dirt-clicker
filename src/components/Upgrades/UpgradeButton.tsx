@@ -267,16 +267,16 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       }
       
       // Проверяем, может ли игрок позволить себе покупку
-      return !canAfford;
+      return !canAfford(cost);
     }
     
     // Для Lucky Cat
     if (type === 'luckyCat') {
-      return isLuckyCatMaxed || !canAfford;
+      return isLuckyCatMaxed || !canAfford(cost);
     }
     
     // Для остальных улучшений
-    return !canAfford;
+    return !canAfford(cost);
   };
   
   const getButtonText = () => {
@@ -451,7 +451,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   };
 
   return (
-    <div className={`upgrade-button ${!canAfford ? 'disabled' : ''}`}>
+    <div className="upgrade-button">
       <div className="upgrade-content-wrapper">
         <div className="upgrade-slot-wrapper">
           <img src={slotImage} alt="slot" className="slot-image" />
@@ -486,16 +486,16 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
             {type === 'multiAutoClick' ? getEnchantedShovelInfo().description : getShovelDescription()}
           </p>
           <div className="upgrade-footer">
-            <span className="cost">
+            <span className={`cost ${!canAfford(cost) ? 'cost-not-enough' : ''}`}>
               {isEnchantedShovelPurchased && isEnchantedShovelMaxed ? 'Max Level' : 
                isEnchantedShovelPurchased ? 'Purchased' : 
                isLuckyCatMaxed ? 'Max Level' : 
                `Cost: ${formattedCost}`}
             </span>
             <button 
-              className={`buy-button ${isButtonDisabled() ? 'disabled' : ''}`}
+              className={`buy-button ${!canAfford(cost) ? 'disabled' : ''}`}
               onClick={buyUpgrade}
-              disabled={isButtonDisabled()}
+              disabled={!canAfford(cost)}
             >
               {getButtonText()}
             </button>

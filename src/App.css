@@ -1052,10 +1052,27 @@ button {
 }
 
 .buy-button.disabled {
-  opacity: 0.6;
+  background-color: #808080;
+  border-color: #666666;
+  color: #cccccc;
   cursor: not-allowed;
-  background-color: #555;
-  filter: brightness(0.8) grayscale(0.3);
+  transform: none;
+  box-shadow: none;
+}
+
+.buy-button.disabled:hover {
+  background-color: #808080;
+  transform: none;
+  box-shadow: none;
+}
+
+.cost {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.cost-not-enough {
+  color: #ff4444;
 }
 
 .info-panel-overlay {
