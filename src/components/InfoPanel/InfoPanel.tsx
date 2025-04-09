@@ -6,6 +6,11 @@ import { formatNumber } from '../../utils/formatNumber';
 import buttonImage from '../../assets/button.png';
 import cursorImage from '../../assets/cursor.webp';
 import woodShovelImage from '../../assets/wood_shovel.webp';
+import stoneShovelImage from '../../assets/stone_shovel.webp';
+import ironShovelImage from '../../assets/iron_shovel.webp';
+import goldenShovelImage from '../../assets/golden_shovel.webp';
+import diamondShovelImage from '../../assets/diamond_shovel.webp';
+import netheriteShovelImage from '../../assets/netherite_shovel.webp';
 import enchantedWoodShovelImage from '../../assets/enchanted_wooden_shovel.webp';
 import endermanDefaultImage from '../../assets/enderman_default.webp';
 import allayImage from '../../assets/allay.webp';
@@ -31,6 +36,53 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     pirateParrotCount,
     musicEnabled
   } = useGameStore();
+  
+  // Функция для получения информации о текущей лопате
+  const getCurrentShovelInfo = () => {
+    let currentShovel = {
+      name: 'Wooden Shovel',
+      description: 'Wood shovels that automatically dig dirt for you. Each shovel generates one dirt per second.'
+    };
+
+    if (autoClickerCount >= 1000) {
+      currentShovel = {
+        name: 'Netherite Shovel',
+        description: 'The ultimate shovel forged from ancient debris. Each shovel generates one dirt per second.'
+      };
+    } else if (autoClickerCount >= 500) {
+      currentShovel = {
+        name: 'Diamond Shovel',
+        description: 'A premium diamond-tipped shovel for efficient digging. Each shovel generates one dirt per second.'
+      };
+    } else if (autoClickerCount >= 300) {
+      currentShovel = {
+        name: 'Golden Shovel',
+        description: 'A golden shovel that brings fortune while digging. Each shovel generates one dirt per second.'
+      };
+    } else if (autoClickerCount >= 200) {
+      currentShovel = {
+        name: 'Iron Shovel',
+        description: 'A durable iron shovel for serious dirt collection. Each shovel generates one dirt per second.'
+      };
+    } else if (autoClickerCount >= 100) {
+      currentShovel = {
+        name: 'Stone Shovel',
+        description: 'An upgraded stone shovel for better digging. Each shovel generates one dirt per second.'
+      };
+    }
+
+    return currentShovel;
+  };
+
+  // Функция для получения изображения текущей лопаты
+  const getShovelImage = () => {
+    if (autoClickerCount >= 1000) return netheriteShovelImage;
+    if (autoClickerCount >= 500) return diamondShovelImage;
+    if (autoClickerCount >= 300) return goldenShovelImage;
+    if (autoClickerCount >= 200) return ironShovelImage;
+    if (autoClickerCount >= 100) return stoneShovelImage;
+    return woodShovelImage;
+  };
   
   // Блокировка прокрутки страницы при открытии инфопанели
   useEffect(() => {
@@ -73,11 +125,12 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       break;
       
     case 'autoClicker':
-      title = 'Wood Shovel';
-      description = 'Wood shovels that automatically dig dirt for you. Each shovel generates one dirt per second.';
-      image = woodShovelImage;
+      const currentShovelInfo = getCurrentShovelInfo();
+      title = currentShovelInfo.name;
+      description = currentShovelInfo.description;
+      image = getShovelImage();
       stats = [
-        { label: 'Wood Shovels', value: formatNumber(autoClickerCount) },
+        { label: `${currentShovelInfo.name}s`, value: formatNumber(autoClickerCount) },
         { label: 'Base Production', value: `${formatNumber(autoClickerCount)} dirt/s` },
         { 
           label: 'Total Production', 
