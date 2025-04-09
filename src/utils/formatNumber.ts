@@ -6,20 +6,22 @@ const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'D
  * @returns Число без неточностей представления
  */
 export function fixFloatingPoint(num: number): number {
-  // Преобразуем в строку с фиксированной точностью, затем обратно в число
-  return parseFloat(Number(num).toFixed(6));
+  // Округляем до одного знака после запятой
+  return Number(num.toFixed(1));
 }
 
 export function formatNumber(num: number): string {
   // Сначала исправляем возможные неточности плавающей запятой
   num = fixFloatingPoint(num);
   
-  // Округляем до целых чисел
-  num = Math.floor(num);
+  // Для отрицательных чисел
+  const isNegative = num < 0;
+  num = Math.abs(num);
   
-  // Для маленьких чисел просто возвращаем форматированную строку
+  // Для чисел меньше 1000 просто возвращаем целое число
   if (num < 1000) {
-    return num.toString();
+    const result = Math.floor(num).toString();
+    return isNegative ? `-${result}` : result;
   }
 
   // Находим подходящий суффикс
@@ -29,11 +31,16 @@ export function formatNumber(num: number): string {
   // Нормализуем число
   const normalized = num / Math.pow(1000, magnitude);
   
-  // Форматируем с одной цифрой после запятой, если число меньше 10
-  // и без цифр после запятой, если число 10 или больше
-  const formatted = normalized >= 10 ? 
-    Math.floor(normalized).toString() : 
-    normalized.toFixed(1).replace(/\.0$/, '');
+  // Форматируем число
+  let formatted: string;
+  if (normalized >= 10) {
+    // Для больших чисел убираем десятичную часть
+    formatted = Math.floor(normalized).toString();
+  } else {
+    // Для чисел меньше 10 оставляем один знак после запятой
+    formatted = normalized.toFixed(1).replace(/\.0$/, '');
+  }
 
-  return `${formatted}${suffix}`;
+  // Добавляем знак минус обратно, если число было отрицательным
+  return `${isNegative ? '-' : ''}${formatted}${suffix}`;
 }

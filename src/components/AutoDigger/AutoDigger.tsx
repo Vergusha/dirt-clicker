@@ -24,20 +24,19 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
 
   // Функция обновления размеров в зависимости от размера экрана
   const updateResponsiveValues = useCallback(() => {
-    // Адаптация для различных размеров экрана
     if (window.innerWidth <= 480) {
       // Мобильные устройства
       setRadius(80);
-      setYOffset(0);
+      setYOffset(-10);
       setAnimationDuration(1.0);
     } else if (window.innerWidth <= 768) {
       // Планшеты
-      setRadius(120);
-      setYOffset(0);
+      setRadius(90);
+      setYOffset(-10);
       setAnimationDuration(0.9);
     } else {
       // Десктопы
-      setRadius(150);
+      setRadius(120);
       setYOffset(0);
       setAnimationDuration(0.8);
     }
@@ -47,14 +46,10 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
   useEffect(() => {
     updateResponsiveValues();
     
-    const handleResize = () => {
-      updateResponsiveValues();
-    };
-    
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', updateResponsiveValues);
     
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', updateResponsiveValues);
     };
   }, [updateResponsiveValues]);
 
@@ -69,7 +64,7 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
 
     // Вычисляем координаты на окружности
     const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
+    const y = Math.sin(angle) * radius + yOffset;
 
     // Вычисляем угол поворота лопаты, чтобы она смотрела на блок земли
     // +90 градусов чтобы острие лопаты смотрело на блок
@@ -94,8 +89,8 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
       {shovels.map(shovel => {
         // Вычисляем направление движения к центру блока для анимации "копания"
         // Уменьшаем глубину движения с -35 до -20 для более легкой анимации
-        const moveX = Math.cos(shovel.angle) * -20; 
-        const moveY = Math.sin(shovel.angle) * -20;
+        const moveX = Math.cos(shovel.angle) * -15; 
+        const moveY = Math.sin(shovel.angle) * -15;
         
         // Итоговый поворот = базовая ориентация + базовый поворот изображения + индивидуальная вариация
         const finalRotation = shovel.rotation + baseImageRotation + shovel.individualRotation;
@@ -106,9 +101,9 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
             className="auto-digger"
             style={{
               position: 'absolute',
-              left: `50%`,
-              top: `50%`,
-              transform: `translate(calc(-50% + ${shovel.position.x}px), calc(-50% + ${shovel.position.y + yOffset}px))`,
+              left: '50%',
+              top: '50%',
+              transform: `translate(calc(-50% + ${shovel.position.x}px), calc(-50% + ${shovel.position.y}px))`,
               pointerEvents: 'none',
             }}
           >
@@ -117,7 +112,7 @@ export const AutoDigger: React.FC<AutoDiggerProps> = ({ blockPosition }) => {
               alt="Wooden Shovel"
               className="shovel-image"
               style={{
-                width: window.innerWidth <= 480 ? '34px' : '40px',
+                width: window.innerWidth <= 480 ? '40px' : '34px',
                 height: 'auto',
                 transformOrigin: '50% 75%', // Точка вращения ближе к нижней части лопаты
                 transform: `rotate(${finalRotation}deg)` // Поворачиваем лопату с учетом всех углов

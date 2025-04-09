@@ -217,7 +217,7 @@ function App() {
                 alt="" 
                 className="mini-dirt"
               />
-              <span className="click-power-text">+{anim.value}</span>
+              <span className="click-power-text">+{formatNumber(anim.value)}</span>
             </motion.div>
           ))}
         </AnimatePresence>
@@ -250,7 +250,9 @@ function App() {
             
             {/* Лопаты вокруг блока земли */}
             {autoClickerCount > 0 && (
-              <AutoDigger blockPosition={blockPosition} />
+              <div className="global-shovels-container">
+                <AutoDigger blockPosition={blockPosition} />
+              </div>
             )}
             
             {/* Enderman animation now handled at the top-level */}

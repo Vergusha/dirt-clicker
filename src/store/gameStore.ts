@@ -117,13 +117,13 @@ const fixFloatingPointNumbers = (state: any) => {
   // Пересчитываем стоимости, если они некорректные
   if (newState.clickPower !== undefined && newState.clickPowerCost !== undefined) {
     const baseCost = 5;
-    const growthRate = 0.08;
+    const growthRate = 0.15;
     newState.clickPowerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.clickPower - 1));
   }
   
   if (newState.autoClickerCount !== undefined && newState.autoClickerCost !== undefined) {
     const baseCost = 15;
-    const growthRate = 0.10;
+    const growthRate = 0.15;
     newState.autoClickerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.autoClickerCount));
   }
   
@@ -142,13 +142,13 @@ const fixFloatingPointNumbers = (state: any) => {
   
   if (newState.allayCount !== undefined && newState.allayCost !== undefined) {
     const baseCost = 1000;
-    const growthRate = 0.20;
+    const growthRate = 0.15;
     newState.allayCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.allayCount));
   }
   
   if (newState.luckyCatCount !== undefined && newState.luckyCatCost !== undefined) {
     const baseCost = 2000;
-    const growthRate = 0.25;
+    const growthRate = 0.15;
     newState.luckyCatCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.luckyCatCount));
   }
   
@@ -213,7 +213,7 @@ export const useGameStore = create<GameState>()(
       purchaseClickPower: (quantity) => {
         const state = get();
         const baseCost = 5;
-        const growthRate = 0.08;
+        const growthRate = 0.15;
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -235,7 +235,7 @@ export const useGameStore = create<GameState>()(
       purchaseAutoClicker: (quantity) => {
         const state = get();
         const baseCost = 15;
-        const growthRate = 0.10;
+        const growthRate = 0.15;
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -305,7 +305,7 @@ export const useGameStore = create<GameState>()(
       purchaseAllay: (quantity) => {
         const state = get();
         const baseCost = 1000;
-        const growthRate = 0.20;
+        const growthRate = 0.15;
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -328,7 +328,7 @@ export const useGameStore = create<GameState>()(
       purchaseLuckyCat: (quantity) => {
         const state = get();
         const baseCost = 2000;
-        const growthRate = 0.25;
+        const growthRate = 0.15;
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -351,7 +351,7 @@ export const useGameStore = create<GameState>()(
       purchasePirateParrot: (quantity) => {
         const state = get();
         const baseCost = 3500;
-        const growthRate = 0.30;
+        const growthRate = 0.15;
         
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
@@ -378,33 +378,26 @@ export const useGameStore = create<GameState>()(
         // Определяем текущий уровень улучшения на основе базовой стоимости
         if (baseCost === 5) { // Click Power
           level = state.clickPower - 1;
-          growthRate = 0.08; 
         } else if (baseCost === 15) { // Wood Shovel
           level = state.autoClickerCount;
-          growthRate = 0.10;
         } else if (baseCost === 100) { // Enchanted Wood Shovel
           level = Math.round((state.multiAutoClickPower - 1) * 10);
-          growthRate = 0.15;
         } else if (baseCost === 500) { // Friendly Enderman
           level = state.friendlyEndermanCount;
-          growthRate = 0.15;
         } else if (baseCost === 1000) { // Allay
           level = state.allayCount;
-          growthRate = 0.20;
         } else if (baseCost === 2000) { // Lucky Cat
           level = state.luckyCatCount;
-          growthRate = 0.25;
         } else if (baseCost === 3500) { // Pirate Parrot
           level = state.pirateParrotCount;
-          growthRate = 0.30;
         }
         
-        // Рассчитываем общую стоимость с учетом текущего уровня
+        // Используем единый коэффициент роста 0.15 для всех улучшений
+        const actualBaseCost = baseCost * Math.pow(1 + 0.15, level);
         let totalCost = 0;
-        const actualBaseCost = baseCost * Math.pow(1 + growthRate, level);
         
         for (let i = 0; i < quantity; i++) {
-          totalCost += Math.floor(actualBaseCost * Math.pow(1 + growthRate, i));
+          totalCost += Math.floor(actualBaseCost * Math.pow(1 + 0.15, i));
         }
         
         return Math.floor(totalCost);

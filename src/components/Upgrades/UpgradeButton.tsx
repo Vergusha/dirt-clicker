@@ -53,11 +53,11 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     switch (type) {
       case 'clickPower':
         // Расчет для Click Power с учетом прогрессии
-        return calculateTotalPrice(5, purchaseQuantity, 0.08);
+        return calculateTotalPrice(5, purchaseQuantity, 0.15);
 
       case 'autoClicker':
         // Расчет для Wood Shovel с учетом прогрессии
-        return calculateTotalPrice(15, purchaseQuantity, 0.10);
+        return calculateTotalPrice(15, purchaseQuantity, 0.15);
 
       case 'multiAutoClick':
         // Расчет для Enchanted Wood Shovel с учетом прогрессии
@@ -69,15 +69,15 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         
       case 'allay':
         // Расчет для Allay с учетом прогрессии
-        return calculateTotalPrice(1000, purchaseQuantity, 0.20);
+        return calculateTotalPrice(1000, purchaseQuantity, 0.15);
         
       case 'luckyCat':
         // Расчет для Lucky Cat с учетом прогрессии 
-        return calculateTotalPrice(2000, purchaseQuantity, 0.25);
+        return calculateTotalPrice(2000, purchaseQuantity, 0.15);
         
       case 'pirateParrot':
         // Расчет для Pirate Parrot с учетом прогрессии
-        return calculateTotalPrice(3500, purchaseQuantity, 0.30);
+        return calculateTotalPrice(3500, purchaseQuantity, 0.15);
         
       default:
         return 0;
