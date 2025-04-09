@@ -30,7 +30,8 @@ function App() {
     pirateParrotCount,
     multiAutoClickPower,
     increaseDirtCount,
-    init
+    init,
+    updateLastVisitTime
   } = useGameStore();
   
   // State for click animations
@@ -174,6 +175,19 @@ function App() {
       setShowOfflineProgress(true);
     }
   }, [init]);
+
+  // Добавляем обработчик закрытия страницы
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      updateLastVisitTime();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [updateLastVisitTime]);
 
   const handleCloseOfflineProgress = () => {
     setShowOfflineProgress(false);

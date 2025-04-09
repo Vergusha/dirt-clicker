@@ -78,6 +78,7 @@ interface GameState {
     earnedDirt: number;
     timeAwayInSeconds: number;
   };
+  updateLastVisitTime: () => void;
 }
 
 // Calculates cost for a specific quantity of upgrades
@@ -695,6 +696,15 @@ export const useGameStore = create<GameState>()(
         const lastVisitTime = get().lastVisitTime;
         const timeAwayInSeconds = Math.floor((currentTime - lastVisitTime) / 1000);
         
+        // Если прошло меньше 30 секунд или это первый визит, не показываем прогресс
+        if (timeAwayInSeconds < 30 || lastVisitTime === 0) {
+          set({ lastVisitTime: currentTime });
+          return {
+            earnedDirt: 0,
+            timeAwayInSeconds: 0
+          };
+        }
+        
         // Получаем текущую скорость добычи в секунду
         const state = get();
         
@@ -722,6 +732,11 @@ export const useGameStore = create<GameState>()(
           earnedDirt,
           timeAwayInSeconds
         };
+      },
+
+      // Функция для обновления времени последнего визита при закрытии страницы
+      updateLastVisitTime: () => {
+        set({ lastVisitTime: Date.now() });
       },
 
       // Обновляем существующую функцию init
