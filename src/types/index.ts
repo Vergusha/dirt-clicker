@@ -8,6 +8,7 @@ export interface ClickAnimation {
   x: number;
   y: number;
   value: number;
+  isLucky?: boolean;
 }
 
 export interface ClickAnimationProps {

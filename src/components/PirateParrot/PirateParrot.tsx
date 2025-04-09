@@ -7,10 +7,10 @@ import { useEffect, useState, useCallback } from 'react';
 /**
  * Component for displaying a Pirate Parrot on screen when the player has the upgrade
  * Parrot adds +30 dirt per second
- * When music is enabled, it shows a dancing parrot
+ * When music is enabled and volume is above minimum threshold, it shows a dancing parrot
  */
 export const PirateParrot: React.FC = () => {
-  const { pirateParrotCount, musicEnabled } = useGameStore();
+  const { pirateParrotCount, musicEnabled, musicVolume } = useGameStore();
   
   // Animation parameters
   const [animationDuration, setAnimationDuration] = useState(4.0);
@@ -51,8 +51,11 @@ export const PirateParrot: React.FC = () => {
   // Don't render if no Pirate Parrots
   if (pirateParrotCount <= 0) return null;
 
-  // Choose image based on music state
-  const currentImage = musicEnabled ? dancingParrotImage : parrotImage;
+  // Определяем, танцует ли попугай (музыка включена И громкость больше минимального порога)
+  const isParrotDancing = musicEnabled && musicVolume > 0.05;
+
+  // Choose image based on music state and volume
+  const currentImage = isParrotDancing ? dancingParrotImage : parrotImage;
 
   return (
     <div className="pirate-parrot-container">
@@ -75,8 +78,8 @@ export const PirateParrot: React.FC = () => {
             position: 'relative'
           }}
           animate={{
-            // Different animations based on music status
-            ...(musicEnabled
+            // Different animations based on music status and volume
+            ...(isParrotDancing
               ? {
                   // Dancing animation with more movement
                   rotate: [0, 10, 0, -10, 0],
@@ -91,7 +94,7 @@ export const PirateParrot: React.FC = () => {
                 }),
           }}
           transition={{
-            duration: musicEnabled ? animationDuration * 0.8 : animationDuration, // Faster when dancing
+            duration: isParrotDancing ? animationDuration * 0.8 : animationDuration, // Faster when dancing
             repeat: Infinity,
             repeatType: "loop",
             ease: "easeInOut",
@@ -105,7 +108,7 @@ export const PirateParrot: React.FC = () => {
               width: '100%',
               height: '100%',
               objectFit: 'contain', // Это гарантирует, что оба изображения поместятся в контейнер
-              filter: musicEnabled 
+              filter: isParrotDancing 
                 ? 'drop-shadow(0 0 5px rgba(255, 0, 0, 0.7))' // Red glow for dancing
                 : 'drop-shadow(0 0 5px rgba(0, 255, 255, 0.5))' // Cyan glow for static
             }}

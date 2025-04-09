@@ -34,7 +34,8 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     allayCount,
     luckyCatCount,
     pirateParrotCount,
-    musicEnabled
+    musicEnabled,
+    musicVolume
   } = useGameStore();
   
   // Функция для получения информации о текущей лопате
@@ -112,14 +113,14 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
   switch (type) {
     case 'clickPower':
       title = 'Stronger Click';
-      description = 'Increases the power of each click, allowing you to collect more dirt with each tap.';
+      description = 'Increases the power of each click by +1 for each level, allowing you to collect more dirt with each tap. Base cost: 10 dirt, increasing by 15% with each level.';
       image = cursorImage; // Always show the regular cursor image regardless of click power
       stats = [
         { label: 'Current Level', value: formatNumber(clickPower) },
         { label: 'Dirt Per Click', value: formatNumber(clickPower) },
         { 
-          label: 'Total Click Power', 
-          value: formatNumber(clickPower) 
+          label: 'Next Level Bonus', 
+          value: '+1 dirt per click' 
         }
       ];
       break;
@@ -127,7 +128,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     case 'autoClicker':
       const currentShovelInfo = getCurrentShovelInfo();
       title = currentShovelInfo.name;
-      description = currentShovelInfo.description;
+      description = `${currentShovelInfo.description} Base cost: 50 dirt, increasing by 15% with each level.`;
       image = getShovelImage();
       stats = [
         { label: `${currentShovelInfo.name}s`, value: formatNumber(autoClickerCount) },
@@ -135,18 +136,27 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         { 
           label: 'Total Production', 
           value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s` 
+        },
+        { 
+          label: 'Next Level Bonus', 
+          value: '+1 dirt per second' 
         }
       ];
       break;
       
     case 'multiAutoClick':
       title = 'Enchanted Wood Shovel';
-      description = 'Magical enchantments that make your wood shovels more efficient, multiplying their dirt production rate.';
+      description = 'Magical enchantments that make your wood shovels more efficient. Gives a fixed ×1.15 multiplier to your shovels production.';
       image = enchantedWoodShovelImage;
+      const isEnchantedPurchased = multiAutoClickPower >= 1.15;
       stats = [
         { 
-          label: 'Current Multiplier', 
-          value: `${multiAutoClickPower.toFixed(1)}x` 
+          label: 'Status', 
+          value: isEnchantedPurchased ? 'Purchased' : 'Not purchased' 
+        },
+        { 
+          label: 'Multiplier', 
+          value: isEnchantedPurchased ? '×1.15' : '×1.0 (not active)' 
         },
         { 
           label: 'Base Production', 
@@ -154,14 +164,14 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         },
         { 
           label: 'Enhanced Production', 
-          value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s` 
+          value: `${formatNumber(autoClickerCount * (isEnchantedPurchased ? 1.15 : 1.0))} dirt/s` 
         }
       ];
       break;
       
     case 'friendlyEnderman':
       title = 'Friendly Enderman';
-      description = 'Friendly Endermen that teleport dirt to you from the End dimension. Each Enderman produces 5 dirt per second.';
+      description = 'Friendly Endermen that teleport dirt to you from the End dimension. Each Enderman produces 5 dirt per second. Base cost: 1000 dirt, increasing by 15% with each level.';
       image = endermanDefaultImage;
       stats = [
         { label: 'Endermen', value: formatNumber(friendlyEndermanCount) },
@@ -169,13 +179,17 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         { 
           label: 'Total Production', 
           value: `${formatNumber(friendlyEndermanCount * 5)} dirt/s` 
+        },
+        { 
+          label: 'Next Level Bonus', 
+          value: '+5 dirt per second' 
         }
       ];
       break;
 
     case 'allay':
       title = 'Allay';
-      description = 'These helpful flying creatures boost your passive dirt generation. Each Allay increases all passive dirt generation by 20%.';
+      description = 'These helpful flying creatures boost your passive dirt generation. Each Allay increases all passive dirt generation by 20%. Base cost: 5000 dirt, increasing by 15% with each level.';
       image = allayImage;
       stats = [
         { label: 'Allays', value: formatNumber(allayCount) },
@@ -183,41 +197,58 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         { 
           label: 'Total Multiplier', 
           value: `${formatNumber((1 + allayCount * 0.2))}x` 
+        },
+        { 
+          label: 'Next Level Bonus', 
+          value: '+0.2x to all passive generation' 
         }
       ];
       break;
 
     case 'luckyCat':
       title = 'Lucky Cat';
-      description = 'This golden lucky cat brings fortune to your digging adventures! Each Lucky Cat increases the chance of getting double dirt from clicks by 5% and improves the chance of finding rare treasures while digging.';
+      description = 'This cute feline brings good luck to you! Each cat adds a 10% chance for your clicks to produce x10 more dirt. The chance stacks with each Lucky Cat you own, up to a maximum of 10 cats. Base cost: 10,000 dirt, increasing by 15% with each level.';
       image = luckyCatImage;
       stats = [
-        { label: 'Lucky Cats', value: formatNumber(luckyCatCount) },
-        { label: 'Double Dirt Chance', value: `${formatNumber(luckyCatCount * 5)}%` },
+        { label: 'Cats Owned', value: `${formatNumber(luckyCatCount)} / 10` },
         { 
-          label: 'Treasure Find Chance', 
-          value: `${formatNumber(luckyCatCount * 2)}%` 
+          label: 'Luck Chance', 
+          value: `${formatNumber(luckyCatCount * 10)}%` 
+        },
+        { 
+          label: 'Luck Bonus', 
+          value: `x10 dirt per click when activated` 
+        },
+        { 
+          label: 'Next Level Bonus', 
+          value: luckyCatCount >= 10 ? 'Maximum level reached!' : '+10% chance for lucky clicks' 
         }
       ];
       break;
 
     case 'pirateParrot':
       title = 'Pirate Parrot';
-      description = 'This colorful avian companion has a knack for finding buried treasures! Each Pirate Parrot adds 30 dirt per second to your collection. The parrot dances when music is playing, showing its excitement for treasure hunting!';
+      description = 'This colorful avian companion has a knack for finding buried treasures! Each Pirate Parrot adds 10 dirt per second to your collection. Base cost: 20,000 dirt, increasing by 15% with each level. The parrot dances when music is playing and volume is above minimum, showing its excitement for treasure hunting!';
       image = parrotImage;
+      // Определяем, танцует ли попугай (музыка включена И громкость больше минимального порога)
+      const isParrotDancing = musicEnabled && musicVolume > 0.05;
       stats = [
         { label: 'Parrots Owned', value: formatNumber(pirateParrotCount) },
         { 
           label: 'Base Production', 
-          value: `${formatNumber(pirateParrotCount * 30)} dirt/s` 
+          value: `${formatNumber(pirateParrotCount * 10)} dirt/s` 
         },
         { 
           label: 'With Allay Bonus', 
-          value: `${formatNumber(pirateParrotCount * 30 * (1 + allayCount * 0.2))} dirt/s` 
+          value: `${formatNumber(pirateParrotCount * 10 * (1 + allayCount * 0.2))} dirt/s` 
+        },
+        { 
+          label: 'Next Level Bonus', 
+          value: '+10 dirt per second' 
         },
         {
           label: 'Current State',
-          value: musicEnabled ? 'Dancing (Music On)' : 'Resting (Music Off)'
+          value: isParrotDancing ? 'Dancing (Music On)' : musicEnabled ? 'Resting (Volume Too Low)' : 'Resting (Music Off)'
         }
       ];
       break;

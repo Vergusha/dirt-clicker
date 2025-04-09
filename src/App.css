@@ -1467,3 +1467,16 @@ img {
 .buy-button:focus-visible {
   outline: none;
 }
+
+/* Стили для анимации счастливого клика от Lucky Cat */
+.lucky-click .mini-dirt {
+  filter: brightness(1.2) saturate(1.5);
+  transform: scale(1.2);
+}
+
+.lucky-text {
+  color: #FFD700 !important; /* Золотой цвет для текста */
+  font-weight: bold;
+  font-size: 1.3em;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+}

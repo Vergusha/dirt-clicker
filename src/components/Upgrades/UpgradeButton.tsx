@@ -69,38 +69,45 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     return null;
   };
 
+  // Получаем текущий уровень улучшения для Enchanted Shovel
+  const getMultiAutoClickLevel = () => {
+    if (type !== 'multiAutoClick') return 0;
+    // Уровень = (текущая сила - 1.5) / 0.1 + 1
+    // Если меньше 1.5, значит еще не куплен
+    return multiAutoClickPower >= 1.5 
+      ? Math.floor(((multiAutoClickPower - 1.5) / 0.1) + 1)
+      : 0;
+  };
+
   // Get the cost of the upgrade based on its type
   const getCost = () => {
+    let totalPrice = 0;
     switch (type) {
       case 'clickPower':
-        return calculateTotalPrice(5, purchaseQuantity, 0.15);
+        return calculateTotalPrice(10, purchaseQuantity, 0.15);
       case 'autoClicker':
-        // Рассчитываем стоимость с учетом текущего уровня
-        let baseCost = 15;
-        return calculateTotalPrice(baseCost, purchaseQuantity, 0.15);
+        totalPrice = calculateTotalPrice(50, purchaseQuantity, 0.15);
+        break;
       case 'multiAutoClick':
-        // Расчет для Enchanted Wood Shovel с учетом прогрессии
-        return calculateTotalPrice(100, purchaseQuantity, 0.15);
-        
+        // Для Enchanted Shovel - фиксированная стоимость
+        totalPrice = 250;
+        break;
       case 'friendlyEnderman':
-        // Расчет для Friendly Enderman с учетом прогрессии
-        return calculateTotalPrice(500, purchaseQuantity, 0.15);
-        
+        totalPrice = calculateTotalPrice(1000, purchaseQuantity, 0.15);
+        break;
       case 'allay':
-        // Расчет для Allay с учетом прогрессии
-        return calculateTotalPrice(1000, purchaseQuantity, 0.15);
-        
+        totalPrice = calculateTotalPrice(5000, purchaseQuantity, 0.15);
+        break;
       case 'luckyCat':
-        // Расчет для Lucky Cat с учетом прогрессии 
-        return calculateTotalPrice(2000, purchaseQuantity, 0.15);
-        
+        totalPrice = calculateTotalPrice(10000, purchaseQuantity, 0.15);
+        break;
       case 'pirateParrot':
-        // Расчет для Pirate Parrot с учетом прогрессии
-        return calculateTotalPrice(3500, purchaseQuantity, 0.15);
-        
+        totalPrice = calculateTotalPrice(20000, purchaseQuantity, 0.15);
+        break;
       default:
         return 0;
     }
+    return totalPrice;
   };
 
   // Get the level or count of the upgrade
@@ -189,6 +196,27 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
 
   // Определяем, показывать ли кнопку Upgrade вместо Buy
   const showUpgradeButton = type === 'autoClicker' && getShovelUpgradeInfo(autoClickerCount) !== null;
+
+  // Определяем, доступна ли кнопка покупки Enchanted Shovel
+  const isEnchantedShovelPurchased = type === 'multiAutoClick' && multiAutoClickPower >= 1.15;
+  // Определяем, достиг ли Lucky Cat максимального уровня
+  const isLuckyCatMaxed = type === 'luckyCat' && luckyCatCount >= 10;
+  // Определяем, должна ли кнопка быть неактивной
+  const isButtonDisabled = !canAfford(cost) || isLuckyCatMaxed;
+  
+  const buttonText = showUpgradeButton 
+    ? 'Upgrade' 
+    : isLuckyCatMaxed 
+      ? 'Max Level' 
+      : `Buy${purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}`;
+  
+  // Для Enchanted Shovel показываем "Upgrade" вместо "Buy" если уже куплен
+  const getButtonText = () => {
+    if (type === 'multiAutoClick' && isEnchantedShovelPurchased) {
+      return 'Upgrade';
+    }
+    return buttonText;
+  };
 
   const getShovelTitle = () => {
     if (type !== 'autoClicker') return title;
@@ -290,14 +318,14 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
           <p className="upgrade-description">{getShovelDescription()}</p>
           <div className="upgrade-footer">
             <span className="cost">
-              Cost: {formattedCost}
+              {isEnchantedShovelPurchased ? 'Purchased' : isLuckyCatMaxed ? 'Max Level' : `Cost: ${formattedCost}`}
             </span>
             <button 
               onClick={buyUpgrade}
-              disabled={!canAfford}
-              className={`buy-button ${!canAfford ? 'disabled' : ''}`}
+              disabled={isButtonDisabled}
+              className={`buy-button ${isButtonDisabled ? 'disabled' : ''}`}
             >
-              {showUpgradeButton ? 'Upgrade' : `Buy${purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}`}
+              {getButtonText()}
             </button>
           </div>
         </div>

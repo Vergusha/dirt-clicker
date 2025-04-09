@@ -9,9 +9,12 @@ import backgroundMusic from '../../audio/C418-Ghostly.mp3';
 export const AudioPlayer: React.FC = () => {
   const { musicEnabled, musicVolume } = useGameStore();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioInitializedRef = useRef(false);
 
-  // Инициализация аудио при монтировании и обработка настроек
+  // Инициализация аудио при монтировании компонента
   useEffect(() => {
+    if (audioInitializedRef.current) return;
+
     // Создаем аудио элемент при монтировании компонента
     const audio = new Audio(backgroundMusic);
     audio.loop = true;  // Зацикливаем воспроизведение
@@ -31,20 +34,7 @@ export const AudioPlayer: React.FC = () => {
     
     // Сохраняем ссылку на аудио элемент
     audioRef.current = audio;
-    
-    // Начинаем воспроизведение, если оно включено
-    if (musicEnabled) {
-      const playPromise = audio.play();
-      
-      // Обрабатываем возможные проблемы с автовоспроизведением
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log('Autoplay prevented:', error);
-          // Здесь можно добавить обработку ошибки автовоспроизведения,
-          // например, показать пользователю кнопку для ручного запуска музыки
-        });
-      }
-    }
+    audioInitializedRef.current = true;
     
     // Очистка при размонтировании компонента
     return () => {
@@ -53,35 +43,34 @@ export const AudioPlayer: React.FC = () => {
         audioRef.current.removeEventListener('ended', handleEnded);
         audioRef.current.pause();
         audioRef.current = null;
+        audioInitializedRef.current = false;
       }
     };
-  }, []); // Выполняется только при монтировании компонента
+  }, []); // Выполняется только при монтировании
 
-  // Обновляем состояние воспроизведения при изменении настроек
+  // Обработка восстановления состояния после загрузки страницы 
+  // и обновления состояния воспроизведения при изменении настроек
   useEffect(() => {
     if (!audioRef.current) return;
     
     if (musicEnabled) {
       // Проверяем, не закончилось ли воспроизведение
       if (audioRef.current.ended || audioRef.current.paused) {
-        // Перематываем на начало для уверенности
-        audioRef.current.currentTime = 0;
-      }
-      
-      const playPromise = audioRef.current.play();
-      
-      // Обрабатываем возможные проблемы с воспроизведением
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log('Play prevented:', error);
-        });
+        const playPromise = audioRef.current.play();
+        
+        // Обрабатываем возможные проблемы с воспроизведением
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log('Play prevented:', error);
+          });
+        }
       }
     } else {
       audioRef.current.pause();
     }
   }, [musicEnabled]);
 
-  // Обновляем громкость при изменении настроек
+  // Обновляем громкость при изменении настроек без перезапуска воспроизведения
   useEffect(() => {
     if (!audioRef.current) return;
     audioRef.current.volume = musicVolume;

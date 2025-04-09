@@ -45,10 +45,10 @@ export const LuckyCat: React.FC = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [updateResponsiveValues]);
-
+  
   // Don't render if no Lucky Cats
   if (luckyCatCount <= 0) return null;
-
+  
   return (
     <div className="lucky-cat-container">
       <motion.div
@@ -59,9 +59,9 @@ export const LuckyCat: React.FC = () => {
         }}
       >
         <motion.img
-          src={catImage}
-          alt="Lucky Cat"
-          className="lucky-cat-image"
+          src={catImage} 
+          alt="Lucky Cat" 
+          className="lucky-cat-image" 
           style={{
             width: window.innerWidth <= 480 ? '45px' : '55px',
             height: 'auto',
