@@ -367,42 +367,42 @@ export const useGameStore = create<GameState>()(
 
         // Проверяем текущий уровень и необходимое количество обычных лопат
         if (currentLevel < 1.15) {
-          cost = 250;
+          cost = 250 * quantity;
           nextMultiplier = 1.15;
         } else if (currentLevel >= 1.15 && currentLevel < 1.3) {
           if (get().autoClickerCount < 100) {
             console.log("Need Stone Shovel first!");
             return;
           }
-          cost = 500;
+          cost = 500 * quantity;
           nextMultiplier = 1.3;
         } else if (currentLevel >= 1.3 && currentLevel < 1.5) {
           if (get().autoClickerCount < 200) {
             console.log("Need Iron Shovel first!");
             return;
           }
-          cost = 1000;
+          cost = 1000 * quantity;
           nextMultiplier = 1.5;
         } else if (currentLevel >= 1.5 && currentLevel < 1.7) {
           if (get().autoClickerCount < 300) {
             console.log("Need Golden Shovel first!");
             return;
           }
-          cost = 2000;
+          cost = 2000 * quantity;
           nextMultiplier = 1.7;
         } else if (currentLevel >= 1.7 && currentLevel < 1.9) {
           if (get().autoClickerCount < 500) {
             console.log("Need Diamond Shovel first!");
             return;
           }
-          cost = 4000;
+          cost = 4000 * quantity;
           nextMultiplier = 1.9;
         } else if (currentLevel >= 1.9 && currentLevel < 2.1) {
           if (get().autoClickerCount < 1000) {
             console.log("Need Netherite Shovel first!");
             return;
           }
-          cost = 8000;
+          cost = 8000 * quantity;
           nextMultiplier = 2.1;
         }
 
