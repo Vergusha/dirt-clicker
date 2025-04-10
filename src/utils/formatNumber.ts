@@ -85,28 +85,3 @@ export function getFullNumberString(num: number): string {
   // Преобразуем в строку и добавляем разделители разрядов (пробелы)
   return wholeNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
-
-/**
- * Вычисляет числовое значение для заданного суффикса
- * @param suffix Суффикс (например, 'zzz')
- * @returns Числовое значение, соответствующее суффиксу
- */
-export function getValueForSuffix(suffix: string): number {
-  const basicSuffixes = ['', 'K', 'M', 'B', 'T'];
-  
-  // Ищем индекс суффикса в нашем массиве
-  const suffixIndex = suffixes.indexOf(suffix);
-  
-  if (suffixIndex === -1) {
-    console.error(`Суффикс ${suffix} не найден в списке суффиксов`);
-    return 0;
-  }
-  
-  // Вычисляем значение: 1000^индекс
-  return Math.pow(1000, suffixIndex);
-}
-
-// Для тестирования
-export function getAllSuffixes(): string[] {
-  return suffixes;
-}

@@ -544,14 +544,26 @@ export const useGameStore = create<GameState>()(
           return { success: true, message: "Весь прогресс был сброшен!" };
         }
         
-        // Промокод Sasha (10^99 земли)
+        // Промокод Sasha (bc земли)
         if (code === "Sasha") {
-          const amount = Math.pow(10, 99); // 10^99 земли
+          // bc соответствует индексу 5 + 1*26 + 2 = 33 (после T идут aa=5, ab=6, ..., bc=33)
+          const amount = Math.pow(1000, 33); // 1000^33 земли
           set({
             dirtCount: fixFloatingPoint(state.dirtCount + amount),
             totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + amount),
           });
-          return { success: true, message: "ВАУ! Вы получили гуголплекс земли!" };
+          return { success: true, message: "ВАУ! Вы получили bc земли!" };
+        }
+        
+        // Промокод 1zz (zz земли)
+        if (code === "1zz") {
+          // zz соответствует индексу 5 + 25*26 + 25 = 680 (после T идут aa=5, ab=6, ..., zz=680)
+          const amount = Math.pow(1000, 680); // 1000^680 земли
+          set({
+            dirtCount: fixFloatingPoint(state.dirtCount + amount),
+            totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + amount),
+          });
+          return { success: true, message: "ВАУ! Вы получили zz земли!" };
         }
         
         // Специальный промокод для 50 триллионов земли
