@@ -28,8 +28,9 @@ export const useSoundEffect = (sounds: string[], volume: number = 1) => {
     // Выбираем случайный звук
     const randomIndex = Math.floor(Math.random() * sounds.length);
     
-    // Создаем новый экземпляр аудио для каждого воспроизведения
-    const audio = new Audio(sounds[randomIndex]);
+    // Используем существующий аудио элемент
+    const audio = audioRefs.current[randomIndex];
+    audio.currentTime = 0; // Сбрасываем время воспроизведения
     audio.volume = volume;
     
     // Воспроизводим звук
