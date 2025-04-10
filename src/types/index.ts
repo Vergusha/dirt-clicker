@@ -27,7 +27,7 @@ export type GameTab = 'upgrades' | 'achievements' | 'settings';
 export type PurchaseQuantity = 1 | 10 | 50 | 100;
 
 // Типы улучшений для информационных панелей
-export type UpgradeType = 'clickPower' | 'autoClicker' | 'multiAutoClick' | 'friendlyEnderman' | 'allay' | 'luckyCat' | 'pirateParrot';
+export type UpgradeType = 'clickPower' | 'autoClicker' | 'multiAutoClick' | 'friendlyEnderman' | 'allay' | 'luckyCat' | 'pirateParrot' | 'fox';
 
 /**
  * Position information for the dirt block

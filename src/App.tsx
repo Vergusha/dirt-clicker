@@ -18,6 +18,9 @@ import { AllayHelper } from './components/AllayHelper';
 import { LuckyCat } from './components/LuckyCat';
 import { PirateParrot } from './components/PirateParrot';
 import { OfflineProgress } from './components/OfflineProgress/OfflineProgress';
+import { FriendlyEnderman } from './components/FriendlyEnderman/FriendlyEnderman';
+import { Allay } from './components/Allay/Allay';
+import { Fox } from './components/Fox/Fox';
 
 function App() {
   const { 
@@ -28,6 +31,7 @@ function App() {
     allayCount,
     luckyCatCount,
     pirateParrotCount,
+    foxCount,
     multiAutoClickPower,
     increaseDirtCount,
     init,
@@ -209,6 +213,7 @@ function App() {
           {allayCount > 0 && <AllayHelper blockPosition={blockPosition} />}
           {luckyCatCount > 0 && <LuckyCat />}
           {pirateParrotCount > 0 && <PirateParrot />}
+          {foxCount > 0 && <Fox />}
         </>
       )}
       

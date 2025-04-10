@@ -15,6 +15,7 @@ interface GameState {
   allayCount: number;
   luckyCatCount: number;
   pirateParrotCount: number;  // Добавляем счетчик для Пиратских Попугаев
+  foxCount: number;
   
   // Costs
   clickPowerCost: number;
@@ -24,6 +25,7 @@ interface GameState {
   allayCost: number;
   luckyCatCost: number;
   pirateParrotCost: number;  // Добавляем стоимость для Пиратских Попугаев
+  foxCost: number;
   
   // Audio settings
   musicEnabled: boolean;
@@ -70,6 +72,7 @@ interface GameState {
   purchaseAllay: (quantity: number) => void;
   purchaseLuckyCat: (quantity: number) => void;
   purchasePirateParrot: (quantity: number) => void;  // Добавляем метод покупки Пиратского Попугая
+  purchaseFox: (quantity: number) => void;
   
   // Helper to check if player can afford an upgrade
   canAfford: (cost: number) => boolean;
@@ -129,7 +132,9 @@ const fixFloatingPointNumbers = (state: any) => {
     'luckyCatCount',
     'luckyCatCost',
     'pirateParrotCount',
-    'pirateParrotCost'
+    'pirateParrotCost',
+    'foxCount',
+    'foxCost'
   ];
   
   integerFields.forEach(field => {
@@ -190,6 +195,12 @@ const fixFloatingPointNumbers = (state: any) => {
     newState.pirateParrotCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.pirateParrotCount));
   }
   
+  if (newState.foxCount !== undefined && newState.foxCost !== undefined) {
+    const baseCost = 30000; // Обновлено с 10000 на 30000
+    const growthRate = 0.15;
+    newState.foxCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.foxCount));
+  }
+  
   return newState;
 };
 
@@ -209,6 +220,7 @@ export const useGameStore = create<GameState>()(
       allayCount: 0,
       luckyCatCount: 0,
       pirateParrotCount: 0,  // Начальное значение для Пиратских Попугаев
+      foxCount: 0,
       
       // Base costs
       clickPowerCost: 10,     // Было 5, новая стоимость 10
@@ -218,6 +230,7 @@ export const useGameStore = create<GameState>()(
       allayCost: 5000,        // Было 1000, новая стоимость 5000
       luckyCatCost: 10000,    // Было 2000, новая стоимость 10000
       pirateParrotCost: 20000, // Было 3500, новая стоимость 20000
+      foxCost: 30000,         // Было 10000, новая стоимость 30000
       
       // Audio settings initial values
       musicEnabled: true,
@@ -477,6 +490,29 @@ export const useGameStore = create<GameState>()(
         }
       },
       
+      // Purchase Fox
+      purchaseFox: (quantity) => {
+        const state = get();
+        const baseCost = 30000; // Базовая стоимость
+        const growthRate = 0.15;
+        
+        // Calculate cost for quantity upgrades from current level
+        const totalCost = calculateCost(
+          baseCost * Math.pow(1 + growthRate, state.foxCount), 
+          growthRate, 
+          quantity
+        );
+        
+        // Check if player can afford
+        if (state.canAfford(totalCost)) {
+          set({
+            dirtCount: Math.floor(state.dirtCount - totalCost),
+            foxCount: state.foxCount + quantity,
+            foxCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.foxCount + quantity))
+          });
+        }
+      },
+      
       // Helper to calculate total price for multiple purchases
       calculateTotalPrice: (baseCost, quantity, growthRate) => {
         const state = get();
@@ -505,6 +541,9 @@ export const useGameStore = create<GameState>()(
           case 20000: // Pirate Parrot (обновлено с 3500 на 20000)
             level = state.pirateParrotCount;
             break;
+          case 30000: // Fox (обновлено с 10000 на 30000)
+            level = state.foxCount;
+            break;
         }
         
         // Используем функцию calculateCost для расчета общей стоимости
@@ -523,6 +562,7 @@ export const useGameStore = create<GameState>()(
           allayCount: 0,
           luckyCatCount: 0,
           pirateParrotCount: 0,
+          foxCount: 0,
           clickPowerCost: 10,
           autoClickerCost: 50,
           multiAutoClickCost: 250, // Возвращаем стоимость для первой покупки
@@ -530,6 +570,7 @@ export const useGameStore = create<GameState>()(
           allayCost: 5000,
           luckyCatCost: 10000,
           pirateParrotCost: 20000,
+          foxCost: 30000,
           usedPromoCodes: [],
         });
       },
@@ -644,7 +685,9 @@ export const useGameStore = create<GameState>()(
             'luckyCatCount',
             'luckyCatCost',
             'pirateParrotCount',
-            'pirateParrotCost'
+            'pirateParrotCost',
+            'foxCount',
+            'foxCost'
           ];
           
           integerFields.forEach(field => {
@@ -703,6 +746,12 @@ export const useGameStore = create<GameState>()(
             const baseCost = 20000; // Обновлено с 3500 на 20000
             const growthRate = 0.15;
             newState.pirateParrotCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.pirateParrotCount));
+          }
+          
+          if (newState.foxCount !== undefined && newState.foxCost !== undefined) {
+            const baseCost = 30000; // Обновлено с 10000 на 30000
+            const growthRate = 0.15;
+            newState.foxCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.foxCount));
           }
           
           return newState;

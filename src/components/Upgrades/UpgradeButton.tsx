@@ -20,6 +20,7 @@ import enchantedDiamondShovelImage from '../../assets/enchanted_diamond_shovel.w
 import enchantedGoldenShovelImage from '../../assets/enchanted_golden_shovel.webp';
 import enchantedIronShovelImage from '../../assets/enchanted_iron_shovel.webp';
 import enchantedStoneShovelImage from '../../assets/enchanted_stone_shovel.webp';
+import foxImage from '../../assets/invicon_fox.webp';
 
 interface UpgradeButtonProps {
   type: UpgradeType;
@@ -46,14 +47,16 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     purchaseFriendlyEnderman,
     purchaseAllay,
     purchaseLuckyCat,
-    purchasePirateParrot, // Добавляем метод для покупки попугая
+    purchasePirateParrot,
+    purchaseFox,
     clickPower,
     autoClickerCount,
     multiAutoClickPower,
     friendlyEndermanCount,
     allayCount,
     luckyCatCount,
-    pirateParrotCount, // Добавляем счетчик для попугая
+    pirateParrotCount,
+    foxCount,
     calculateTotalPrice,
     canAfford,
     recalculateShovelCosts
@@ -128,6 +131,9 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'pirateParrot':
         totalPrice = calculateTotalPrice(20000, purchaseQuantity, 0.15);
         break;
+      case 'fox':
+        totalPrice = calculateTotalPrice(30000, purchaseQuantity, 0.15);
+        break;
       default:
         return 0;
     }
@@ -137,13 +143,12 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   // Get the level or count of the upgrade
   const getUpgradeCount = () => {
     if (type === 'clickPower') {
-      return clickPower - 1; // -1 потому что начальное значение 1
+      return clickPower - 1;
     }
     if (type === 'autoClicker') {
       return autoClickerCount;
     }
     if (type === 'multiAutoClick') {
-      // Для Enchanted Shovel показываем текущий уровень множителя
       return multiAutoClickPower;
     }
     if (type === 'friendlyEnderman') {
@@ -157,6 +162,9 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     }
     if (type === 'pirateParrot') {
       return pirateParrotCount;
+    }
+    if (type === 'fox') {
+      return foxCount;
     }
     return 0;
   };
@@ -204,6 +212,9 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       case 'pirateParrot':
         purchasePirateParrot(purchaseQuantity);
         break;
+      case 'fox':
+        purchaseFox(purchaseQuantity);
+        break;
     }
   };
 
@@ -226,7 +237,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         if (multiAutoClickPower >= 1.5) return enchantedIronShovelImage;
         if (multiAutoClickPower >= 1.3) return enchantedStoneShovelImage;
         if (multiAutoClickPower >= 1.15) return enchantedWoodShovelImage;
-        return enchantedWoodShovelImage; // По умолчанию показываем Wood Shovel
+        return enchantedWoodShovelImage;
       case 'friendlyEnderman':
         return enderPearlImage;
       case 'allay':
@@ -235,6 +246,8 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         return catImage;
       case 'pirateParrot':
         return parrotImage;
+      case 'fox':
+        return foxImage;
       default:
         return slotImage;
     }

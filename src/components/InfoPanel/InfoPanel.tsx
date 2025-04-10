@@ -16,6 +16,7 @@ import endermanDefaultImage from '../../assets/enderman_default.webp';
 import allayImage from '../../assets/allay.webp';
 import luckyCatImage from '../../assets/cat.webp';
 import parrotImage from '../../assets/parrot.webp';
+import foxImage from '../../assets/sleeping_fox.webp';
 import enchantedNetheriteShovelImage from '../../assets/enchanted_netherite_shovel.webp';
 import enchantedDiamondShovelImage from '../../assets/enchanted_diamond_shovel.webp';
 import enchantedGoldenShovelImage from '../../assets/enchanted_golden_shovel.webp';
@@ -40,7 +41,8 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     luckyCatCount,
     pirateParrotCount,
     musicEnabled,
-    musicVolume
+    musicVolume,
+    foxCount
   } = useGameStore();
   
   // Функция для получения информации о текущей лопате
@@ -318,6 +320,19 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
           label: 'Next Level Bonus', 
           value: `+${formatNumber(10 * (1 + 0.15 * (pirateParrotCount + 1)))} dirt per second` 
         }
+      ];
+      break;
+
+    case 'fox':
+      title = 'Fox';
+      description = 'A clever fox that helps you collect dirt. Each fox adds +20 dirt per second to your collection.';
+      image = foxImage;
+      const currentFoxPower = foxCount * 20;
+      stats = [
+        { label: 'Foxes Owned', value: formatNumber(foxCount) },
+        { label: 'Base Production', value: `${formatNumber(20)} dirt/s per fox` },
+        { label: 'Total Production', value: `${formatNumber(currentFoxPower)} dirt/s` },
+        { label: 'Next Fox Bonus', value: `+${formatNumber(20)} dirt per second` }
       ];
       break;
   }
