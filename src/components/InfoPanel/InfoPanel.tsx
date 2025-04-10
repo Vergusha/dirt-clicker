@@ -47,38 +47,38 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
   const getCurrentShovelInfo = () => {
     let currentShovel = {
       name: 'Wooden Shovel',
-      description: 'Wood shovels that automatically dig dirt for you. Each shovel generates one dirt per second.',
+      description: 'Wood shovels that automatically dig dirt for you. Each shovel generates one dirt per second, with a 15% increase in production for each level.',
       count: autoClickerCount
     };
 
     if (autoClickerCount >= 1000) {
       currentShovel = {
         name: 'Netherite Shovel',
-        description: 'The ultimate shovel forged from ancient debris. Each shovel generates one dirt per second.',
+        description: 'The ultimate shovel forged from ancient debris. Each shovel generates one dirt per second, with a 15% increase in production for each level.',
         count: autoClickerCount
       };
     } else if (autoClickerCount >= 500) {
       currentShovel = {
         name: 'Diamond Shovel',
-        description: 'A premium diamond-tipped shovel for efficient digging. Each shovel generates one dirt per second.',
+        description: 'A premium diamond-tipped shovel for efficient digging. Each shovel generates one dirt per second, with a 15% increase in production for each level.',
         count: autoClickerCount
       };
     } else if (autoClickerCount >= 300) {
       currentShovel = {
         name: 'Golden Shovel',
-        description: 'A golden shovel that brings fortune while digging. Each shovel generates one dirt per second.',
+        description: 'A golden shovel that brings fortune while digging. Each shovel generates one dirt per second, with a 15% increase in production for each level.',
         count: autoClickerCount
       };
     } else if (autoClickerCount >= 200) {
       currentShovel = {
         name: 'Iron Shovel',
-        description: 'A durable iron shovel for serious dirt collection. Each shovel generates one dirt per second.',
+        description: 'A durable iron shovel for serious dirt collection. Each shovel generates one dirt per second, with a 15% increase in production for each level.',
         count: autoClickerCount
       };
     } else if (autoClickerCount >= 100) {
       currentShovel = {
         name: 'Stone Shovel',
-        description: 'An upgraded stone shovel for better digging. Each shovel generates one dirt per second.',
+        description: 'An upgraded stone shovel for better digging. Each shovel generates one dirt per second, with a 15% increase in production for each level.',
         count: autoClickerCount
       };
     }
@@ -124,14 +124,16 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
   switch (type) {
     case 'clickPower':
       title = 'Stronger Click';
-      description = 'Increases the power of each click by +1 for each level, allowing you to collect more dirt with each tap. Base cost: 10 dirt, increasing by 15% with each level.';
+      description = 'Increases the power of each click. Each level adds +1 to your base click power, and your total click power increases by 15% for each level. Base cost: 10 dirt, increasing by 15% with each level.';
       image = cursorImage; // Always show the regular cursor image regardless of click power
+      const currentClickPower = clickPower * (1 + 0.15 * clickPower);
       stats = [
         { label: 'Current Level', value: formatNumber(clickPower) },
-        { label: 'Dirt Per Click', value: formatNumber(clickPower) },
+        { label: 'Base Click Power', value: formatNumber(clickPower) },
+        { label: 'Actual Click Power', value: formatNumber(currentClickPower) },
         { 
           label: 'Next Level Bonus', 
-          value: '+1 dirt per click' 
+          value: `+${formatNumber(1 + 0.15 * (clickPower + 1))} dirt per click` 
         }
       ];
       break;
@@ -141,6 +143,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       title = currentShovelInfo.name;
       description = `${currentShovelInfo.description} Base cost: 50 dirt, increasing by 15% with each level.`;
       image = getShovelImage();
+      const currentShovelPower = autoClickerCount * (1 + 0.15 * autoClickerCount);
       stats = [
         { label: 'Total Shovels', value: formatNumber(autoClickerCount) },
         { label: 'Current Type', value: currentShovelInfo.name },
@@ -149,12 +152,12 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
           value: `${formatNumber(autoClickerCount)} dirt/s` 
         },
         { 
-          label: 'Total Production', 
-          value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s` 
+          label: 'Actual Production', 
+          value: `${formatNumber(currentShovelPower)} dirt/s` 
         },
         { 
           label: 'Next Level Bonus', 
-          value: '+1 dirt per second' 
+          value: `+${formatNumber(1 + 0.15 * (autoClickerCount + 1))} dirt per second` 
         }
       ];
       break;
@@ -226,18 +229,23 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       
     case 'friendlyEnderman':
       title = 'Friendly Enderman';
-      description = 'Friendly Endermen that teleport dirt to you from the End dimension. Each Enderman produces 5 dirt per second. Base cost: 1000 dirt, increasing by 15% with each level.';
+      description = 'Friendly Endermen that teleport dirt to you from the End dimension. Each Enderman produces 5 dirt per second, with a 15% increase in production for each level. Base cost: 1000 dirt, increasing by 15% with each level.';
       image = endermanDefaultImage;
+      const currentEndermanPower = friendlyEndermanCount * 5 * (1 + 0.15 * friendlyEndermanCount);
       stats = [
         { label: 'Endermen', value: formatNumber(friendlyEndermanCount) },
-        { label: 'Production per Enderman', value: '5 dirt/s' },
+        { label: 'Base Production per Enderman', value: '5 dirt/s' },
+        { 
+          label: 'Actual Production per Enderman', 
+          value: `${formatNumber(5 * (1 + 0.15 * friendlyEndermanCount))} dirt/s` 
+        },
         { 
           label: 'Total Production', 
-          value: `${formatNumber(friendlyEndermanCount * 5)} dirt/s` 
+          value: `${formatNumber(currentEndermanPower)} dirt/s` 
         },
         { 
           label: 'Next Level Bonus', 
-          value: '+5 dirt per second' 
+          value: `+${formatNumber(5 * (1 + 0.15 * (friendlyEndermanCount + 1)))} dirt per second` 
         }
       ];
       break;
@@ -283,27 +291,32 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
 
     case 'pirateParrot':
       title = 'Pirate Parrot';
-      description = 'This colorful avian companion has a knack for finding buried treasures! Each Pirate Parrot adds 10 dirt per second to your collection. Base cost: 20,000 dirt, increasing by 15% with each level. The parrot dances when music is playing and volume is above minimum, showing its excitement for treasure hunting!';
+      description = 'This colorful avian companion has a knack for finding buried treasures! Each Pirate Parrot adds 10 dirt per second to your collection, with a 15% increase in production for each level. Base cost: 20,000 dirt, increasing by 15% with each level. The parrot dances when music is playing and volume is above minimum, showing its excitement for treasure hunting!';
       image = parrotImage;
       // Определяем, танцует ли попугай (музыка включена И громкость больше минимального порога)
       const isParrotDancing = musicEnabled && musicVolume > 0.05;
+      const currentParrotPower = pirateParrotCount * 10 * (1 + 0.15 * pirateParrotCount);
       stats = [
         { label: 'Parrots Owned', value: formatNumber(pirateParrotCount) },
         { 
-          label: 'Base Production', 
-          value: `${formatNumber(pirateParrotCount * 10)} dirt/s` 
+          label: 'Base Production per Parrot', 
+          value: '10 dirt/s' 
+        },
+        { 
+          label: 'Actual Production per Parrot', 
+          value: `${formatNumber(10 * (1 + 0.15 * pirateParrotCount))} dirt/s` 
+        },
+        { 
+          label: 'Total Production', 
+          value: `${formatNumber(currentParrotPower)} dirt/s` 
         },
         { 
           label: 'With Allay Bonus', 
-          value: `${formatNumber(pirateParrotCount * 10 * (1 + allayCount * 0.2))} dirt/s` 
+          value: `${formatNumber(currentParrotPower * (1 + allayCount * 0.2))} dirt/s` 
         },
         { 
           label: 'Next Level Bonus', 
-          value: '+10 dirt per second' 
-        },
-        {
-          label: 'Current State',
-          value: isParrotDancing ? 'Dancing (Music On)' : musicEnabled ? 'Resting (Volume Too Low)' : 'Resting (Music Off)'
+          value: `+${formatNumber(10 * (1 + 0.15 * (pirateParrotCount + 1)))} dirt per second` 
         }
       ];
       break;
@@ -335,12 +348,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
             <img 
               src={image} 
               alt={title} 
-              className="info-image" 
-              style={{ 
-                maxWidth: '100%', 
-                height: 'auto', 
-                display: 'block'
-              }} 
+              className="info-image"
             />
           </div>
           <div className="info-description">

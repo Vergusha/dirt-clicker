@@ -822,9 +822,53 @@ button {
   box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
 }
 
+/* Стили для изображений в информационной панели */
+.info-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.info-image {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
 /* Инвертирование изображения деревянной лопаты в информационной панели */
 .info-image-container img[src*="wood_shovel.webp"] {
   transform: scaleY(-1);
+}
+
+/* Специальные стили для разных типов изображений */
+.info-image-container img[src*="cursor.webp"] {
+  width: 80px;
+  height: 80px;
+}
+
+.info-image-container img[src*="enderman_default.webp"] {
+  width: 90px;
+  height: 90px;
+}
+
+.info-image-container img[src*="allay.webp"] {
+  width: 70px;
+  height: 70px;
+}
+
+.info-image-container img[src*="cat.webp"] {
+  width: 80px;
+  height: 80px;
+}
+
+.info-image-container img[src*="parrot.webp"] {
+  width: 80px;
+  height: 80px;
 }
 
 /* Заголовок информационной панели */
