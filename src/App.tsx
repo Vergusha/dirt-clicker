@@ -63,14 +63,17 @@ function App() {
     // if (activeTab !== 'game') return;
     
     const interval = setInterval(() => {
-      // Calculate total auto click power from wood shovels
-      const autoClickPower = autoClickerCount;
+      // Calculate total auto click power from wood shovels with level scaling
+      // Каждая лопата дает 1 землю в секунду, умноженное на (1 + 0.15 * уровень)
+      const autoClickPower = autoClickerCount * (1 + 0.15 * autoClickerCount);
       
-      // Calculate extra dirt from Friendly Endermen (each enderman produces 5 dirt per second)
-      const endermanPower = friendlyEndermanCount * 5;
+      // Calculate extra dirt from Friendly Endermen with level scaling
+      // Каждый эндермен дает 5 земли в секунду, умноженное на (1 + 0.15 * уровень)
+      const endermanPower = friendlyEndermanCount * 5 * (1 + 0.15 * friendlyEndermanCount);
       
-      // Calculate dirt from Pirate Parrots (each parrot produces 30 dirt per second)
-      const parrotPower = pirateParrotCount * 30;
+      // Calculate dirt from Pirate Parrots with level scaling
+      // Каждый попугай дает 30 земли в секунду, умноженное на (1 + 0.15 * уровень)
+      const parrotPower = pirateParrotCount * 30 * (1 + 0.15 * pirateParrotCount);
       
       // Apply Allay multiplier if there are any Allays (each Allay adds 0.2x multiplier)
       const allayMultiplier = allayCount > 0 ? 1 + (allayCount * 0.2) : 1;
@@ -125,8 +128,8 @@ function App() {
 
   // Обработчик клика по блоку земли
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    // Определяем базовую мощность клика
-    let clickAmount = clickPower;
+    // Определяем базовую мощность клика с учетом увеличения на 15% с каждым уровнем
+    let clickAmount = clickPower * (1 + 0.15 * clickPower);
     
     // Проверяем, сработала ли удача от Lucky Cat (10% шанс на ×10 к клику за каждого кота)
     const luckChance = luckyCatCount * 0.1; // 10% за каждого кота
@@ -150,7 +153,7 @@ function App() {
       x: clickX,
       y: clickY,
       value: clickAmount,
-      isLucky: clickAmount > clickPower // Признак того, что сработала удача
+      isLucky: clickAmount > clickPower * (1 + 0.15 * clickPower) // Признак того, что сработала удача
     };
     
     setClickAnimations(prev => [...prev, newAnimation]);
@@ -162,9 +165,9 @@ function App() {
   };
 
   // Calculate total dirt per second from all sources
-  const totalAutoClickPower = autoClickerCount * (multiAutoClickPower > 1.0 ? 1.15 : 1.0);
-  const endermanPower = friendlyEndermanCount * 5;
-  const pirateParrotPower = pirateParrotCount * 10;
+  const totalAutoClickPower = autoClickerCount * (1 + 0.15 * autoClickerCount);
+  const endermanPower = friendlyEndermanCount * 5 * (1 + 0.15 * friendlyEndermanCount);
+  const pirateParrotPower = pirateParrotCount * 10 * (1 + 0.15 * pirateParrotCount);
   const allayMultiplier = allayCount > 0 ? 1 + (allayCount * 0.2) : 1;
   const totalDirtPerSecond = (totalAutoClickPower + endermanPower + pirateParrotPower) * allayMultiplier;
 
