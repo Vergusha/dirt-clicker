@@ -29,6 +29,8 @@ export const SettingsPanel = () => {
     setCatSoundsEnabled,
     parrotSoundsEnabled,
     setParrotSoundsEnabled,
+    foxSoundsEnabled,
+    setFoxSoundsEnabled,
     dirtCount,
     totalDirtCollected,
     applyPromoCode
@@ -169,6 +171,14 @@ export const SettingsPanel = () => {
                       onChange={(e) => setParrotSoundsEnabled(e.target.checked)}
                     />
                     Parrot Sounds
+                  </label>
+                  <label className={styles.settingLabel}>
+                    <input
+                      type="checkbox"
+                      checked={foxSoundsEnabled}
+                      onChange={(e) => setFoxSoundsEnabled(e.target.checked)}
+                    />
+                    Fox Sounds
                   </label>
                 </div>
               </motion.div>

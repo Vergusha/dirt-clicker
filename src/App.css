@@ -1562,6 +1562,7 @@ button,
 @media (max-width: 480px) {
   .enderman-image {
     width: 60px;
+    
   }
   
   .allay-image {
@@ -1773,34 +1774,45 @@ img {
 /* Fox styles */
 .fox-container {
   position: fixed;
-  bottom: 80px;
-  right: 290px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-  z-index: 1;
-  pointer-events: none;
+  bottom: 70px; /* Перемещаем выше от нижнего края */
+  right: 280px; /* Перемещаем левее от правого края */
+  z-index: 5;
+  pointer-events: auto;
 }
 
 .fox {
-  width: 70px;
-  height: 70px;
   position: relative;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 5;
 }
 
 .fox-image {
   width: 100%;
   height: 100%;
+  filter: drop-shadow(0 0 6px rgba(255, 102, 0, 0.7));
   object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(255, 165, 0, 0.8));
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
 }
 
 @media (max-width: 480px) {
   .fox-container {
-    right: 10px;
-    bottom: 180px; /* Adjust position on mobile */
-    right: 10px;
+    bottom: 60px; /* Адаптируем для мобильных устройств */
+    right: 250px;
+  }
+  
+  .fox {
+    width: 70px;
+    height: 70px;
   }
 }
 
