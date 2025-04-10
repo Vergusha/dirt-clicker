@@ -325,14 +325,14 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
 
     case 'fox':
       title = 'Fox';
-      description = 'A clever fox that helps you collect dirt. Each fox adds +20 dirt per second to your collection.';
+      description = 'A clever fox that helps you collect dirt. Each fox adds +70 dirt per second to your collection.';
       image = foxImage;
-      const currentFoxPower = foxCount * 20;
+      const currentFoxPower = foxCount * 70;
       stats = [
         { label: 'Foxes Owned', value: formatNumber(foxCount) },
-        { label: 'Base Production', value: `${formatNumber(20)} dirt/s per fox` },
+        { label: 'Base Production', value: `${formatNumber(70)} dirt/s per fox` },
         { label: 'Total Production', value: `${formatNumber(currentFoxPower)} dirt/s` },
-        { label: 'Next Fox Bonus', value: `+${formatNumber(20)} dirt per second` }
+        { label: 'Next Fox Bonus', value: `+${formatNumber(70)} dirt per second` }
       ];
       break;
   }

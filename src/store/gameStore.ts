@@ -100,6 +100,7 @@ interface GameState {
     timeAwayInSeconds: number;
   };
   updateLastVisitTime: () => void;
+  getDirtPerSecond: () => number;
 }
 
 // Calculates cost for a specific quantity of upgrades
@@ -200,12 +201,35 @@ const fixFloatingPointNumbers = (state: any) => {
   }
   
   if (newState.foxCount !== undefined && newState.foxCost !== undefined) {
-    const baseCost = 30000; // Обновлено с 10000 на 30000
+    const baseCost = 50000; // Изменено с 30000 на 50000
     const growthRate = 0.15;
     newState.foxCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.foxCount));
   }
   
   return newState;
+};
+
+// Функция для расчета добычи в секунду
+const calculateDirtPerSecond = (state: GameState): number => {
+  // Базовая добыча от лопат с учетом множителя улучшения и уровня лопат
+  const autoClickerDirt = state.autoClickerCount * state.multiAutoClickPower * (1 + 0.15 * state.autoClickerCount);
+  
+  // Добыча от эндерменов с учетом уровня
+  const endermanDirt = state.friendlyEndermanCount * 10 * (1 + 0.15 * state.friendlyEndermanCount);
+  
+  // Добыча от попугаев с учетом уровня
+  const parrotDirt = state.pirateParrotCount * 30 * (1 + 0.15 * state.pirateParrotCount);
+  
+  // Добыча от остальных мобов
+  const allayDirt = state.allayCount * 15;
+  const catDirt = state.luckyCatCount * 25;
+  const foxDirt = state.foxCount * 70;
+  
+  // Применяем множитель от Allay
+  const allayMultiplier = state.allayCount > 0 ? 1 + (state.allayCount * 0.2) : 1;
+  
+  // Умножаем всю добычу на множитель от Allay
+  return (autoClickerDirt + endermanDirt + parrotDirt + allayDirt + catDirt + foxDirt) * allayMultiplier;
 };
 
 // Create the store with persistence
@@ -234,7 +258,7 @@ export const useGameStore = create<GameState>()(
       allayCost: 5000,        // Было 1000, новая стоимость 5000
       luckyCatCost: 10000,    // Было 2000, новая стоимость 10000
       pirateParrotCost: 20000, // Было 3500, новая стоимость 20000
-      foxCost: 30000,         // Было 10000, новая стоимость 30000
+      foxCost: 50000,         // Изменено с 30000 на 50000
       
       // Audio settings initial values
       musicEnabled: true,
@@ -499,7 +523,7 @@ export const useGameStore = create<GameState>()(
       // Purchase Fox
       purchaseFox: (quantity) => {
         const state = get();
-        const baseCost = 30000; // Базовая стоимость
+        const baseCost = 50000; // Базовая стоимость
         const growthRate = 0.15;
         
         // Calculate cost for quantity upgrades from current level
@@ -547,7 +571,7 @@ export const useGameStore = create<GameState>()(
           case 20000: // Pirate Parrot (обновлено с 3500 на 20000)
             level = state.pirateParrotCount;
             break;
-          case 30000: // Fox (обновлено с 10000 на 30000)
+          case 50000: // Fox (обновлено с 30000 на 50000)
             level = state.foxCount;
             break;
         }
@@ -576,7 +600,7 @@ export const useGameStore = create<GameState>()(
           allayCost: 5000,
           luckyCatCost: 10000,
           pirateParrotCost: 20000,
-          foxCost: 30000,
+          foxCost: 50000,
           usedPromoCodes: [],
         });
       },
@@ -757,7 +781,7 @@ export const useGameStore = create<GameState>()(
           }
           
           if (newState.foxCount !== undefined && newState.foxCost !== undefined) {
-            const baseCost = 30000; // Обновлено с 10000 на 30000
+            const baseCost = 50000; // Изменено с 30000 на 50000
             const growthRate = 0.15;
             newState.foxCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.foxCount));
           }
@@ -773,7 +797,6 @@ export const useGameStore = create<GameState>()(
         const lastVisitTime = get().lastVisitTime;
         const timeAwayInSeconds = Math.floor((currentTime - lastVisitTime) / 1000);
         
-        // Если прошло меньше 30 секунд или это первый визит, не показываем прогресс
         if (timeAwayInSeconds < 30 || lastVisitTime === 0) {
           set({ lastVisitTime: currentTime });
           return {
@@ -782,24 +805,11 @@ export const useGameStore = create<GameState>()(
           };
         }
         
-        // Получаем текущую скорость добычи в секунду
         const state = get();
+        const dirtPerSecond = calculateDirtPerSecond(state);
         
-        // Расчет всех источников дохода
-        const autoClickPower = state.autoClickerCount * (state.multiAutoClickPower > 1.0 ? state.multiAutoClickPower : 1.0);
-        const endermanPower = state.friendlyEndermanCount * 5;
-        const pirateParrotPower = state.pirateParrotCount * 10;
-        
-        // Применяем множитель от Allay
-        const allayMultiplier = state.allayCount > 0 ? 1 + (state.allayCount * 0.2) : 1;
-        
-        // Общая скорость добычи в секунду
-        const dirtPerSecond = (autoClickPower + endermanPower + pirateParrotPower) * allayMultiplier;
-        
-        // Рассчитываем заработанную землю
         const earnedDirt = Math.floor(dirtPerSecond * timeAwayInSeconds);
         
-        // Обновляем время последнего визита и добавляем заработанную землю
         set({
           lastVisitTime: currentTime,
           dirtCount: state.dirtCount + earnedDirt
@@ -820,6 +830,12 @@ export const useGameStore = create<GameState>()(
       init: () => {
         const offlineProgress = get().calculateOfflineProgress();
         return offlineProgress;
+      },
+
+      // Добавляем функцию в состояние
+      getDirtPerSecond: () => {
+        const state = get();
+        return calculateDirtPerSecond(state);
       },
     }),
     {

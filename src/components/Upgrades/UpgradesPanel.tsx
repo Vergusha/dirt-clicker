@@ -136,7 +136,7 @@ export const UpgradesPanel: React.FC = () => {
           <UpgradeButton 
             type="fox"
             title="Fox"
-            description="Adds +20 dirt per second to your collection"
+            description="Adds +70 dirt per second to your collection"
             purchaseQuantity={purchaseQuantity}
             onInfoClick={handleInfoClick}
           />

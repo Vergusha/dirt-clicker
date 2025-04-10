@@ -1782,8 +1782,8 @@ img {
 
 .fox {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   cursor: pointer;
   pointer-events: auto;
   z-index: 5;

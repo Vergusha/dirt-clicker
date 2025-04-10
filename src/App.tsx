@@ -35,7 +35,8 @@ function App() {
     multiAutoClickPower,
     increaseDirtCount,
     init,
-    updateLastVisitTime
+    updateLastVisitTime,
+    getDirtPerSecond
   } = useGameStore();
   
   // State for click animations
@@ -168,12 +169,8 @@ function App() {
     }, 800);
   };
 
-  // Calculate total dirt per second from all sources
-  const totalAutoClickPower = autoClickerCount * (1 + 0.15 * autoClickerCount);
-  const endermanPower = friendlyEndermanCount * 5 * (1 + 0.15 * friendlyEndermanCount);
-  const pirateParrotPower = pirateParrotCount * 10 * (1 + 0.15 * pirateParrotCount);
-  const allayMultiplier = allayCount > 0 ? 1 + (allayCount * 0.2) : 1;
-  const totalDirtPerSecond = (totalAutoClickPower + endermanPower + pirateParrotPower) * allayMultiplier;
+  // Заменяем старый расчет на новую функцию
+  const totalDirtPerSecond = getDirtPerSecond();
 
   useEffect(() => {
     const progress = init();

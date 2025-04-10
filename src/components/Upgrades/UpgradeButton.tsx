@@ -132,7 +132,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
         totalPrice = calculateTotalPrice(20000, purchaseQuantity, 0.15);
         break;
       case 'fox':
-        totalPrice = calculateTotalPrice(30000, purchaseQuantity, 0.15);
+        totalPrice = calculateTotalPrice(50000, purchaseQuantity, 0.15);
         break;
       default:
         return 0;
