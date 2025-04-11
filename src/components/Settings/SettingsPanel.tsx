@@ -19,8 +19,6 @@ export const SettingsPanel = () => {
     setSoundEffectsEnabled,
     soundEffectsVolume,
     setSoundEffectsVolume,
-    shovelSoundsEnabled,
-    setShovelSoundsEnabled,
     endermanSoundsEnabled,
     setEndermanSoundsEnabled,
     allaySoundsEnabled,
@@ -132,14 +130,6 @@ export const SettingsPanel = () => {
                   />
                 </div>
                 <div className={styles.subSettings}>
-                  <label className={styles.settingLabel}>
-                    <input
-                      type="checkbox"
-                      checked={shovelSoundsEnabled}
-                      onChange={(e) => setShovelSoundsEnabled(e.target.checked)}
-                    />
-                    Shovel Sounds
-                  </label>
                   <label className={styles.settingLabel}>
                     <input
                       type="checkbox"

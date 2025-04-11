@@ -6,8 +6,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSoundEffect } from '../SoundEffects/useSoundEffect';
 import parrotSound1 from '../../audio/Parrot_idle1.ogg';
 import parrotSound2 from '../../audio/Parrot_idle2.ogg';
-import parrotSound3 from '../../audio/Parrot_idle3.ogg';
-import parrotSound4 from '../../audio/Parrot_idle4.ogg';
 
 /**
  * Component for displaying a Pirate Parrot on screen when the player has the upgrade

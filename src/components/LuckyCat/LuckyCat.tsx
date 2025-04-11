@@ -16,7 +16,6 @@ export const LuckyCat: React.FC = () => {
   
   // Animation parameters
   const [animationDuration, setAnimationDuration] = useState(4.0);
-  const [catSize, setCatSize] = useState(55);
 
   // Add debug console log
   useEffect(() => {
@@ -28,15 +27,12 @@ export const LuckyCat: React.FC = () => {
     if (window.innerWidth <= 480) {
       // Mobile devices
       setAnimationDuration(4.2);
-      setCatSize(45);
     } else if (window.innerWidth <= 768) {
       // Tablets
       setAnimationDuration(4.0);
-      setCatSize(50);
     } else {
       // Desktop
       setAnimationDuration(3.8);
-      setCatSize(55);
     }
   }, []);
 

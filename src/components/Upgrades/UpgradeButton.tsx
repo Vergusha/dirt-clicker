@@ -77,16 +77,6 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
     return null;
   };
 
-  // Получаем текущий уровень улучшения для Enchanted Shovel
-  const getMultiAutoClickLevel = () => {
-    if (type !== 'multiAutoClick') return 0;
-    // Уровень = (текущая сила - 1.5) / 0.1 + 1
-    // Если меньше 1.5, значит еще не куплен
-    return multiAutoClickPower >= 1.5 
-      ? Math.floor(((multiAutoClickPower - 1.5) / 0.1) + 1)
-      : 0;
-  };
-
   // Get the cost of the upgrade based on its type
   const getCost = () => {
     let totalPrice = 0;

@@ -1,5 +1,5 @@
-import { RefObject, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { RefObject, useEffect, useRef, memo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import dirtImage from '../../assets/dirt.webp';
 
 interface DirtBlockProps {
@@ -12,9 +12,11 @@ interface DirtBlockProps {
  * Component representing the clickable dirt block
  * Always positioned in the center of the screen
  */
-export const DirtBlock: React.FC<DirtBlockProps> = ({ blockRef, onBlockClick, onPositionUpdate }) => {
-  // Keep track of the previous position to avoid unnecessary updates
+const DirtBlockComponent: React.FC<DirtBlockProps> = ({ blockRef, onBlockClick, onPositionUpdate }) => {
+  const shouldReduceMotion = useReducedMotion();
   const prevPositionRef = useRef<{ x: number, y: number, width: number, height: number } | null>(null);
+  const updateTimeoutRef = useRef<number | null>(null);
+  const lastUpdateTimeRef = useRef<number>(0);
   
   // Helper function to check if positions are significantly different
   const hasPositionChanged = (
@@ -23,18 +25,22 @@ export const DirtBlock: React.FC<DirtBlockProps> = ({ blockRef, onBlockClick, on
   ) => {
     if (!prev) return true;
     
-    // Only update if position changed by at least 1px
+    // Увеличиваем порог изменений до 10px
     return (
-      Math.abs(prev.x - current.x) > 1 || 
-      Math.abs(prev.y - current.y) > 1 ||
-      Math.abs(prev.width - current.width) > 1 ||
-      Math.abs(prev.height - current.height) > 1
+      Math.abs(prev.x - current.x) > 10 || 
+      Math.abs(prev.y - current.y) > 10 ||
+      Math.abs(prev.width - current.width) > 10 ||
+      Math.abs(prev.height - current.height) > 10
     );
   };
 
-  // Обновляем положение блока при монтировании и изменении размера
   useEffect(() => {
     const updateBlockPosition = () => {
+      const now = performance.now();
+      // Ограничиваем обновления до 1 раза в 500мс
+      if (now - lastUpdateTimeRef.current < 500) return;
+      lastUpdateTimeRef.current = now;
+
       if (blockRef.current && onPositionUpdate) {
         const rect = blockRef.current.getBoundingClientRect();
         const newPosition = {
@@ -44,7 +50,6 @@ export const DirtBlock: React.FC<DirtBlockProps> = ({ blockRef, onBlockClick, on
           height: rect.height
         };
         
-        // Only update if position has actually changed
         if (hasPositionChanged(prevPositionRef.current, newPosition)) {
           prevPositionRef.current = newPosition;
           onPositionUpdate(newPosition);
@@ -55,44 +60,63 @@ export const DirtBlock: React.FC<DirtBlockProps> = ({ blockRef, onBlockClick, on
     // Начальное обновление
     updateBlockPosition();
     
-    // Обновление при изменении размера
+    // Используем только ResizeObserver с сильным throttle
     const resizeObserver = new ResizeObserver(() => {
-      updateBlockPosition();
+      if (updateTimeoutRef.current) {
+        window.cancelAnimationFrame(updateTimeoutRef.current);
+      }
+      updateTimeoutRef.current = window.requestAnimationFrame(updateBlockPosition);
     });
     
     if (blockRef.current) {
       resizeObserver.observe(blockRef.current);
     }
     
-    window.addEventListener('resize', updateBlockPosition);
-    window.addEventListener('scroll', updateBlockPosition);
-    
-    // Снижаем частоту проверок - используем крупный интервал
-    const interval = setInterval(updateBlockPosition, 500);
-    
     return () => {
-      window.removeEventListener('resize', updateBlockPosition);
-      window.removeEventListener('scroll', updateBlockPosition);
-      clearInterval(interval);
       resizeObserver.disconnect();
+      if (updateTimeoutRef.current) {
+        window.cancelAnimationFrame(updateTimeoutRef.current);
+      }
     };
-  }, [blockRef, onPositionUpdate]); // Важные зависимости
+  }, [blockRef, onPositionUpdate]);
 
   return (
     <motion.div 
       ref={blockRef}
       className="dirt-block-container"
-      whileTap={{ scale: 0.9 }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+      transition={{ 
+        type: "tween", // Используем более легкую анимацию
+        duration: 0.1,
+        ease: "easeOut"
+      }}
       onClick={onBlockClick}
-      onContextMenu={(e) => e.preventDefault()} // Disable context menu
+      onContextMenu={(e) => e.preventDefault()}
+      style={{
+        transform: 'translate3d(0,0,0)', // Включаем аппаратное ускорение
+        backfaceVisibility: 'hidden',
+        perspective: 1000,
+        willChange: 'transform'
+      }}
     >
       <img 
         src={dirtImage} 
         alt="Dirt Block" 
         draggable="false" 
-        onContextMenu={(e) => e.preventDefault()} // Disable context menu on image
+        onContextMenu={(e) => e.preventDefault()}
+        style={{
+          transform: 'translate3d(0,0,0)',
+          backfaceVisibility: 'hidden',
+          perspective: 1000,
+          willChange: 'transform'
+        }}
       />
     </motion.div>
   );
 };
+
+// Мемоизируем компонент для предотвращения лишних ререндеров
+export const DirtBlock = memo(DirtBlockComponent, (prev, next) => {
+  // Дополнительная проверка для предотвращения ненужных ререндеров
+  return prev.blockRef === next.blockRef;
+});

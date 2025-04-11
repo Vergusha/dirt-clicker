@@ -14,7 +14,7 @@ interface GameState {
   friendlyEndermanCount: number;
   allayCount: number;
   luckyCatCount: number;
-  pirateParrotCount: number;  // Добавляем счетчик для Пиратских Попугаев
+  pirateParrotCount: number;
   foxCount: number;
   
   // Costs
@@ -24,15 +24,13 @@ interface GameState {
   friendlyEndermanCost: number;
   allayCost: number;
   luckyCatCost: number;
-  pirateParrotCost: number;  // Добавляем стоимость для Пиратских Попугаев
+  pirateParrotCost: number;
   foxCost: number;
   
   // Audio settings
   musicEnabled: boolean;
   musicVolume: number;
   soundEffectsEnabled: boolean;
-  shovelSoundsEnabled: boolean;
-  shovelSoundsVolume: number;
   endermanSoundsEnabled: boolean;
   endermanSoundsVolume: number;
   allaySoundsEnabled: boolean;
@@ -49,8 +47,6 @@ interface GameState {
   setMusicEnabled: (enabled: boolean) => void;
   setMusicVolume: (volume: number) => void;
   setSoundEffectsEnabled: (enabled: boolean) => void;
-  setShovelSoundsEnabled: (enabled: boolean) => void;
-  setShovelSoundsVolume: (volume: number) => void;
   setEndermanSoundsEnabled: (enabled: boolean) => void;
   setEndermanSoundsVolume: (volume: number) => void;
   setAllaySoundsEnabled: (enabled: boolean) => void;
@@ -75,7 +71,7 @@ interface GameState {
   purchaseFriendlyEnderman: (quantity: number) => void;
   purchaseAllay: (quantity: number) => void;
   purchaseLuckyCat: (quantity: number) => void;
-  purchasePirateParrot: (quantity: number) => void;  // Добавляем метод покупки Пиратского Попугая
+  purchasePirateParrot: (quantity: number) => void;
   purchaseFox: (quantity: number) => void;
   
   // Helper to check if player can afford an upgrade
@@ -103,18 +99,55 @@ interface GameState {
   getDirtPerSecond: () => number;
 }
 
-// Calculates cost for a specific quantity of upgrades
-const calculateCost = (baseCost: number, growthRate: number, quantity: number, startLevel: number = 0): number => {
-  let totalCost = 0;
+// Оптимизированная функция для расчета добычи в секунду
+const calculateDirtPerSecond = (state: GameState): number => {
+  // Кэшируем часто используемые значения
+  const { autoClickerCount, friendlyEndermanCount, pirateParrotCount, allayCount } = state;
   
-  for (let i = 0; i < quantity; i++) {
-    const currentLevel = startLevel + i;
-    // Просто рассчитываем стоимость с учетом роста 15%
-    const levelCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
-    totalCost += levelCost;
+  // Оптимизируем вычисления, избегая повторных расчетов
+  const autoClickerMultiplier = 1 + 0.15 * autoClickerCount;
+  const endermanMultiplier = 1 + 0.15 * friendlyEndermanCount;
+  const parrotMultiplier = 1 + 0.15 * pirateParrotCount;
+  
+  // Базовая добыча от лопат
+  const autoClickerDirt = autoClickerCount * autoClickerMultiplier;
+  
+  // Добыча от эндерменов
+  const endermanDirt = friendlyEndermanCount * 10 * endermanMultiplier;
+  
+  // Добыча от попугаев
+  const parrotDirt = pirateParrotCount * 30 * parrotMultiplier;
+  
+  // Добыча от остальных мобов (без множителей)
+  const allayDirt = state.allayCount * 15;
+  const catDirt = state.luckyCatCount * 25;
+  const foxDirt = state.foxCount * 70;
+  
+  // Применяем множитель от Allay только один раз в конце
+  const allayMultiplier = allayCount > 0 ? 1 + (allayCount * 0.2) : 1;
+  
+  // Суммируем всю добычу и применяем финальный множитель
+  return Math.floor((autoClickerDirt + endermanDirt + parrotDirt + allayDirt + catDirt + foxDirt) * allayMultiplier);
+};
+
+// Оптимизированная функция для расчета стоимости
+const calculateCost = (baseCost: number, growthRate: number, quantity: number, startLevel: number = 0): number => {
+  // Для маленьких количеств используем прямой расчет
+  if (quantity <= 3) {
+    let totalCost = 0;
+    for (let i = 0; i < quantity; i++) {
+      totalCost += Math.floor(baseCost * Math.pow(1 + growthRate, startLevel + i));
+    }
+    return totalCost;
   }
   
-  return totalCost;
+  // Для больших количеств используем оптимизированную формулу
+  const endLevel = startLevel + quantity - 1;
+  const baseMultiplier = 1 + growthRate;
+  
+  // Используем формулу суммы геометрической прогрессии
+  const sum = baseCost * (Math.pow(baseMultiplier, quantity) - 1) / (baseMultiplier - 1);
+  return Math.floor(sum * Math.pow(baseMultiplier, startLevel));
 };
 
 // Функция для исправления чисел с плавающей запятой и обработки изменений базовых стоимостей
@@ -209,29 +242,6 @@ const fixFloatingPointNumbers = (state: any) => {
   return newState;
 };
 
-// Функция для расчета добычи в секунду
-const calculateDirtPerSecond = (state: GameState): number => {
-  // Базовая добыча от лопат с учетом множителя улучшения и уровня лопат
-  const autoClickerDirt = state.autoClickerCount * state.multiAutoClickPower * (1 + 0.15 * state.autoClickerCount);
-  
-  // Добыча от эндерменов с учетом уровня
-  const endermanDirt = state.friendlyEndermanCount * 10 * (1 + 0.15 * state.friendlyEndermanCount);
-  
-  // Добыча от попугаев с учетом уровня
-  const parrotDirt = state.pirateParrotCount * 30 * (1 + 0.15 * state.pirateParrotCount);
-  
-  // Добыча от остальных мобов
-  const allayDirt = state.allayCount * 15;
-  const catDirt = state.luckyCatCount * 25;
-  const foxDirt = state.foxCount * 70;
-  
-  // Применяем множитель от Allay
-  const allayMultiplier = state.allayCount > 0 ? 1 + (state.allayCount * 0.2) : 1;
-  
-  // Умножаем всю добычу на множитель от Allay
-  return (autoClickerDirt + endermanDirt + parrotDirt + allayDirt + catDirt + foxDirt) * allayMultiplier;
-};
-
 // Create the store with persistence
 export const useGameStore = create<GameState>()(
   persist(
@@ -247,25 +257,23 @@ export const useGameStore = create<GameState>()(
       friendlyEndermanCount: 0,
       allayCount: 0,
       luckyCatCount: 0,
-      pirateParrotCount: 0,  // Начальное значение для Пиратских Попугаев
+      pirateParrotCount: 0,
       foxCount: 0,
       
       // Base costs
-      clickPowerCost: 10,     // Было 5, новая стоимость 10
-      autoClickerCost: 50,    // Было 15, новая стоимость 50
-      multiAutoClickCost: 250, // Было 100, новая стоимость 250
-      friendlyEndermanCost: 1000, // Было 500, новая стоимость 1000
-      allayCost: 5000,        // Было 1000, новая стоимость 5000
-      luckyCatCost: 10000,    // Было 2000, новая стоимость 10000
-      pirateParrotCost: 20000, // Было 3500, новая стоимость 20000
-      foxCost: 50000,         // Изменено с 30000 на 50000
+      clickPowerCost: 10,
+      autoClickerCost: 50,
+      multiAutoClickCost: 250,
+      friendlyEndermanCost: 1000,
+      allayCost: 5000,
+      luckyCatCost: 10000,
+      pirateParrotCost: 20000,
+      foxCost: 50000,
       
       // Audio settings initial values
       musicEnabled: true,
       musicVolume: 0.5,
       soundEffectsEnabled: true,
-      shovelSoundsEnabled: true,
-      shovelSoundsVolume: 0.5,
       endermanSoundsEnabled: true,
       endermanSoundsVolume: 0.5,
       allaySoundsEnabled: true,
@@ -284,12 +292,11 @@ export const useGameStore = create<GameState>()(
       // Actions
       increaseDirtCount: (amount) => {
         set((state) => {
-          // Используем fixFloatingPoint чтобы избежать проблем с числами с плавающей запятой
-          const newDirtCount = fixFloatingPoint(state.dirtCount + amount);
-          const newTotalCollected = fixFloatingPoint(state.totalDirtCollected + amount);
+          const newDirtCount = Math.floor(fixFloatingPoint(state.dirtCount + amount));
+          const newTotalCollected = Math.floor(fixFloatingPoint(state.totalDirtCollected + amount));
           return { 
-            dirtCount: Math.floor(newDirtCount),
-            totalDirtCollected: Math.floor(newTotalCollected)
+            dirtCount: newDirtCount,
+            totalDirtCollected: newTotalCollected
           };
         });
       },
@@ -337,21 +344,18 @@ export const useGameStore = create<GameState>()(
       
       purchaseAutoClicker: (amount: number = 1) => {
         const state = get();
-        const baseCost = 50; // Базовая стоимость из скриншота
+        const baseCost = 50;
         const growthRate = 0.15;
         
-        // Рассчитываем общую стоимость для текущей покупки
         const totalCost = calculateCost(baseCost, growthRate, amount, state.autoClickerCount);
         
         if (state.dirtCount >= totalCost) {
           const newCount = state.autoClickerCount + amount;
-          
-          // Рассчитываем стоимость следующей покупки
-          const nextCost = calculateCost(baseCost, growthRate, 1, newCount);
+          const nextCost = Math.floor(baseCost * Math.pow(1 + growthRate, newCount));
           
           set({
-            dirtCount: fixFloatingPoint(state.dirtCount - totalCost),
-            autoClickerCount: newCount, // Каждая лопата даёт +1 землю в секунду
+            dirtCount: Math.floor(fixFloatingPoint(state.dirtCount - totalCost)),
+            autoClickerCount: newCount,
             autoClickerCost: nextCost
           });
           return true;
@@ -683,8 +687,6 @@ export const useGameStore = create<GameState>()(
       setMusicEnabled: (enabled) => set({ musicEnabled: enabled }),
       setMusicVolume: (volume) => set({ musicVolume: volume }),
       setSoundEffectsEnabled: (enabled) => set({ soundEffectsEnabled: enabled }),
-      setShovelSoundsEnabled: (enabled) => set({ shovelSoundsEnabled: enabled }),
-      setShovelSoundsVolume: (volume) => set({ shovelSoundsVolume: volume }),
       setEndermanSoundsEnabled: (enabled) => set({ endermanSoundsEnabled: enabled }),
       setEndermanSoundsVolume: (volume) => set({ endermanSoundsVolume: volume }),
       setAllaySoundsEnabled: (enabled) => set({ allaySoundsEnabled: enabled }),
@@ -832,16 +834,14 @@ export const useGameStore = create<GameState>()(
         return offlineProgress;
       },
 
-      // Добавляем функцию в состояние
+      // Оптимизированная функция получения добычи в секунду
       getDirtPerSecond: () => {
-        const state = get();
-        return calculateDirtPerSecond(state);
+        return calculateDirtPerSecond(get());
       },
     }),
     {
-      name: 'dirt-clicker-storage', // Name for localStorage
+      name: 'dirt-clicker-storage',
       onRehydrateStorage: () => (state) => {
-        // Исправляем числа с плавающей запятой при загрузке сохраненных данных
         if (state) {
           const fixedState = fixFloatingPointNumbers(state) as Partial<GameState>;
           Object.keys(fixedState).forEach(key => {
@@ -851,7 +851,6 @@ export const useGameStore = create<GameState>()(
             }
           });
           
-          // Пересчитываем стоимость лопат
           state.recalculateShovelCosts();
         }
       }

@@ -40,8 +40,6 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     allayCount,
     luckyCatCount,
     pirateParrotCount,
-    musicEnabled,
-    musicVolume,
     foxCount
   } = useGameStore();
   
@@ -295,8 +293,6 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       title = 'Pirate Parrot';
       description = 'This colorful avian companion has a knack for finding buried treasures! Each Pirate Parrot adds 10 dirt per second to your collection, with a 15% increase in production for each level. Base cost: 20,000 dirt, increasing by 15% with each level. The parrot dances when music is playing and volume is above minimum, showing its excitement for treasure hunting!';
       image = parrotImage;
-      // Определяем, танцует ли попугай (музыка включена И громкость больше минимального порога)
-      const isParrotDancing = musicEnabled && musicVolume > 0.05;
       const currentParrotPower = pirateParrotCount * 10 * (1 + 0.15 * pirateParrotCount);
       stats = [
         { label: 'Parrots Owned', value: formatNumber(pirateParrotCount) },

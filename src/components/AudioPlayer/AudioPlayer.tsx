@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
+import { useAudioContext } from '../../hooks/useAudioContext';
 import backgroundMusic from '../../audio/C418-Ghostly.mp3';
 
 /**
@@ -8,77 +9,48 @@ import backgroundMusic from '../../audio/C418-Ghostly.mp3';
  */
 export const AudioPlayer: React.FC = () => {
   const { musicEnabled, musicVolume } = useGameStore();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioInitializedRef = useRef(false);
+  const [isUserInteracted, setIsUserInteracted] = useState(false);
+  const audioContext = useAudioContext();
 
-  // Инициализация аудио при монтировании компонента
+  // Слушаем первое взаимодействие пользователя
   useEffect(() => {
-    if (audioInitializedRef.current) return;
-
-    // Создаем аудио элемент при монтировании компонента
-    const audio = new Audio(backgroundMusic);
-    audio.loop = true;  // Зацикливаем воспроизведение
-    audio.volume = musicVolume;  // Устанавливаем начальную громкость
-    
-    // Если музыка была включена до обновления страницы, начинаем воспроизведение
-    if (musicEnabled) {
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log('Initial play prevented:', error);
-        });
-      }
-    }
-    
-    // Добавляем обработчик события окончания воспроизведения
-    const handleEnded = () => {
-      if (musicEnabled) {
-        audio.currentTime = 0;
-        audio.play().catch(error => {
-          console.log('Replay after end prevented:', error);
-        });
-      }
+    const handleInteraction = async () => {
+      setIsUserInteracted(true);
+      await audioContext.initialize();
+      await audioContext.loadSound(backgroundMusic);
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
     };
-    
-    audio.addEventListener('ended', handleEnded);
-    
-    // Сохраняем ссылку на аудио элемент
-    audioRef.current = audio;
-    audioInitializedRef.current = true;
-    
-    // Очистка при размонтировании компонента
+
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('keydown', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
+
     return () => {
-      if (audioRef.current) {
-        audioRef.current.removeEventListener('ended', handleEnded);
-        audioRef.current.pause();
-        audioRef.current = null;
-        audioInitializedRef.current = false;
-      }
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
     };
-  }, []); // Выполняется только при монтировании
+  }, []);
 
-  // Обработка изменения состояния воспроизведения
+  // Управление воспроизведением
   useEffect(() => {
-    if (!audioRef.current) return;
-    
+    if (!isUserInteracted) return;
+
     if (musicEnabled) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log('Play prevented:', error);
-        });
-      }
+      audioContext.resume();
+      audioContext.playSound(backgroundMusic, musicVolume);
     } else {
-      audioRef.current.pause();
+      audioContext.stopAll();
+      audioContext.suspend();
     }
-  }, [musicEnabled]);
+  }, [musicEnabled, isUserInteracted]);
 
-  // Обновляем громкость при изменении настроек
+  // Обновляем громкость
   useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = musicVolume;
+    audioContext.setMasterVolume(musicVolume);
   }, [musicVolume]);
 
-  // Компонент не рендерит никаких элементов в DOM
   return null;
 };
