@@ -8,6 +8,6 @@
 <h3 align="left">Used this technology stack:</h3>
 <p align="left">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=react,vite,ts,tailwind" />
+    <img src="https://skillicons.dev/icons?i=react,vite,ts" />
   </a>
 </p>
