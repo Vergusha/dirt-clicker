@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { fixFloatingPoint } from '../utils/formatNumber';
+import { BASE_COSTS, GROWTH_RATE, PRODUCTION_RATES, MULTIPLIERS, LIMITS, AUDIO_DEFAULTS } from '../constants/gameConstants';
 
 interface GameState {
   // Game state
   dirtCount: number;
   totalDirtCollected: number;
-  
+
   // Upgrades
   clickPower: number;
   autoClickerCount: number;
@@ -16,7 +17,7 @@ interface GameState {
   luckyCatCount: number;
   pirateParrotCount: number;  // Добавляем счетчик для Пиратских Попугаев
   foxCount: number;
-  
+
   // Costs
   clickPowerCost: number;
   autoClickerCost: number;
@@ -26,7 +27,7 @@ interface GameState {
   luckyCatCost: number;
   pirateParrotCost: number;  // Добавляем стоимость для Пиратских Попугаев
   foxCost: number;
-  
+
   // Audio settings
   musicEnabled: boolean;
   musicVolume: number;
@@ -44,7 +45,7 @@ interface GameState {
   foxSoundsEnabled: boolean;
   foxSoundsVolume: number;
   soundEffectsVolume: number;
-  
+
   // Audio controls
   setMusicEnabled: (enabled: boolean) => void;
   setMusicVolume: (volume: number) => void;
@@ -62,11 +63,11 @@ interface GameState {
   setFoxSoundsEnabled: (enabled: boolean) => void;
   setFoxSoundsVolume: (volume: number) => void;
   setSoundEffectsVolume: (volume: number) => void;
-  
+
   // Promo codes
   usedPromoCodes: string[];
   applyPromoCode: (code: string) => { success: boolean, message: string };
-  
+
   // Actions
   increaseDirtCount: (amount: number) => void;
   purchaseClickPower: (quantity: number) => void;
@@ -77,21 +78,21 @@ interface GameState {
   purchaseLuckyCat: (quantity: number) => void;
   purchasePirateParrot: (quantity: number) => void;  // Добавляем метод покупки Пиратского Попугая
   purchaseFox: (quantity: number) => void;
-  
+
   // Helper to check if player can afford an upgrade
   canAfford: (cost: number) => boolean;
-  
+
   // Helper to calculate total price for multiple purchases
   calculateTotalPrice: (baseCost: number, quantity: number, growthRate: number) => number;
-  
+
   // Reset game (for testing)
   resetGame: () => void;
-  
+
   // Пересчет стоимости лопат
   recalculateShovelCosts: () => void;
-  
+
   lastVisitTime: number;
-  calculateOfflineProgress: () => { 
+  calculateOfflineProgress: () => {
     earnedDirt: number;
     timeAwayInSeconds: number;
   };
@@ -102,26 +103,28 @@ interface GameState {
   updateLastVisitTime: () => void;
 }
 
-// Calculates cost for a specific quantity of upgrades
+// Calculates cost for a specific quantity of upgrades using geometric series formula
 const calculateCost = (baseCost: number, growthRate: number, quantity: number, startLevel: number = 0): number => {
-  let totalCost = 0;
-  
-  for (let i = 0; i < quantity; i++) {
-    const currentLevel = startLevel + i;
-    // Просто рассчитываем стоимость с учетом роста 15%
-    const levelCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
-    totalCost += levelCost;
+  if (quantity === 0) return 0;
+  if (quantity === 1) {
+    return Math.floor(baseCost * Math.pow(1 + growthRate, startLevel));
   }
-  
-  return totalCost;
+
+  // Using geometric series formula: a * (r^n - 1) / (r - 1)
+  // where a = baseCost * (1 + growthRate)^startLevel, r = (1 + growthRate), n = quantity
+  const a = baseCost * Math.pow(1 + growthRate, startLevel);
+  const r = 1 + growthRate;
+  const totalCost = a * (Math.pow(r, quantity) - 1) / (r - 1);
+
+  return Math.floor(totalCost);
 };
 
 // Функция для исправления чисел с плавающей запятой и обработки изменений базовых стоимостей
-const fixFloatingPointNumbers = (state: any) => {
+const fixFloatingPointNumbers = (state: Partial<GameState>): Partial<GameState> => {
   const newState = { ...state };
-  
+
   // Всегда округляем до целых чисел для основных значений
-  const integerFields = [
+  const integerFields: (keyof GameState)[] = [
     'dirtCount',
     'totalDirtCollected',
     'clickPower',
@@ -140,71 +143,55 @@ const fixFloatingPointNumbers = (state: any) => {
     'foxCount',
     'foxCost'
   ];
-  
+
   integerFields.forEach(field => {
-    if (newState[field] !== undefined) {
-      // Сначала исправляем проблемы с плавающей запятой, потом округляем
-      newState[field] = Math.floor(fixFloatingPoint(Number(newState[field])));
+    const value = newState[field];
+    if (value !== undefined && typeof value === 'number') {
+      (newState[field] as number) = Math.floor(fixFloatingPoint(value));
     }
   });
-  
+
   // Округляем множители до 2 знаков
   if (newState.multiAutoClickPower !== undefined) {
     // Исправляем проблемы с плавающей запятой, затем форматируем до 2 знаков
     newState.multiAutoClickPower = fixFloatingPoint(Number(newState.multiAutoClickPower));
     newState.multiAutoClickPower = Number(newState.multiAutoClickPower.toFixed(2));
   }
-  
+
   // Пересчитываем стоимости, если они некорректные
   if (newState.clickPower !== undefined && newState.clickPowerCost !== undefined) {
-    const baseCost = 10; // Обновлено с 5 на 10
-    const growthRate = 0.15;
-    newState.clickPowerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.clickPower - 1));
+    newState.clickPowerCost = Math.floor(BASE_COSTS.CLICK_POWER * Math.pow(1 + GROWTH_RATE, newState.clickPower - 1));
   }
-  
+
   if (newState.autoClickerCount !== undefined && newState.autoClickerCost !== undefined) {
-    const baseCost = 50; // Обновлено с 15 на 50
-    const growthRate = 0.15;
-    newState.autoClickerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.autoClickerCount));
+    newState.autoClickerCost = Math.floor(BASE_COSTS.AUTO_CLICKER * Math.pow(1 + GROWTH_RATE, newState.autoClickerCount));
   }
-  
+
   if (newState.multiAutoClickPower !== undefined && newState.multiAutoClickCost !== undefined) {
-    const baseCost = 250; // Обновлено с 100 на 250
-    const growthRate = 0.15;
     const currentLevel = Math.round((newState.multiAutoClickPower - 1) * 10);
-    newState.multiAutoClickCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
+    newState.multiAutoClickCost = Math.floor(BASE_COSTS.MULTI_AUTO_CLICK * Math.pow(1 + GROWTH_RATE, currentLevel));
   }
-  
+
   if (newState.friendlyEndermanCount !== undefined && newState.friendlyEndermanCost !== undefined) {
-    const baseCost = 1000; // Обновлено с 500 на 1000
-    const growthRate = 0.15;
-    newState.friendlyEndermanCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.friendlyEndermanCount));
+    newState.friendlyEndermanCost = Math.floor(BASE_COSTS.FRIENDLY_ENDERMAN * Math.pow(1 + GROWTH_RATE, newState.friendlyEndermanCount));
   }
-  
+
   if (newState.allayCount !== undefined && newState.allayCost !== undefined) {
-    const baseCost = 5000; // Обновлено с 1000 на 5000
-    const growthRate = 0.15;
-    newState.allayCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.allayCount));
+    newState.allayCost = Math.floor(BASE_COSTS.ALLAY * Math.pow(1 + GROWTH_RATE, newState.allayCount));
   }
-  
+
   if (newState.luckyCatCount !== undefined && newState.luckyCatCost !== undefined) {
-    const baseCost = 10000; // Обновлено с 2000 на 10000
-    const growthRate = 0.15;
-    newState.luckyCatCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.luckyCatCount));
+    newState.luckyCatCost = Math.floor(BASE_COSTS.LUCKY_CAT * Math.pow(1 + GROWTH_RATE, newState.luckyCatCount));
   }
-  
+
   if (newState.pirateParrotCount !== undefined && newState.pirateParrotCost !== undefined) {
-    const baseCost = 20000; // Обновлено с 3500 на 20000
-    const growthRate = 0.15;
-    newState.pirateParrotCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.pirateParrotCount));
+    newState.pirateParrotCost = Math.floor(BASE_COSTS.PIRATE_PARROT * Math.pow(1 + GROWTH_RATE, newState.pirateParrotCount));
   }
-  
+
   if (newState.foxCount !== undefined && newState.foxCost !== undefined) {
-    const baseCost = 30000; // Обновлено с 10000 на 30000
-    const growthRate = 0.15;
-    newState.foxCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.foxCount));
+    newState.foxCost = Math.floor(BASE_COSTS.FOX * Math.pow(1 + GROWTH_RATE, newState.foxCount));
   }
-  
+
   return newState;
 };
 
@@ -215,7 +202,7 @@ export const useGameStore = create<GameState>()(
       // Initial state
       dirtCount: 0,
       totalDirtCollected: 0,
-      
+
       // Upgrades initial values
       clickPower: 1,
       autoClickerCount: 0,
@@ -225,118 +212,111 @@ export const useGameStore = create<GameState>()(
       luckyCatCount: 0,
       pirateParrotCount: 0,  // Начальное значение для Пиратских Попугаев
       foxCount: 0,
-      
+
       // Base costs
-      clickPowerCost: 10,     // Было 5, новая стоимость 10
-      autoClickerCost: 50,    // Было 15, новая стоимость 50
-      multiAutoClickCost: 250, // Было 100, новая стоимость 250
-      friendlyEndermanCost: 1000, // Было 500, новая стоимость 1000
-      allayCost: 5000,        // Было 1000, новая стоимость 5000
-      luckyCatCost: 10000,    // Было 2000, новая стоимость 10000
-      pirateParrotCost: 20000, // Было 3500, новая стоимость 20000
-      foxCost: 30000,         // Было 10000, новая стоимость 30000
-      
+      clickPowerCost: BASE_COSTS.CLICK_POWER,
+      autoClickerCost: BASE_COSTS.AUTO_CLICKER,
+      multiAutoClickCost: BASE_COSTS.MULTI_AUTO_CLICK,
+      friendlyEndermanCost: BASE_COSTS.FRIENDLY_ENDERMAN,
+      allayCost: BASE_COSTS.ALLAY,
+      luckyCatCost: BASE_COSTS.LUCKY_CAT,
+      pirateParrotCost: BASE_COSTS.PIRATE_PARROT,
+      foxCost: BASE_COSTS.FOX,
+
       // Audio settings initial values
       musicEnabled: true,
-      musicVolume: 0.5,
+      musicVolume: AUDIO_DEFAULTS.MUSIC_VOLUME,
       soundEffectsEnabled: true,
       shovelSoundsEnabled: true,
-      shovelSoundsVolume: 0.5,
+      shovelSoundsVolume: AUDIO_DEFAULTS.CREATURE_VOLUME,
       endermanSoundsEnabled: true,
-      endermanSoundsVolume: 0.5,
+      endermanSoundsVolume: AUDIO_DEFAULTS.CREATURE_VOLUME,
       allaySoundsEnabled: true,
-      allaySoundsVolume: 0.5,
+      allaySoundsVolume: AUDIO_DEFAULTS.CREATURE_VOLUME,
       catSoundsEnabled: true,
-      catSoundsVolume: 0.5,
+      catSoundsVolume: AUDIO_DEFAULTS.CREATURE_VOLUME,
       parrotSoundsEnabled: true,
-      parrotSoundsVolume: 0.5,
+      parrotSoundsVolume: AUDIO_DEFAULTS.CREATURE_VOLUME,
       foxSoundsEnabled: true,
-      foxSoundsVolume: 0.5,
-      soundEffectsVolume: 1,
-      
+      foxSoundsVolume: AUDIO_DEFAULTS.CREATURE_VOLUME,
+      soundEffectsVolume: AUDIO_DEFAULTS.EFFECTS_VOLUME,
+
       // Promo codes initial values
       usedPromoCodes: [],
-      
+
       // Actions
       increaseDirtCount: (amount) => {
         set((state) => {
           // Используем fixFloatingPoint чтобы избежать проблем с числами с плавающей запятой
           const newDirtCount = fixFloatingPoint(state.dirtCount + amount);
           const newTotalCollected = fixFloatingPoint(state.totalDirtCollected + amount);
-          return { 
+          return {
             dirtCount: Math.floor(newDirtCount),
             totalDirtCollected: Math.floor(newTotalCollected)
           };
         });
       },
-      
+
       canAfford: (cost) => {
         return get().dirtCount >= cost;
       },
-      
+
       // Пересчет стоимости лопат
       recalculateShovelCosts: () => {
         set((state) => {
-          const baseCost = 50; // Обновлено с 15 на 50
-          const growthRate = 0.15;
-          
           // Рассчитываем стоимость следующей покупки
-          const nextCost = calculateCost(baseCost, growthRate, 1, state.autoClickerCount);
-          
+          const nextCost = calculateCost(BASE_COSTS.AUTO_CLICKER, GROWTH_RATE, 1, state.autoClickerCount);
+
           return {
             autoClickerCost: nextCost
           };
         });
       },
-      
+
       purchaseClickPower: (quantity) => {
         const state = get();
-        const baseCost = 10; // Базовая стоимость из скриншота
-        const growthRate = 0.15;
-        
+
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
-          baseCost * Math.pow(1 + growthRate, state.clickPower - 1), 
-          growthRate, 
+          BASE_COSTS.CLICK_POWER * Math.pow(1 + GROWTH_RATE, state.clickPower - 1),
+          GROWTH_RATE,
           quantity
         );
-        
+
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
             dirtCount: Math.floor(state.dirtCount - totalCost),
-            clickPower: state.clickPower + quantity, // Каждый уровень даёт +1 к мощности клика
-            clickPowerCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.clickPower + quantity - 1))
+            clickPower: state.clickPower + quantity,
+            clickPowerCost: Math.floor(BASE_COSTS.CLICK_POWER * Math.pow(1 + GROWTH_RATE, state.clickPower + quantity - 1))
           });
         }
       },
-      
+
       purchaseAutoClicker: (amount: number = 1) => {
         const state = get();
-        const baseCost = 50; // Базовая стоимость из скриншота
-        const growthRate = 0.15;
-        
+
         // Рассчитываем общую стоимость для текущей покупки
-        const totalCost = calculateCost(baseCost, growthRate, amount, state.autoClickerCount);
-        
+        const totalCost = calculateCost(BASE_COSTS.AUTO_CLICKER, GROWTH_RATE, amount, state.autoClickerCount);
+
         if (state.dirtCount >= totalCost) {
           const newCount = state.autoClickerCount + amount;
-          
+
           // Рассчитываем стоимость следующей покупки
-          const nextCost = calculateCost(baseCost, growthRate, 1, newCount);
-          
+          const nextCost = calculateCost(BASE_COSTS.AUTO_CLICKER, GROWTH_RATE, 1, newCount);
+
           set({
             dirtCount: fixFloatingPoint(state.dirtCount - totalCost),
-            autoClickerCount: newCount, // Каждая лопата даёт +1 землю в секунду
+            autoClickerCount: newCount,
             autoClickerCost: nextCost
           });
           return true;
         }
         return false;
       },
-      
+
       // Purchase Enchanted Wood Shovel (multiAutoClick)
-      purchaseMultiAutoClick: (quantity) => {
+      purchaseMultiAutoClick: (_quantity) => {
         const currentLevel = get().multiAutoClickPower;
         let cost = 0;
         let nextMultiplier = 1;
@@ -390,49 +370,45 @@ export const useGameStore = create<GameState>()(
           }));
         }
       },
-      
+
       // Purchase Friendly Enderman
       purchaseFriendlyEnderman: (quantity) => {
         const state = get();
-        const baseCost = 1000; // Базовая стоимость из скриншота
-        const growthRate = 0.15;
-        
+
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
-          baseCost * Math.pow(1 + growthRate, state.friendlyEndermanCount), 
-          growthRate, 
+          BASE_COSTS.FRIENDLY_ENDERMAN * Math.pow(1 + GROWTH_RATE, state.friendlyEndermanCount),
+          GROWTH_RATE,
           quantity
         );
-        
+
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
             dirtCount: Math.floor(state.dirtCount - totalCost),
-            friendlyEndermanCount: state.friendlyEndermanCount + quantity, // Каждый Эндермен даёт +5 земли в секунду
-            friendlyEndermanCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.friendlyEndermanCount + quantity))
+            friendlyEndermanCount: state.friendlyEndermanCount + quantity,
+            friendlyEndermanCost: Math.floor(BASE_COSTS.FRIENDLY_ENDERMAN * Math.pow(1 + GROWTH_RATE, state.friendlyEndermanCount + quantity))
           });
         }
       },
-      
+
       // Purchase Allay
       purchaseAllay: (quantity) => {
         const state = get();
-        const baseCost = 5000; // Базовая стоимость из скриншота
-        const growthRate = 0.15;
-        
+
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
-          baseCost * Math.pow(1 + growthRate, state.allayCount), 
-          growthRate, 
+          BASE_COSTS.ALLAY * Math.pow(1 + GROWTH_RATE, state.allayCount),
+          GROWTH_RATE,
           quantity
         );
-        
+
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
             dirtCount: Math.floor(state.dirtCount - totalCost),
-            allayCount: state.allayCount + quantity, // Каждый Allay даёт x1.2 к общей добыче
-            allayCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.allayCount + quantity))
+            allayCount: state.allayCount + quantity,
+            allayCost: Math.floor(BASE_COSTS.ALLAY * Math.pow(1 + GROWTH_RATE, state.allayCount + quantity))
           });
         }
       },
@@ -440,35 +416,32 @@ export const useGameStore = create<GameState>()(
       // Purchase Lucky Cat
       purchaseLuckyCat: (quantity) => {
         const state = get();
-        const baseCost = 10000; // Базовая стоимость из скриншота
-        const growthRate = 0.15;
-        const maxLevel = 10; // Максимальный уровень котов
-        
+
         // Проверяем, не превышен ли максимальный уровень
-        if (state.luckyCatCount >= maxLevel) {
-          return; // Выходим из функции, если достигнут максимальный уровень
+        if (state.luckyCatCount >= LIMITS.LUCKY_CAT_MAX) {
+          return;
         }
-        
+
         // Ограничиваем количество покупок до максимального уровня
-        const actualQuantity = Math.min(quantity, maxLevel - state.luckyCatCount);
-        
+        const actualQuantity = Math.min(quantity, LIMITS.LUCKY_CAT_MAX - state.luckyCatCount);
+
         if (actualQuantity <= 0) {
-          return; // Выходим, если нечего покупать
+          return;
         }
-        
+
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
-          baseCost * Math.pow(1 + growthRate, state.luckyCatCount), 
-          growthRate, 
+          BASE_COSTS.LUCKY_CAT * Math.pow(1 + GROWTH_RATE, state.luckyCatCount),
+          GROWTH_RATE,
           actualQuantity
         );
-        
+
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
             dirtCount: Math.floor(state.dirtCount - totalCost),
-            luckyCatCount: state.luckyCatCount + actualQuantity, // Каждый Lucky Cat даёт 10% шанс x10 на клик
-            luckyCatCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.luckyCatCount + actualQuantity))
+            luckyCatCount: state.luckyCatCount + actualQuantity,
+            luckyCatCost: Math.floor(BASE_COSTS.LUCKY_CAT * Math.pow(1 + GROWTH_RATE, state.luckyCatCount + actualQuantity))
           });
         }
       },
@@ -476,86 +449,82 @@ export const useGameStore = create<GameState>()(
       // Purchase Pirate Parrot
       purchasePirateParrot: (quantity) => {
         const state = get();
-        const baseCost = 20000; // Базовая стоимость из скриншота
-        const growthRate = 0.15;
-        
+
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
-          baseCost * Math.pow(1 + growthRate, state.pirateParrotCount), 
-          growthRate, 
+          BASE_COSTS.PIRATE_PARROT * Math.pow(1 + GROWTH_RATE, state.pirateParrotCount),
+          GROWTH_RATE,
           quantity
         );
-        
+
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
             dirtCount: Math.floor(state.dirtCount - totalCost),
-            pirateParrotCount: state.pirateParrotCount + quantity, // Каждый попугай даёт +10 земли в секунду
-            pirateParrotCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.pirateParrotCount + quantity))
+            pirateParrotCount: state.pirateParrotCount + quantity,
+            pirateParrotCost: Math.floor(BASE_COSTS.PIRATE_PARROT * Math.pow(1 + GROWTH_RATE, state.pirateParrotCount + quantity))
           });
         }
       },
-      
+
       // Purchase Fox
       purchaseFox: (quantity) => {
         const state = get();
-        const baseCost = 30000; // Базовая стоимость
-        const growthRate = 0.15;
-        
+
         // Calculate cost for quantity upgrades from current level
         const totalCost = calculateCost(
-          baseCost * Math.pow(1 + growthRate, state.foxCount), 
-          growthRate, 
+          BASE_COSTS.FOX * Math.pow(1 + GROWTH_RATE, state.foxCount),
+          GROWTH_RATE,
           quantity
         );
-        
+
         // Check if player can afford
         if (state.canAfford(totalCost)) {
           set({
             dirtCount: Math.floor(state.dirtCount - totalCost),
             foxCount: state.foxCount + quantity,
-            foxCost: Math.floor(baseCost * Math.pow(1 + growthRate, state.foxCount + quantity))
+            foxCost: Math.floor(BASE_COSTS.FOX * Math.pow(1 + GROWTH_RATE, state.foxCount + quantity))
           });
         }
       },
-      
+
       // Helper to calculate total price for multiple purchases
       calculateTotalPrice: (baseCost, quantity, growthRate) => {
         const state = get();
         let level = 0;
-        
+
         // Определяем текущий уровень улучшения на основе базовой стоимости
         switch (baseCost) {
-          case 50: // Wood Shovel (обновлено с 15 на 50)
+          case BASE_COSTS.AUTO_CLICKER:
             level = state.autoClickerCount;
             break;
-          case 10: // Click Power (обновлено с 5 на 10)
+          case BASE_COSTS.CLICK_POWER:
             level = state.clickPower - 1;
             break;
-          case 250: // Enchanted Wood Shovel (обновлено с 100 на 250)
+          case BASE_COSTS.MULTI_AUTO_CLICK:
             level = Math.round((state.multiAutoClickPower - 1) * 10);
             break;
-          case 1000: // Friendly Enderman (обновлено с 500 на 1000)
+          case BASE_COSTS.FRIENDLY_ENDERMAN:
             level = state.friendlyEndermanCount;
             break;
-          case 5000: // Allay (обновлено с 1000 на 5000)
+          case BASE_COSTS.ALLAY:
             level = state.allayCount;
             break;
-          case 10000: // Lucky Cat (обновлено с 2000 на 10000)
+          case BASE_COSTS.LUCKY_CAT:
             level = state.luckyCatCount;
             break;
-          case 20000: // Pirate Parrot (обновлено с 3500 на 20000)
+          case BASE_COSTS.PIRATE_PARROT:
             level = state.pirateParrotCount;
             break;
-          case 30000: // Fox (обновлено с 10000 на 30000)
+          case BASE_COSTS.FOX:
             level = state.foxCount;
             break;
         }
-        
+
         // Используем функцию calculateCost для расчета общей стоимости
         return calculateCost(baseCost, growthRate, quantity, level);
       },
-      
+
       // Reset game (for testing)
       resetGame: () => {
         set({
@@ -563,99 +532,102 @@ export const useGameStore = create<GameState>()(
           totalDirtCollected: 0,
           clickPower: 1,
           autoClickerCount: 0,
-          multiAutoClickPower: 1.0, // Сбрасываем множитель до базового 1.0
+          multiAutoClickPower: 1.0,
           friendlyEndermanCount: 0,
           allayCount: 0,
           luckyCatCount: 0,
           pirateParrotCount: 0,
           foxCount: 0,
-          clickPowerCost: 10,
-          autoClickerCost: 50,
-          multiAutoClickCost: 250, // Возвращаем стоимость для первой покупки
-          friendlyEndermanCost: 1000,
-          allayCost: 5000,
-          luckyCatCost: 10000,
-          pirateParrotCost: 20000,
-          foxCost: 30000,
+          clickPowerCost: BASE_COSTS.CLICK_POWER,
+          autoClickerCost: BASE_COSTS.AUTO_CLICKER,
+          multiAutoClickCost: BASE_COSTS.MULTI_AUTO_CLICK,
+          friendlyEndermanCost: BASE_COSTS.FRIENDLY_ENDERMAN,
+          allayCost: BASE_COSTS.ALLAY,
+          luckyCatCost: BASE_COSTS.LUCKY_CAT,
+          pirateParrotCost: BASE_COSTS.PIRATE_PARROT,
+          foxCost: BASE_COSTS.FOX,
           usedPromoCodes: [],
         });
       },
-      
+
       // Apply promo code
       applyPromoCode: (code) => {
         const state = get();
-        
+
+        // Validate input
+        if (!code || typeof code !== 'string' || code.trim().length === 0) {
+          return { success: false, message: "Please enter a valid promo code." };
+        }
+
+        const trimmedCode = code.trim();
+
         // Промокод для сброса прогресса
-        if (code === "Dead") {
+        if (trimmedCode === "Dead") {
           get().resetGame();
           return { success: true, message: "Весь прогресс был сброшен!" };
         }
-        
+
         // Промокод Sasha (bc земли)
-        if (code === "Sasha") {
-          // bc соответствует индексу 5 + 1*26 + 2 = 33 (после T идут aa=5, ab=6, ..., bc=33)
-          const amount = Math.pow(1000, 33); // 1000^33 земли
+        if (trimmedCode === "Sasha") {
+          const amount = Math.pow(1000, 33);
           set({
             dirtCount: fixFloatingPoint(state.dirtCount + amount),
             totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + amount),
           });
           return { success: true, message: "ВАУ! Вы получили bc земли!" };
         }
-        
+
         // Промокод 1zz (zz земли)
-        if (code === "1zz") {
-          // zz соответствует индексу 5 + 25*26 + 25 = 680 (после T идут aa=5, ab=6, ..., zz=680)
-          const amount = Math.pow(1000, 680); // 1000^680 земли
+        if (trimmedCode === "1zz") {
+          const amount = Math.pow(1000, 680);
           set({
             dirtCount: fixFloatingPoint(state.dirtCount + amount),
             totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + amount),
           });
           return { success: true, message: "ВАУ! Вы получили zz земли!" };
         }
-        
+
         // Специальный промокод для 50 триллионов земли
-        if (code.toLowerCase() === "get50trilliondirt") {
-          const amount = 50000000000000; // 50 триллионов
+        if (trimmedCode.toLowerCase() === "get50trilliondirt") {
+          const amount = 50000000000000;
           set({
             dirtCount: fixFloatingPoint(state.dirtCount + amount),
             totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + amount),
           });
           return { success: true, message: "WOW! You received 50 trillion dirt!" };
         }
-        
+
         // Обычные промокоды (с ограничением на однократное использование)
         const promoCodes: Record<string, { dirt: number, message: string, oneTime?: boolean }> = {
           "PROMO10": { dirt: 10, message: "You received 10 dirt!", oneTime: true },
           "PROMO50": { dirt: 50, message: "You received 50 dirt!", oneTime: true },
           "PROMO100": { dirt: 100, message: "You received 100 dirt!", oneTime: true }
         };
-        
-        const normalizedCode = code.toUpperCase();
-        
+
+        const normalizedCode = trimmedCode.toUpperCase();
+
         if (promoCodes[normalizedCode]) {
           // Проверить, использовался ли уже этот промокод, если он одноразовый
           if (promoCodes[normalizedCode].oneTime && state.usedPromoCodes.includes(normalizedCode)) {
             return { success: false, message: "Promo code already used." };
           }
-          
+
           // Добавить землю
           const dirtAmount = promoCodes[normalizedCode].dirt;
           set({
             dirtCount: fixFloatingPoint(state.dirtCount + dirtAmount),
             totalDirtCollected: fixFloatingPoint(state.totalDirtCollected + dirtAmount),
             // Добавляем код в список использованных, только если он одноразовый
-            usedPromoCodes: promoCodes[normalizedCode].oneTime 
-              ? [...state.usedPromoCodes, normalizedCode] 
+            usedPromoCodes: promoCodes[normalizedCode].oneTime
+              ? [...state.usedPromoCodes, normalizedCode]
               : state.usedPromoCodes
           });
-          
+
           return { success: true, message: promoCodes[normalizedCode].message };
-        } else {
-          return { success: false, message: "Invalid promo code." };
         }
-      },
-      
-      // Audio controls
+
+        return { success: false, message: "Invalid promo code." };
+      },      // Audio controls
       setMusicEnabled: (enabled) => set({ musicEnabled: enabled }),
       setMusicVolume: (volume) => set({ musicVolume: volume }),
       setSoundEffectsEnabled: (enabled) => set({ soundEffectsEnabled: enabled }),
@@ -672,139 +644,48 @@ export const useGameStore = create<GameState>()(
       setFoxSoundsEnabled: (enabled) => set({ foxSoundsEnabled: enabled }),
       setFoxSoundsVolume: (volume) => set({ foxSoundsVolume: volume }),
       setSoundEffectsVolume: (volume) => set({ soundEffectsVolume: volume }),
-      
+
       fixFloatingPointNumbers: () => {
-        set((state) => {
-          const newState = { ...state };
-          
-          // Всегда округляем до целых чисел для основных значений
-          const integerFields = [
-            'dirtCount',
-            'totalDirtCollected',
-            'clickPower',
-            'autoClickerCount',
-            'clickPowerCost',
-            'autoClickerCost',
-            'multiAutoClickCost',
-            'friendlyEndermanCount',
-            'friendlyEndermanCost',
-            'allayCount',
-            'allayCost',
-            'luckyCatCount',
-            'luckyCatCost',
-            'pirateParrotCount',
-            'pirateParrotCost',
-            'foxCount',
-            'foxCost'
-          ];
-          
-          integerFields.forEach(field => {
-            if (newState[field as keyof typeof newState] !== undefined) {
-              // Сначала исправляем проблемы с плавающей запятой, потом округляем
-              (newState as any)[field] = Math.floor(fixFloatingPoint(Number((newState as any)[field])));
-            }
-          });
-          
-          // Округляем множители до 2 знаков
-          if (newState.multiAutoClickPower !== undefined) {
-            // Исправляем проблемы с плавающей запятой, затем форматируем до 2 знаков
-            newState.multiAutoClickPower = fixFloatingPoint(Number(newState.multiAutoClickPower));
-            newState.multiAutoClickPower = Number(newState.multiAutoClickPower.toFixed(2));
-          }
-          
-          // Пересчитываем стоимости, если они некорректные
-          if (newState.clickPower !== undefined && newState.clickPowerCost !== undefined) {
-            const baseCost = 10; // Обновлено с 5 на 10
-            const growthRate = 0.15;
-            newState.clickPowerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.clickPower - 1));
-          }
-          
-          if (newState.autoClickerCount !== undefined && newState.autoClickerCost !== undefined) {
-            const baseCost = 50; // Обновлено с 15 на 50
-            const growthRate = 0.15;
-            newState.autoClickerCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.autoClickerCount));
-          }
-          
-          if (newState.multiAutoClickPower !== undefined && newState.multiAutoClickCost !== undefined) {
-            const baseCost = 250; // Обновлено с 100 на 250
-            const growthRate = 0.15;
-            const currentLevel = Math.round((newState.multiAutoClickPower - 1) * 10);
-            newState.multiAutoClickCost = Math.floor(baseCost * Math.pow(1 + growthRate, currentLevel));
-          }
-          
-          if (newState.friendlyEndermanCount !== undefined && newState.friendlyEndermanCost !== undefined) {
-            const baseCost = 1000; // Обновлено с 500 на 1000
-            const growthRate = 0.15;
-            newState.friendlyEndermanCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.friendlyEndermanCount));
-          }
-          
-          if (newState.allayCount !== undefined && newState.allayCost !== undefined) {
-            const baseCost = 5000; // Обновлено с 1000 на 5000
-            const growthRate = 0.15;
-            newState.allayCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.allayCount));
-          }
-          
-          if (newState.luckyCatCount !== undefined && newState.luckyCatCost !== undefined) {
-            const baseCost = 10000; // Обновлено с 2000 на 10000
-            const growthRate = 0.15;
-            newState.luckyCatCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.luckyCatCount));
-          }
-          
-          if (newState.pirateParrotCount !== undefined && newState.pirateParrotCost !== undefined) {
-            const baseCost = 20000; // Обновлено с 3500 на 20000
-            const growthRate = 0.15;
-            newState.pirateParrotCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.pirateParrotCount));
-          }
-          
-          if (newState.foxCount !== undefined && newState.foxCost !== undefined) {
-            const baseCost = 30000; // Обновлено с 10000 на 30000
-            const growthRate = 0.15;
-            newState.foxCost = Math.floor(baseCost * Math.pow(1 + growthRate, newState.foxCount));
-          }
-          
-          return newState;
-        });
-      },
-      
-      lastVisitTime: Date.now(),
-      
+        set((state) => fixFloatingPointNumbers(state));
+      }, lastVisitTime: Date.now(),
+
       calculateOfflineProgress: () => {
         const currentTime = Date.now();
         const lastVisitTime = get().lastVisitTime;
         const timeAwayInSeconds = Math.floor((currentTime - lastVisitTime) / 1000);
-        
-        // Если прошло меньше 30 секунд или это первый визит, не показываем прогресс
-        if (timeAwayInSeconds < 30 || lastVisitTime === 0) {
+
+        // Если прошло меньше минимального времени или это первый визит, не показываем прогресс
+        if (timeAwayInSeconds < LIMITS.OFFLINE_MIN_SECONDS || lastVisitTime === 0) {
           set({ lastVisitTime: currentTime });
           return {
             earnedDirt: 0,
             timeAwayInSeconds: 0
           };
         }
-        
+
         // Получаем текущую скорость добычи в секунду
         const state = get();
-        
-        // Расчет всех источников дохода
-        const autoClickPower = state.autoClickerCount * (state.multiAutoClickPower > 1.0 ? state.multiAutoClickPower : 1.0);
-        const endermanPower = state.friendlyEndermanCount * 5;
-        const pirateParrotPower = state.pirateParrotCount * 10;
-        
+
+        // Расчет всех источников дохода с учетом масштабирования уровня
+        const autoClickPower = state.autoClickerCount * PRODUCTION_RATES.AUTO_CLICKER * (1 + MULTIPLIERS.LEVEL_SCALING * state.autoClickerCount);
+        const endermanPower = state.friendlyEndermanCount * PRODUCTION_RATES.FRIENDLY_ENDERMAN * (1 + MULTIPLIERS.LEVEL_SCALING * state.friendlyEndermanCount);
+        const pirateParrotPower = state.pirateParrotCount * PRODUCTION_RATES.PIRATE_PARROT * (1 + MULTIPLIERS.LEVEL_SCALING * state.pirateParrotCount);
+
         // Применяем множитель от Allay
-        const allayMultiplier = state.allayCount > 0 ? 1 + (state.allayCount * 0.2) : 1;
-        
+        const allayMultiplier = state.allayCount > 0 ? 1 + (state.allayCount * MULTIPLIERS.ALLAY) : 1;
+
         // Общая скорость добычи в секунду
         const dirtPerSecond = (autoClickPower + endermanPower + pirateParrotPower) * allayMultiplier;
-        
+
         // Рассчитываем заработанную землю
         const earnedDirt = Math.floor(dirtPerSecond * timeAwayInSeconds);
-        
+
         // Обновляем время последнего визита и добавляем заработанную землю
         set({
           lastVisitTime: currentTime,
           dirtCount: state.dirtCount + earnedDirt
         });
-        
+
         return {
           earnedDirt,
           timeAwayInSeconds
@@ -834,7 +715,7 @@ export const useGameStore = create<GameState>()(
               (state as any)[typedKey] = fixedState[typedKey];
             }
           });
-          
+
           // Пересчитываем стоимость лопат
           state.recalculateShovelCosts();
         }

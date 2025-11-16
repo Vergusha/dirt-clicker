@@ -78,14 +78,12 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   };
 
   // Получаем текущий уровень улучшения для Enchanted Shovel
-  const getMultiAutoClickLevel = () => {
-    if (type !== 'multiAutoClick') return 0;
-    // Уровень = (текущая сила - 1.5) / 0.1 + 1
-    // Если меньше 1.5, значит еще не куплен
-    return multiAutoClickPower >= 1.5 
-      ? Math.floor(((multiAutoClickPower - 1.5) / 0.1) + 1)
-      : 0;
-  };
+  // const getMultiAutoClickLevel = () => {
+  //   if (type !== 'multiAutoClick') return 0;
+  //   return multiAutoClickPower >= 1.5 
+  //     ? Math.floor(((multiAutoClickPower - 1.5) / 0.1) + 1)
+  //     : 0;
+  // };
 
   // Get the cost of the upgrade based on its type
   const getCost = () => {
@@ -270,7 +268,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   const isLuckyCatMaxed = type === 'luckyCat' && luckyCatCount >= 10;
   // Определяем, достиг ли Enchanted Shovel максимального уровня
   const isEnchantedShovelMaxed = type === 'multiAutoClick' && multiAutoClickPower >= 2.1;
-  
+
   // Проверяем, нужно ли отключить кнопку
   const isButtonDisabled = () => {
     if (type === 'multiAutoClick') {
@@ -278,20 +276,20 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       if (isEnchantedShovelMaxed) {
         return true;
       }
-      
+
       // Проверяем, может ли игрок позволить себе покупку
       return !canAfford;
     }
-    
+
     // Для Lucky Cat
     if (type === 'luckyCat') {
       return isLuckyCatMaxed || !canAfford;
     }
-    
+
     // Для остальных улучшений
     return !canAfford;
   };
-  
+
   const getButtonText = () => {
     if (type === 'multiAutoClick') {
       // Проверяем требования для каждого уровня зачарованной лопаты
@@ -312,7 +310,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       }
       return multiAutoClickPower >= 2.1 ? 'Max Level' : 'Upgrade';
     }
-    
+
     return showUpgradeButton ? 'Upgrade' : `Buy${purchaseQuantity > 1 ? ` x${purchaseQuantity}` : ''}`;
   };
 
@@ -388,7 +386,7 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
   // Получаем название и описание для Enchanted Shovel в зависимости от уровня
   const getEnchantedShovelInfo = () => {
     if (type !== 'multiAutoClick') return { title, description };
-    
+
     // Определяем текущий уровень Enchanted Shovel
     if (multiAutoClickPower >= 2.1) {
       return {
@@ -468,10 +466,10 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
       <div className="upgrade-content-wrapper">
         <div className="upgrade-slot-wrapper">
           <img src={slotImage} alt="slot" className="slot-image" />
-          <img 
-            src={upgradeImage} 
-            alt="upgrade" 
-            className={`upgrade-icon ${isCursorType ? 'cursor-icon' : ''}`} 
+          <img
+            src={upgradeImage}
+            alt="upgrade"
+            className={`upgrade-icon ${isCursorType ? 'cursor-icon' : ''}`}
           />
         </div>
         <div className="upgrade-info">
@@ -480,13 +478,13 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
               {type === 'multiAutoClick' ? getEnchantedShovelInfo().title : getShovelTitle()}
               {upgradeCount > 0 && (
                 <span className="upgrade-count-header">
-                  {type === 'autoClicker' || type === 'multiAutoClick' 
-                    ? ` (Level ${formatNumber(upgradeCount)})` 
+                  {type === 'autoClicker' || type === 'multiAutoClick'
+                    ? ` (Level ${formatNumber(upgradeCount)})`
                     : ` (${formatNumber(upgradeCount)})`}
                 </span>
               )}
             </h3>
-            <button 
+            <button
               className="info-button"
               onClick={() => onInfoClick(type)}
               title={type === 'multiAutoClick' ? getEnchantedShovelInfo().title : getCurrentShovelInfo().name}
@@ -500,12 +498,12 @@ export const UpgradeButton: React.FC<UpgradeButtonProps> = ({
           </p>
           <div className="upgrade-footer">
             <span className="cost">
-              {isEnchantedShovelPurchased && isEnchantedShovelMaxed ? 'Max Level' : 
-               isEnchantedShovelPurchased ? 'Purchased' : 
-               isLuckyCatMaxed ? 'Max Level' : 
-               `Cost: ${formattedCost}`}
+              {isEnchantedShovelPurchased && isEnchantedShovelMaxed ? 'Max Level' :
+                isEnchantedShovelPurchased ? 'Purchased' :
+                  isLuckyCatMaxed ? 'Max Level' :
+                    `Cost: ${formattedCost}`}
             </span>
-            <button 
+            <button
               className={`buy-button ${isButtonDisabled() ? 'disabled' : ''}`}
               onClick={buyUpgrade}
               disabled={isButtonDisabled()}

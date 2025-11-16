@@ -13,10 +13,9 @@ import catSound2 from '../../audio/Cat_purreow2.ogg';
 export const LuckyCat: React.FC = () => {
   const { luckyCatCount, catSoundsEnabled, catSoundsVolume } = useGameStore();
   const playSound = useSoundEffect([catSound1, catSound2], catSoundsVolume);
-  
+
   // Animation parameters
   const [animationDuration, setAnimationDuration] = useState(4.0);
-  const [catSize, setCatSize] = useState(55);
 
   // Add debug console log
   useEffect(() => {
@@ -28,36 +27,33 @@ export const LuckyCat: React.FC = () => {
     if (window.innerWidth <= 480) {
       // Mobile devices
       setAnimationDuration(4.2);
-      setCatSize(45);
     } else if (window.innerWidth <= 768) {
       // Tablets
       setAnimationDuration(4.0);
-      setCatSize(50);
     } else {
       // Desktop
       setAnimationDuration(3.8);
-      setCatSize(55);
     }
   }, []);
 
   // Listen for window resize events
   useEffect(() => {
     updateResponsiveValues();
-    
+
     const handleResize = () => {
       updateResponsiveValues();
     };
-    
+
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [updateResponsiveValues]);
-  
+
   // Don't render if no Lucky Cats
   if (luckyCatCount <= 0) return null;
-  
+
   return (
     <div className="lucky-cat-container">
       <motion.div
@@ -66,16 +62,16 @@ export const LuckyCat: React.FC = () => {
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
         onClick={() => catSoundsEnabled && playSound()}
-        style={{ 
+        style={{
           cursor: 'pointer',
           pointerEvents: 'auto',
           zIndex: 10
         }}
       >
         <motion.img
-          src={catImage} 
-          alt="Lucky Cat" 
-          className="lucky-cat-image" 
+          src={catImage}
+          alt="Lucky Cat"
+          className="lucky-cat-image"
           style={{
             width: window.innerWidth <= 480 ? '45px' : '55px',
             height: 'auto',
@@ -88,8 +84,8 @@ export const LuckyCat: React.FC = () => {
             scale: [1, 1.03, 1],
             // Golden luck glow pulsing
             filter: [
-              'drop-shadow(0 0 5px rgba(255, 215, 0, 0.6))', 
-              'drop-shadow(0 0 10px rgba(255, 215, 0, 0.8))', 
+              'drop-shadow(0 0 5px rgba(255, 215, 0, 0.6))',
+              'drop-shadow(0 0 10px rgba(255, 215, 0, 0.8))',
               'drop-shadow(0 0 5px rgba(255, 215, 0, 0.6))'
             ]
           }}

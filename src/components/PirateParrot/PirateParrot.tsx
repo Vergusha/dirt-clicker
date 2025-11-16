@@ -6,8 +6,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSoundEffect } from '../SoundEffects/useSoundEffect';
 import parrotSound1 from '../../audio/Parrot_idle1.ogg';
 import parrotSound2 from '../../audio/Parrot_idle2.ogg';
-import parrotSound3 from '../../audio/Parrot_idle3.ogg';
-import parrotSound4 from '../../audio/Parrot_idle4.ogg';
 
 /**
  * Component for displaying a Pirate Parrot on screen when the player has the upgrade
@@ -17,7 +15,7 @@ import parrotSound4 from '../../audio/Parrot_idle4.ogg';
 export const PirateParrot: React.FC = () => {
   const { pirateParrotCount, parrotSoundsEnabled, parrotSoundsVolume } = useGameStore();
   const playSound = useSoundEffect([parrotSound1, parrotSound2], parrotSoundsVolume);
-  
+
   // Animation parameters
   const [animationDuration, setAnimationDuration] = useState(4.0);
   const [parrotSize, setParrotSize] = useState(55);
@@ -42,13 +40,13 @@ export const PirateParrot: React.FC = () => {
   // Listen for window resize events
   useEffect(() => {
     updateResponsiveValues();
-    
+
     const handleResize = () => {
       updateResponsiveValues();
     };
-    
+
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -72,7 +70,7 @@ export const PirateParrot: React.FC = () => {
           zIndex: 8,
         }}
       >
-        <motion.div 
+        <motion.div
           className="parrot-image-container"
           style={{
             width: `${parrotSize}px`,
@@ -86,21 +84,21 @@ export const PirateParrot: React.FC = () => {
           }}
           onClick={() => parrotSoundsEnabled && playSound()}
           initial={{ scale: 0 }}
-          animate={{ 
+          animate={{
             // Different animations based on music status and volume
             ...(isParrotDancing
               ? {
-                  // Dancing animation with more movement
-                  rotate: [0, 10, 0, -10, 0],
-                  y: [0, -10, 0, -5, 0],
-                  scale: [1, 1.05, 1, 1.03, 1],
-                }
+                // Dancing animation with more movement
+                rotate: [0, 10, 0, -10, 0],
+                y: [0, -10, 0, -5, 0],
+                scale: [1, 1.05, 1, 1.03, 1],
+              }
               : {
-                  // Subtle floating animation when not dancing
-                  y: [0, -5, 0],
-                  rotate: [0, 3, 0, -3, 0],
-                  scale: [1, 1.03, 1],
-                }),
+                // Subtle floating animation when not dancing
+                y: [0, -5, 0],
+                rotate: [0, 3, 0, -3, 0],
+                scale: [1, 1.03, 1],
+              }),
           }}
           transition={{
             duration: isParrotDancing ? animationDuration * 0.8 : animationDuration,
@@ -117,7 +115,7 @@ export const PirateParrot: React.FC = () => {
               width: '100%',
               height: '100%',
               objectFit: 'contain',
-              filter: isParrotDancing 
+              filter: isParrotDancing
                 ? 'drop-shadow(0 0 5px rgba(255, 0, 0, 0.7))'
                 : 'drop-shadow(0 0 5px rgba(0, 255, 255, 0.5))'
             }}

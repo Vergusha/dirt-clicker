@@ -32,19 +32,17 @@ interface InfoPanelProps {
  * Component for displaying detailed information about upgrades
  */
 export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
-  const { 
-    clickPower, 
-    autoClickerCount, 
-    multiAutoClickPower, 
+  const {
+    clickPower,
+    autoClickerCount,
+    multiAutoClickPower,
     friendlyEndermanCount,
     allayCount,
     luckyCatCount,
     pirateParrotCount,
-    musicEnabled,
-    musicVolume,
     foxCount
   } = useGameStore();
-  
+
   // Функция для получения информации о текущей лопате
   const getCurrentShovelInfo = () => {
     let currentShovel = {
@@ -97,17 +95,17 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
     if (autoClickerCount >= 100) return stoneShovelImage;
     return woodShovelImage;
   };
-  
+
   // Блокировка прокрутки страницы при открытии инфопанели
   useEffect(() => {
     // Сохраняем текущую позицию прокрутки
     const scrollY = window.scrollY;
-    
+
     // Блокируем прокрутку и устанавливаем стили для body
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
     document.body.style.width = '100%';
-    
+
     // При закрытии панели возвращаем прокрутку в исходное состояние
     return () => {
       document.body.style.position = '';
@@ -116,13 +114,13 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       window.scrollTo(0, scrollY);
     };
   }, []);
-  
+
   // Define content based on upgrade type
   let title = '';
   let description = '';
   let image = '';
   let stats: Array<{ label: string, value: string }> = [];
-  
+
   switch (type) {
     case 'clickPower':
       title = 'Stronger Click';
@@ -133,13 +131,13 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         { label: 'Current Level', value: formatNumber(clickPower) },
         { label: 'Base Click Power', value: formatNumber(clickPower) },
         { label: 'Actual Click Power', value: formatNumber(currentClickPower) },
-        { 
-          label: 'Next Level Bonus', 
-          value: `+${formatNumber(1 + 0.15 * (clickPower + 1))} dirt per click` 
+        {
+          label: 'Next Level Bonus',
+          value: `+${formatNumber(1 + 0.15 * (clickPower + 1))} dirt per click`
         }
       ];
       break;
-      
+
     case 'autoClicker':
       const currentShovelInfo = getCurrentShovelInfo();
       title = currentShovelInfo.name;
@@ -149,28 +147,28 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       stats = [
         { label: 'Total Shovels', value: formatNumber(autoClickerCount) },
         { label: 'Current Type', value: currentShovelInfo.name },
-        { 
-          label: 'Base Production', 
-          value: `${formatNumber(autoClickerCount)} dirt/s` 
+        {
+          label: 'Base Production',
+          value: `${formatNumber(autoClickerCount)} dirt/s`
         },
-        { 
-          label: 'Actual Production', 
-          value: `${formatNumber(currentShovelPower)} dirt/s` 
+        {
+          label: 'Actual Production',
+          value: `${formatNumber(currentShovelPower)} dirt/s`
         },
-        { 
-          label: 'Next Level Bonus', 
-          value: `+${formatNumber(1 + 0.15 * (autoClickerCount + 1))} dirt per second` 
+        {
+          label: 'Next Level Bonus',
+          value: `+${formatNumber(1 + 0.15 * (autoClickerCount + 1))} dirt per second`
         }
       ];
       break;
-      
+
     case 'multiAutoClick':
       // Определяем текущий уровень Enchanted Shovel
       let enchantedShovelTitle = 'Enchanted Wood Shovel';
       let enchantedShovelDescription = 'Magical enchantments that make your wood shovels more efficient. Gives a ×1.15 multiplier to your shovels production.';
       let enchantedShovelMultiplier = '×1.15';
       let enchantedShovelImage = enchantedWoodShovelImage;
-      
+
       if (multiAutoClickPower >= 2.1) {
         enchantedShovelTitle = 'Enchanted Netherite Shovel';
         enchantedShovelDescription = 'The most powerful enchanted shovel, forged from ancient debris. Gives a ×2.1 multiplier to your shovels production.';
@@ -202,33 +200,33 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         enchantedShovelMultiplier = '×1.15';
         enchantedShovelImage = enchantedWoodShovelImage;
       }
-      
+
       title = enchantedShovelTitle;
       description = enchantedShovelDescription;
       image = enchantedShovelImage;
       const isEnchantedPurchased = multiAutoClickPower > 1.0;
       const isMaxLevel = multiAutoClickPower >= 2.1;
-      
+
       stats = [
-        { 
-          label: 'Status', 
-          value: isEnchantedPurchased ? (isMaxLevel ? 'Maximum Level' : 'Purchased') : 'Not purchased' 
+        {
+          label: 'Status',
+          value: isEnchantedPurchased ? (isMaxLevel ? 'Maximum Level' : 'Purchased') : 'Not purchased'
         },
-        { 
-          label: 'Multiplier', 
-          value: isEnchantedPurchased ? enchantedShovelMultiplier : '×1.0 (not active)' 
+        {
+          label: 'Multiplier',
+          value: isEnchantedPurchased ? enchantedShovelMultiplier : '×1.0 (not active)'
         },
-        { 
-          label: 'Base Production', 
-          value: `${formatNumber(autoClickerCount)} dirt/s` 
+        {
+          label: 'Base Production',
+          value: `${formatNumber(autoClickerCount)} dirt/s`
         },
-        { 
-          label: 'Enhanced Production', 
-          value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s` 
+        {
+          label: 'Enhanced Production',
+          value: `${formatNumber(autoClickerCount * multiAutoClickPower)} dirt/s`
         }
       ];
       break;
-      
+
     case 'friendlyEnderman':
       title = 'Friendly Enderman';
       description = 'Friendly Endermen that teleport dirt to you from the End dimension. Each Enderman produces 5 dirt per second, with a 15% increase in production for each level. Base cost: 1000 dirt, increasing by 15% with each level.';
@@ -237,17 +235,17 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       stats = [
         { label: 'Endermen', value: formatNumber(friendlyEndermanCount) },
         { label: 'Base Production per Enderman', value: '5 dirt/s' },
-        { 
-          label: 'Actual Production per Enderman', 
-          value: `${formatNumber(5 * (1 + 0.15 * friendlyEndermanCount))} dirt/s` 
+        {
+          label: 'Actual Production per Enderman',
+          value: `${formatNumber(5 * (1 + 0.15 * friendlyEndermanCount))} dirt/s`
         },
-        { 
-          label: 'Total Production', 
-          value: `${formatNumber(currentEndermanPower)} dirt/s` 
+        {
+          label: 'Total Production',
+          value: `${formatNumber(currentEndermanPower)} dirt/s`
         },
-        { 
-          label: 'Next Level Bonus', 
-          value: `+${formatNumber(5 * (1 + 0.15 * (friendlyEndermanCount + 1)))} dirt per second` 
+        {
+          label: 'Next Level Bonus',
+          value: `+${formatNumber(5 * (1 + 0.15 * (friendlyEndermanCount + 1)))} dirt per second`
         }
       ];
       break;
@@ -259,13 +257,13 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       stats = [
         { label: 'Allays', value: formatNumber(allayCount) },
         { label: 'Boost per Allay', value: '20%' },
-        { 
-          label: 'Total Multiplier', 
-          value: `${formatNumber((1 + allayCount * 0.2))}x` 
+        {
+          label: 'Total Multiplier',
+          value: `${formatNumber((1 + allayCount * 0.2))}x`
         },
-        { 
-          label: 'Next Level Bonus', 
-          value: '+0.2x to all passive generation' 
+        {
+          label: 'Next Level Bonus',
+          value: '+0.2x to all passive generation'
         }
       ];
       break;
@@ -276,17 +274,17 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       image = luckyCatImage;
       stats = [
         { label: 'Cats Owned', value: `${formatNumber(luckyCatCount)} / 10` },
-        { 
-          label: 'Luck Chance', 
-          value: `${formatNumber(luckyCatCount * 10)}%` 
+        {
+          label: 'Luck Chance',
+          value: `${formatNumber(luckyCatCount * 10)}%`
         },
-        { 
-          label: 'Luck Bonus', 
-          value: `x10 dirt per click when activated` 
+        {
+          label: 'Luck Bonus',
+          value: `x10 dirt per click when activated`
         },
-        { 
-          label: 'Next Level Bonus', 
-          value: luckyCatCount >= 10 ? 'Maximum level reached!' : '+10% chance for lucky clicks' 
+        {
+          label: 'Next Level Bonus',
+          value: luckyCatCount >= 10 ? 'Maximum level reached!' : '+10% chance for lucky clicks'
         }
       ];
       break;
@@ -296,29 +294,29 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       description = 'This colorful avian companion has a knack for finding buried treasures! Each Pirate Parrot adds 10 dirt per second to your collection, with a 15% increase in production for each level. Base cost: 20,000 dirt, increasing by 15% with each level. The parrot dances when music is playing and volume is above minimum, showing its excitement for treasure hunting!';
       image = parrotImage;
       // Определяем, танцует ли попугай (музыка включена И громкость больше минимального порога)
-      const isParrotDancing = musicEnabled && musicVolume > 0.05;
+      // const isParrotDancing = musicEnabled && musicVolume > 0.05;
       const currentParrotPower = pirateParrotCount * 10 * (1 + 0.15 * pirateParrotCount);
       stats = [
         { label: 'Parrots Owned', value: formatNumber(pirateParrotCount) },
-        { 
-          label: 'Base Production per Parrot', 
-          value: '10 dirt/s' 
+        {
+          label: 'Base Production per Parrot',
+          value: '10 dirt/s'
         },
-        { 
-          label: 'Actual Production per Parrot', 
-          value: `${formatNumber(10 * (1 + 0.15 * pirateParrotCount))} dirt/s` 
+        {
+          label: 'Actual Production per Parrot',
+          value: `${formatNumber(10 * (1 + 0.15 * pirateParrotCount))} dirt/s`
         },
-        { 
-          label: 'Total Production', 
-          value: `${formatNumber(currentParrotPower)} dirt/s` 
+        {
+          label: 'Total Production',
+          value: `${formatNumber(currentParrotPower)} dirt/s`
         },
-        { 
-          label: 'With Allay Bonus', 
-          value: `${formatNumber(currentParrotPower * (1 + allayCount * 0.2))} dirt/s` 
+        {
+          label: 'With Allay Bonus',
+          value: `${formatNumber(currentParrotPower * (1 + allayCount * 0.2))} dirt/s`
         },
-        { 
-          label: 'Next Level Bonus', 
-          value: `+${formatNumber(10 * (1 + 0.15 * (pirateParrotCount + 1)))} dirt per second` 
+        {
+          label: 'Next Level Bonus',
+          value: `+${formatNumber(10 * (1 + 0.15 * (pirateParrotCount + 1)))} dirt per second`
         }
       ];
       break;
@@ -336,16 +334,16 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
       ];
       break;
   }
-  
+
   return (
-    <motion.div 
+    <motion.div
       className="info-panel-overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
-      <motion.div 
+      <motion.div
         className="info-panel"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -360,9 +358,9 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ type, onClose }) => {
         </div>
         <div className="info-content">
           <div className="info-image-container">
-            <img 
-              src={image} 
-              alt={title} 
+            <img
+              src={image}
+              alt={title}
               className="info-image"
             />
           </div>
